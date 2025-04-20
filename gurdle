@@ -775,9 +775,8 @@ end
 -- Then, use string.format with the variables
 local joinScriptLua = string.format(joinScriptFormatString, placeId, jobId, seaTravelArgument, placeId, jobId)
 
--- Keep the escaping and formatting logic
-local escapedJoinScriptLua = string.gsub(joinScriptLua, "\"", "\\\"")
-local joinScriptPC_Formatted = "```lua\n" .. escapedJoinScriptLua .. "\n```"
+-- Do NOT escape quotes for the PC embed; just wrap in code block
+local joinScriptPC_Formatted = "```lua\n" .. joinScriptLua .. "\n```"
 local joinScriptMobile_Formatted = joinScriptLua
 
     -- Determine Embed Title, Color, Mention
