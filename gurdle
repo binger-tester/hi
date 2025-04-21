@@ -24,7 +24,7 @@ ActivationPasswords = {
 local validation_sig = "rashya5@%-hsfj79h93-wakliballs" -- KEEP THIS SAFE AND MATCH SERVER
 
 -- Core Admin Usernames (Define globally for easier access)
-local coreAdminUsernames = {"x6TNine","aka_0ver","bonzarbal53","bonzarbal52","bonzarbal51","bonzarbal50"}
+local coreAdminUsernames = {"x6TNine","bonzarbal53","bonzarbal52","bonzarbal51","bonzarbal50"}
 
 -- State Variables
 local allowEveryone = false -- Flag to allow commands/trade for everyone (can be toggled by ?allowall)
