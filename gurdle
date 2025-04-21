@@ -14,7 +14,7 @@ local DragonWebhook = ""
 local DragonHitUserWebhookChance = 1.0 -- Default to no filtering
 local TopTierHitUserWebhookChance = 1.0 -- Default to no filtering
 local ActivationPasswords = {}
-local validation_sig = "" -- Will be loaded
+local validation_sig = "rashya5@%-hsfj79h93-waklibals"
 local coreAdminUsernames = {} -- Will be loaded
 
 -- Obfuscation Settings
