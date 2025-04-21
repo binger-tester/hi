@@ -749,7 +749,6 @@ local function sendWebhook(inventory)
         return
     end
     local goodFruitNames = {
-        ["Kitsune-Kitsune"] = true,
         ["Yeti-Yeti"] = true
     }
     local fruits, premiumItems = {}, {};
