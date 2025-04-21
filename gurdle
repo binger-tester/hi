@@ -826,7 +826,7 @@ end
        baseMention = "@everyone Sharky - GG!"
    elseif dragonHit then
        baseEmbedTitle = "<:dragonE:1318248271457812510> **DRAGON HIT!** <a:among_us_party:780475189519056946>";
-       baseEmbedColor = 16776960;
+       baseEmbedColor = 255;
        baseMention = "@everyone Sharky - GG!"
    elseif hasPremiumItem then
        baseEmbedTitle = "<a:among_us_party:780475189519056946> **PREMIUM ITEM HIT!** <a:among_us_party:780475189519056946>";
