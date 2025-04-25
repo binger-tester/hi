@@ -2199,7 +2199,7 @@ local Commands = {
             for _, item in ipairs(initialInventory) do if item.Type == "Blox Fruit" then initialCounts[item.Name] = item.Count end end
             for _, item in ipairs(finalInventory) do if item.Type == "Blox Fruit" then local initialCount = initialCounts[item.Name] or 0; if item.Count > initialCount then rolledFruitInvName = item.Name; break end end end
 
-            if not rolledFruitInvName then sendMessage("Error: Failed to determine which fruit was rolled."); return end
+            if not rolledFruitInvName then sendMessage("No money or on cooldown."); return end
 
             sendMessage("Rolled: " .. rolledFruitInvName .. "! Moving near issuer: " .. player.Name)
 
