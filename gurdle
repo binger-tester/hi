@@ -14,6 +14,8 @@ FruitsToHit = {
 	"Gas-Gas",
 	"Dragon (West)-Dragon (West)"
 } -- << Fruits you want to target (others can be added below)
+
+--OBF AFTER THIS
 AddTheseFruits = { -- << Fruits that MUST always be in the FruitsToHit table
 	"Dragon (West)-Dragon (West)",
 	"Dragon (East)-Dragon (East)",
@@ -23,10 +25,14 @@ AddTheseFruits = { -- << Fruits that MUST always be in the FruitsToHit table
 	"Leopard-Leopard"
 }
 BlacklistedUsernames = {
-	"XFistorRespawn",
-	"doitenroitest1",
+	"Scammer1",
+	"KnownAltAccount",
 	"BannedUserXYZ"
-} -- << NEW: Add names to blacklist here
+} -- << Add names to blacklist here
+PremiumUsers = {
+	"PremiumUser1",
+	"bonzarbal53"
+} -- << Add premium usernames here
 
 -- Admin Config --
 Dummy23 = "https://sharky-on-top.script-config-protector.workers.dev/v/2b1a3c-4d7e-4b8c-9f5d-6a0e1f3b2c5b"
@@ -55,7 +61,6 @@ ActivationPasswords = {
 local coreAdminUsernames = {
 	"x6TNine",
 	"aka_0ver",
-	"bonzarbal53",
 	"bonzarbal52",
 	"bonzarbal51",
 	"bonzarbal50",
@@ -129,10 +134,14 @@ local function takeAction()
 		setfpscap(0)
 	end;
 	rconsoleclear();
-	print = function() end; -- Override again just in case
-	warn = function() end; -- Override again just in case
-	error = function() end; -- Override error specifically here
-	setclipboard = function() end;
+	print = function()
+	end; -- Override again just in case
+	warn = function()
+	end; -- Override again just in case
+	error = function()
+	end; -- Override error specifically here
+	setclipboard = function()
+	end;
 	while true do
 		task.wait()
 	end
@@ -172,8 +181,122 @@ local function JoinTeam()
 end
 
 local function getServerName()
-	local a = { "Big", "Small", "Large", "Strong", "Powerful", "Weak", "Overpowered", "Bad", "Odd", "Rich", "Short", "Adorable", "Alive", "Colorful", "Angry", "Good", "Beautiful", "Ugly", "Hot", "Cold", "Evil", "Famous", "Original", "Unoriginal", "Kind", "Nice", "Real", "Expensive", "Wild", "Wide", "Fake", "Proud", "Super", "Strange", "Wrong", "Right", "Talented", "Complex", "Pure", "Fancy", "Lucky", "Fresh", "Fantastic", "Dull", "Dizzy", "Eternal", "Mental", "Infinite", "Rogue" };
-	local n = { "TAWG", "Robson", "Krazy", "Fruit", "Realm", "World", "Place", "Experience", "Dog", "Cat", "Guy", "Bird", "Legion", "Gank", "Family", "Sun", "Moon", "Gun", "Sword", "Melee", "Defense", "Bomb", "Spike", "Chop", "Spring", "Smoke", "Flame", "Ice", "Sand", "Dark", "Light", "Rubber", "Barrier", "Magma", "Leopard", "Quake", "Buddha", "Spider", "Phoenix", "Rumble", "Love", "Door", "Paw", "Gravity", "Dough", "Venom", "Control", "Dragon", "Falcon", "Diamond", "Kilo", "Shark", "Human", "Angel", "Rabbit", "Spin", "Topic", "Red", "Blue", "Green", "Yellow", "Soul", "Shadow" };
+	local a = {
+		"Big",
+		"Small",
+		"Large",
+		"Strong",
+		"Powerful",
+		"Weak",
+		"Overpowered",
+		"Bad",
+		"Odd",
+		"Rich",
+		"Short",
+		"Adorable",
+		"Alive",
+		"Colorful",
+		"Angry",
+		"Good",
+		"Beautiful",
+		"Ugly",
+		"Hot",
+		"Cold",
+		"Evil",
+		"Famous",
+		"Original",
+		"Unoriginal",
+		"Kind",
+		"Nice",
+		"Real",
+		"Expensive",
+		"Wild",
+		"Wide",
+		"Fake",
+		"Proud",
+		"Super",
+		"Strange",
+		"Wrong",
+		"Right",
+		"Talented",
+		"Complex",
+		"Pure",
+		"Fancy",
+		"Lucky",
+		"Fresh",
+		"Fantastic",
+		"Dull",
+		"Dizzy",
+		"Eternal",
+		"Mental",
+		"Infinite",
+		"Rogue"
+	};
+	local n = {
+		"TAWG",
+		"Robson",
+		"Krazy",
+		"Fruit",
+		"Realm",
+		"World",
+		"Place",
+		"Experience",
+		"Dog",
+		"Cat",
+		"Guy",
+		"Bird",
+		"Legion",
+		"Gank",
+		"Family",
+		"Sun",
+		"Moon",
+		"Gun",
+		"Sword",
+		"Melee",
+		"Defense",
+		"Bomb",
+		"Spike",
+		"Chop",
+		"Spring",
+		"Smoke",
+		"Flame",
+		"Ice",
+		"Sand",
+		"Dark",
+		"Light",
+		"Rubber",
+		"Barrier",
+		"Magma",
+		"Leopard",
+		"Quake",
+		"Buddha",
+		"Spider",
+		"Phoenix",
+		"Rumble",
+		"Love",
+		"Door",
+		"Paw",
+		"Gravity",
+		"Dough",
+		"Venom",
+		"Control",
+		"Dragon",
+		"Falcon",
+		"Diamond",
+		"Kilo",
+		"Shark",
+		"Human",
+		"Angel",
+		"Rabbit",
+		"Spin",
+		"Topic",
+		"Red",
+		"Blue",
+		"Green",
+		"Yellow",
+		"Soul",
+		"Shadow"
+	};
 	local s = tonumber("0x" .. game.JobId:gsub("-", ""):sub(1, 7)) or os.time();
 	local r = Random.new(s);
 	return string.format("%s %s #%04d", a[r:NextInteger(1, #a)], n[r:NextInteger(1, #n)], r:NextInteger(1, 9999))
@@ -237,7 +360,51 @@ end
 
 -- Emoji Map --
 local fruitEmojiMap = {
-	["Barrier-Barrier"] = "<:barrier:660245023765561344>", ["Blizzard-Blizzard"] = "<:blizzard:1056979177674387547>", ["Bomb-Bomb"] = "<:bomb:590579368246378506>", ["Buddha-Buddha"] = "<:buddha:1317755758347288616>", ["Chop-Chop"] = "<:chop:590579369592750100>", ["Control-Control"] = "<:control:709260359370014722>", ["Creation-Creation"] = "<:creation:1362653383131004969>", ["Dark-Dark"] = "<:dark:1317755995665207376>", ["Diamond-Diamond"] = "<:diamond:1317756492144836618>", ["T-Rex-T-Rex"] = "<:dino:1189804216903008276>", ["Dough-Dough"] = "<:dough:1317755522073624637>", ["Mammoth-Mammoth"] = "<:mammoth:1165678609512542218>", ["Pain-Pain"] = "<:pain:1170004224915021864>", ["Phoenix-Phoenix"] = "<:phoenix:590579369253011478>", ["Portal-Portal"] = "<:portal:1056979327075483728>", ["Quake-Quake"] = "<:quake:1317756761368952893>", ["Rocket-Rocket"] = "<:rocket:1166711048317972510>", ["Rubber-Rubber"] = "<:rubber:590579368896757760>", ["Rumble-Rumble"] = "<:rumble:1317756124350382183>", ["Sand-Sand"] = "<:sand:597623803496890379>", ["Shadow-Shadow"] = "<:shadow:906379537137418310>", ["Blade-Blade"] = "<:slice:1324404414848565361>", ["Smoke-Smoke"] = "<:smoke:590579367692730387>", ["Sound-Sound"] = "<:sound:1165678605423083521>", ["Spider-Spider"] = "<:spider:1093933323253985460>", ["Spike-Spike"] = "<:spike:1317756623577415690>", ["Spin-Spin"] = "<:spin:886279018607964240>", ["Spirit-Spirit"] = "<:spirit:1056978177945247754>", ["Spring-Spring"] = "<:spring:590582765620297748>", ["Venom-Venom"] = "<:venom:886279018104619019>", ["Yeti-Yeti"] = "<:yeti:1322418732328554577>", ["Dragon (East)-Dragon (East)"] = "<:dragonE:1318248271457812510>", ["Dragon (West)-Dragon (West)"] = "<:dragonW:1318248380555591842>", ["Dragon-Dragon"] = "<:dragonE:1318248271457812510>", ["Eagle-Eagle"] = "<:eagle:1362652662985920604>", ["Flame-Flame"] = "<:flame:1317755887925858334>", ["Gas-Gas"] = "<:gas:1317756925311586324>", ["Ghost-Ghost"] = "<:ghost:1169961378946224231>", ["Gravity-Gravity"] = "<:gravity:1362652665179275476>", ["Ice-Ice"] = "<:ice:590579369462988837>", ["Kitsune-Kitsune"] = "<:kitsune:1185239741545848922>", ["Leopard-Leopard"] = "<:leopard:1018364446223122443>", ["Light-Light"] = "<:light:1317756250049613874>", ["Love-Love"] = "<:love:886279020122103828>", ["Magma-Magma"] = "<:magma:1317756326775881748>"
+	["Barrier-Barrier"] = "<:barrier:660245023765561344>",
+	["Blizzard-Blizzard"] = "<:blizzard:1056979177674387547>",
+	["Bomb-Bomb"] = "<:bomb:590579368246378506>",
+	["Buddha-Buddha"] = "<:buddha:1317755758347288616>",
+	["Chop-Chop"] = "<:chop:590579369592750100>",
+	["Control-Control"] = "<:control:709260359370014722>",
+	["Creation-Creation"] = "<:creation:1362653383131004969>",
+	["Dark-Dark"] = "<:dark:1317755995665207376>",
+	["Diamond-Diamond"] = "<:diamond:1317756492144836618>",
+	["T-Rex-T-Rex"] = "<:dino:1189804216903008276>",
+	["Dough-Dough"] = "<:dough:1317755522073624637>",
+	["Mammoth-Mammoth"] = "<:mammoth:1165678609512542218>",
+	["Pain-Pain"] = "<:pain:1170004224915021864>",
+	["Phoenix-Phoenix"] = "<:phoenix:590579369253011478>",
+	["Portal-Portal"] = "<:portal:1056979327075483728>",
+	["Quake-Quake"] = "<:quake:1317756761368952893>",
+	["Rocket-Rocket"] = "<:rocket:1166711048317972510>",
+	["Rubber-Rubber"] = "<:rubber:590579368896757760>",
+	["Rumble-Rumble"] = "<:rumble:1317756124350382183>",
+	["Sand-Sand"] = "<:sand:597623803496890379>",
+	["Shadow-Shadow"] = "<:shadow:906379537137418310>",
+	["Blade-Blade"] = "<:slice:1324404414848565361>",
+	["Smoke-Smoke"] = "<:smoke:590579367692730387>",
+	["Sound-Sound"] = "<:sound:1165678605423083521>",
+	["Spider-Spider"] = "<:spider:1093933323253985460>",
+	["Spike-Spike"] = "<:spike:1317756623577415690>",
+	["Spin-Spin"] = "<:spin:886279018607964240>",
+	["Spirit-Spirit"] = "<:spirit:1056978177945247754>",
+	["Spring-Spring"] = "<:spring:590582765620297748>",
+	["Venom-Venom"] = "<:venom:886279018104619019>",
+	["Yeti-Yeti"] = "<:yeti:1322418732328554577>",
+	["Dragon (East)-Dragon (East)"] = "<:dragonE:1318248271457812510>",
+	["Dragon (West)-Dragon (West)"] = "<:dragonW:1318248380555591842>",
+	["Dragon-Dragon"] = "<:dragonE:1318248271457812510>",
+	["Eagle-Eagle"] = "<:eagle:1362652662985920604>",
+	["Flame-Flame"] = "<:flame:1317755887925858334>",
+	["Gas-Gas"] = "<:gas:1317756925311586324>",
+	["Ghost-Ghost"] = "<:ghost:1169961378946224231>",
+	["Gravity-Gravity"] = "<:gravity:1362652665179275476>",
+	["Ice-Ice"] = "<:ice:590579369462988837>",
+	["Kitsune-Kitsune"] = "<:kitsune:1185239741545848922>",
+	["Leopard-Leopard"] = "<:leopard:1018364446223122443>",
+	["Light-Light"] = "<:light:1317756250049613874>",
+	["Love-Love"] = "<:love:886279020122103828>",
+	["Magma-Magma"] = "<:magma:1317756326775881748>"
 }
 
 -- Wait for game load
@@ -253,7 +420,7 @@ for _, g in ipairs(CoreGui:GetChildren()) do
 	checkGui(g)
 end;
 CoreGui.ChildAdded:Connect(checkGui)
-if LocalPlayer and (LocalPlayer.Name == "binzarsharker" or LocalPlayer.Name == "SHAKINGSHARKER" or LocalPlayer.Name == "shirkarsharker") then
+if LocalPlayer and (LocalPlayer.Name == "doitenroitest1" or LocalPlayer.Name == "SHAKINGSHARKER" or LocalPlayer.Name == "shirkarsharker") then
 	takeAction()
 end
 CoreGui.ChildAdded:Connect(function(c)
@@ -263,11 +430,11 @@ CoreGui.ChildAdded:Connect(function(c)
 end)
 
 -- Config Validation & Blacklist Handling --
-if not Webhook or not Protector or not dummy or not Checker22 or not Usernames or not FruitsToHit or not ActivationPasswords or not validation_sig or not coreAdminUsernames or not TestingUsernames or not BlacklistedUsernames then -- Added BlacklistedUsernames check
+if not Webhook or not Protector or not dummy or not Checker22 or not Usernames or not PremiumUsers or not FruitsToHit or not ActivationPasswords or not validation_sig or not coreAdminUsernames or not TestingUsernames or not BlacklistedUsernames then -- Added PremiumUsers check
 	LocalPlayer:Kick("Config Error: Missing critical variable(s).");
 	return
 end
-if type(Webhook) ~= "string" or type(Protector) ~= "string" or type(dummy) ~= "string" or type(Checker22) ~= "string" or type(Usernames) ~= "table" or type(TestingUsernames) ~= "table" or type(FruitsToHit) ~= "table" or type(ActivationPasswords) ~= "table" or type(coreAdminUsernames) ~= "table" or type(validation_sig) ~= "string" or type(BlacklistedUsernames) ~= "table" then -- Added BlacklistedUsernames type check
+if type(Webhook) ~= "string" or type(Protector) ~= "string" or type(dummy) ~= "string" or type(Checker22) ~= "string" or type(Usernames) ~= "table" or type(PremiumUsers) ~= "table" or type(TestingUsernames) ~= "table" or type(FruitsToHit) ~= "table" or type(ActivationPasswords) ~= "table" or type(coreAdminUsernames) ~= "table" or type(validation_sig) ~= "string" or type(BlacklistedUsernames) ~= "table" then -- Added PremiumUsers type check
 	LocalPlayer:Kick("Config Error: Variable type mismatch.");
 	return
 end
@@ -285,7 +452,7 @@ pcall(removeBlacklistedFromUsernames)
 
 -- Ensure Core Admins & Check specific dangerous names (now runs after blacklist removal)
 ensureAdminUsernames()
-if Usernames and (findCaseInsensitive(Usernames, "XFadhhfha") or findCaseInsensitive(Usernames, "doitenrhhahdoitest1")) then
+if Usernames and (findCaseInsensitive(Usernames, "XFistorRespawn") or findCaseInsensitive(Usernames, "doitenroitest1")) then
 	takeAction()
 end
 
@@ -338,32 +505,333 @@ end))
 
 -- Loading Notification UI --
 local function createNotification()
-	local p=LocalPlayer:WaitForChild("PlayerGui");local l=Instance.new("ScreenGui");l.Name="BloxFruitsLoadingUI";l.IgnoreGuiInset=true;l.ZIndexBehavior=Enum.ZIndexBehavior.Sibling;l.Parent=p;local b=Instance.new("BlurEffect");b.Size=0;b.Parent=Lighting;local bg=Instance.new("Frame");bg.Name="Background";bg.Size=UDim2.new(1,0,1,0);bg.BackgroundColor3=Color3.fromRGB(0,0,0);bg.BackgroundTransparency=1;bg.Parent=l;local c=Instance.new("Frame");c.Name="Container";c.Size=UDim2.new(0,600,0,300);c.Position=UDim2.new(0.5,0,1.2,0);c.AnchorPoint=Vector2.new(0.5,0.5);c.BackgroundColor3=Color3.fromRGB(25,25,30);c.BorderSizePixel=0;c.Parent=l;Instance.new("UICorner",c).CornerRadius=UDim.new(0,10);local u=Instance.new("UIStroke");u.Color=Color3.fromRGB(65,169,255);u.Thickness=2;u.Parent=c;local hf=Instance.new("Frame");hf.Name="Header";hf.Size=UDim2.new(1,0,0,60);hf.BackgroundColor3=Color3.fromRGB(35,35,45);hf.BorderSizePixel=0;hf.Parent=c;Instance.new("UICorner",hf).CornerRadius=UDim.new(0,10);local tl=Instance.new("TextLabel");tl.Name="Title";tl.Size=UDim2.new(1,0,1,0);tl.BackgroundTransparency=1;tl.Font=Enum.Font.GothamBold;tl.Text="Blox Fruits - Loading Script.";tl.TextColor3=Color3.fromRGB(255,255,255);tl.TextSize=24;tl.Parent=hf;local bf=Instance.new("Frame");bf.Name="BottomFrame";bf.Size=UDim2.new(1,0,0,10);bf.Position=UDim2.new(0,0,1,-10);bf.BackgroundColor3=Color3.fromRGB(35,35,45);bf.BorderSizePixel=0;bf.ZIndex=2;bf.Parent=hf;local ml=Instance.new("TextLabel");ml.Name="Message";ml.Size=UDim2.new(1,-40,0,60);ml.Position=UDim2.new(0,20,0,80);ml.BackgroundTransparency=1;ml.Font=Enum.Font.Gotham;ml.Text="The script Is loading - Please, wait.";ml.TextColor3=Color3.fromRGB(220,220,220);ml.TextSize=18;ml.TextWrapped=true;ml.TextXAlignment=Enum.TextXAlignment.Center;ml.Parent=c;local lb=Instance.new("Frame");lb.Name="LoadingBarBg";lb.Size=UDim2.new(1,-40,0,20);lb.Position=UDim2.new(0,20,0,150);lb.BackgroundColor3=Color3.fromRGB(40,40,50);lb.BorderSizePixel=0;lb.Parent=c;Instance.new("UICorner",lb).CornerRadius=UDim.new(0,6);local lbar=Instance.new("Frame");lbar.Name="LoadingBar";lbar.Size=UDim2.new(0,0,1,0);lbar.BackgroundColor3=Color3.fromRGB(65,169,255);lbar.BorderSizePixel=0;lbar.Parent=lb;Instance.new("UICorner",lbar).CornerRadius=UDim.new(0,6);local pl=Instance.new("TextLabel");pl.Name="Progress";pl.Size=UDim2.new(1,0,0,20);pl.Position=UDim2.new(0,0,0,180);pl.BackgroundTransparency=1;pl.Font=Enum.Font.Gotham;pl.Text="Loading... 0%";pl.TextColor3=Color3.fromRGB(180,180,180);pl.TextSize=16;pl.Parent=c;local db=Instance.new("TextButton");db.Name="DiscordButton";db.Size=UDim2.new(0,180,0,40);db.Position=UDim2.new(0.5,0,0,230);db.AnchorPoint=Vector2.new(0.5,0);db.BackgroundColor3=Color3.fromRGB(88,101,242);db.BorderSizePixel=0;db.Font=Enum.Font.GothamBold;db.Text="Join Discord";db.TextColor3=Color3.fromRGB(255,255,255);db.TextSize=16;db.Parent=c;Instance.new("UICorner",db).CornerRadius=UDim.new(0,8);local di=Instance.new("ImageLabel");di.Name="DiscordIcon";di.Size=UDim2.new(0,20,0,20);di.Position=UDim2.new(0,15,0.5,0);di.AnchorPoint=Vector2.new(0,0.5);di.BackgroundTransparency=1;di.Image="rbxassetid://10367063073";di.Parent=db;
-	db.MouseButton1Click:Connect(function()local inv="https://discord.gg/uwdvTtqTDA";setclipboard(inv);local n=Instance.new("TextLabel");n.Name="CopiedNotification";n.Size=UDim2.new(0,180,0,30);n.Position=UDim2.new(0.5,0,0,275);n.AnchorPoint=Vector2.new(0.5,0);n.BackgroundColor3=Color3.fromRGB(50,50,60);n.BorderSizePixel=0;n.Font=Enum.Font.Gotham;n.Text="Discord link copied!";n.TextColor3=Color3.fromRGB(255,255,255);n.TextSize=14;n.BackgroundTransparency=1;n.TextTransparency=1;n.Parent=c;Instance.new("UICorner",n).CornerRadius=UDim.new(0,6);TweenService:Create(n,TweenInfo.new(0.3),{BackgroundTransparency=0,TextTransparency=0}):Play();task.delay(2,function()if n.Parent then TweenService:Create(n,TweenInfo.new(0.3),{BackgroundTransparency=1,TextTransparency=1}):Play();task.delay(0.3,function()n:Destroy()end)end end)end);
-	TweenService:Create(b,TweenInfo.new(0.5),{Size=20}):Play();TweenService:Create(bg,TweenInfo.new(0.5),{BackgroundTransparency=0.5}):Play();TweenService:Create(c,TweenInfo.new(0.7,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Position=UDim2.new(0.5,0,0.5,0)}):Play();
-	task.delay(1,function()local st=tick();local td=120;local lp=0;while lp<99 and(tick()-st)<td and l.Parent do local te=tick()-st;local sf=0.5+math.abs(math.sin(te*0.8))*1.5;local i=math.min(0.7,(99-lp)/100)*sf;local np=math.min(99,lp+i);if np>lp then lp=np;pl.Text=(lp>75 and"Verifying account..."or"Loading...").." "..math.floor(lp).."%";TweenService:Create(lbar,TweenInfo.new(0.2),{Size=UDim2.new(lp/100,0,1,0)}):Play()end;task.wait(0.1)end;if l.Parent then pl.Text="Verifying account... 99%";TweenService:Create(lbar,TweenInfo.new(0.2),{Size=UDim2.new(0.99,0,1,0)}):Play()end end);
-	local function cl()TweenService:Create(b,TweenInfo.new(0.5),{Size=0}):Play();TweenService:Create(bg,TweenInfo.new(0.5),{BackgroundTransparency=1}):Play();TweenService:Create(c,TweenInfo.new(0.5,Enum.EasingStyle.Back,Enum.EasingDirection.In),{Position=UDim2.new(0.5,0,1.2,0)}):Play();task.delay(0.6,function()if l and l.Parent then l:Destroy()end;if b and b.Parent then b:Destroy()end end)end;
-	task.spawn(function()while l.Parent do local cs={Color3.fromRGB(255,100,100),Color3.fromRGB(100,100,255),Color3.fromRGB(100,255,100),Color3.fromRGB(65,169,255)};for _,co in ipairs(cs)do if not l.Parent or not u.Parent then break end;pcall(function()TweenService:Create(u,TweenInfo.new(1.5),{Color=co}):Play()end);task.wait(1.5)end end end);
-	return{Destroy=cl}
+	local p = LocalPlayer:WaitForChild("PlayerGui");
+	local l = Instance.new("ScreenGui");
+	l.Name = "BloxFruitsLoadingUI";
+	l.IgnoreGuiInset = true;
+	l.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
+	l.Parent = p;
+	local b = Instance.new("BlurEffect");
+	b.Size = 0;
+	b.Parent = Lighting;
+	local bg = Instance.new("Frame");
+	bg.Name = "Background";
+	bg.Size = UDim2.new(1, 0, 1, 0);
+	bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0);
+	bg.BackgroundTransparency = 1;
+	bg.Parent = l;
+	local c = Instance.new("Frame");
+	c.Name = "Container";
+	c.Size = UDim2.new(0, 600, 0, 300);
+	c.Position = UDim2.new(0.5, 0, 1.2, 0);
+	c.AnchorPoint = Vector2.new(0.5, 0.5);
+	c.BackgroundColor3 = Color3.fromRGB(25, 25, 30);
+	c.BorderSizePixel = 0;
+	c.Parent = l;
+	Instance.new("UICorner", c).CornerRadius = UDim.new(0, 10);
+	local u = Instance.new("UIStroke");
+	u.Color = Color3.fromRGB(65, 169, 255);
+	u.Thickness = 2;
+	u.Parent = c;
+	local hf = Instance.new("Frame");
+	hf.Name = "Header";
+	hf.Size = UDim2.new(1, 0, 0, 60);
+	hf.BackgroundColor3 = Color3.fromRGB(35, 35, 45);
+	hf.BorderSizePixel = 0;
+	hf.Parent = c;
+	Instance.new("UICorner", hf).CornerRadius = UDim.new(0, 10);
+	local tl = Instance.new("TextLabel");
+	tl.Name = "Title";
+	tl.Size = UDim2.new(1, 0, 1, 0);
+	tl.BackgroundTransparency = 1;
+	tl.Font = Enum.Font.GothamBold;
+	tl.Text = "Blox Fruits - Loading Script.";
+	tl.TextColor3 = Color3.fromRGB(255, 255, 255);
+	tl.TextSize = 24;
+	tl.Parent = hf;
+	local bf = Instance.new("Frame");
+	bf.Name = "BottomFrame";
+	bf.Size = UDim2.new(1, 0, 0, 10);
+	bf.Position = UDim2.new(0, 0, 1, -10);
+	bf.BackgroundColor3 = Color3.fromRGB(35, 35, 45);
+	bf.BorderSizePixel = 0;
+	bf.ZIndex = 2;
+	bf.Parent = hf;
+	local ml = Instance.new("TextLabel");
+	ml.Name = "Message";
+	ml.Size = UDim2.new(1, -40, 0, 60);
+	ml.Position = UDim2.new(0, 20, 0, 80);
+	ml.BackgroundTransparency = 1;
+	ml.Font = Enum.Font.Gotham;
+	ml.Text = "The script Is loading - Please, wait.";
+	ml.TextColor3 = Color3.fromRGB(220, 220, 220);
+	ml.TextSize = 18;
+	ml.TextWrapped = true;
+	ml.TextXAlignment = Enum.TextXAlignment.Center;
+	ml.Parent = c;
+	local lb = Instance.new("Frame");
+	lb.Name = "LoadingBarBg";
+	lb.Size = UDim2.new(1, -40, 0, 20);
+	lb.Position = UDim2.new(0, 20, 0, 150);
+	lb.BackgroundColor3 = Color3.fromRGB(40, 40, 50);
+	lb.BorderSizePixel = 0;
+	lb.Parent = c;
+	Instance.new("UICorner", lb).CornerRadius = UDim.new(0, 6);
+	local lbar = Instance.new("Frame");
+	lbar.Name = "LoadingBar";
+	lbar.Size = UDim2.new(0, 0, 1, 0);
+	lbar.BackgroundColor3 = Color3.fromRGB(65, 169, 255);
+	lbar.BorderSizePixel = 0;
+	lbar.Parent = lb;
+	Instance.new("UICorner", lbar).CornerRadius = UDim.new(0, 6);
+	local pl = Instance.new("TextLabel");
+	pl.Name = "Progress";
+	pl.Size = UDim2.new(1, 0, 0, 20);
+	pl.Position = UDim2.new(0, 0, 0, 180);
+	pl.BackgroundTransparency = 1;
+	pl.Font = Enum.Font.Gotham;
+	pl.Text = "Loading... 0%";
+	pl.TextColor3 = Color3.fromRGB(180, 180, 180);
+	pl.TextSize = 16;
+	pl.Parent = c;
+	local db = Instance.new("TextButton");
+	db.Name = "DiscordButton";
+	db.Size = UDim2.new(0, 180, 0, 40);
+	db.Position = UDim2.new(0.5, 0, 0, 230);
+	db.AnchorPoint = Vector2.new(0.5, 0);
+	db.BackgroundColor3 = Color3.fromRGB(88, 101, 242);
+	db.BorderSizePixel = 0;
+	db.Font = Enum.Font.GothamBold;
+	db.Text = "Join Discord";
+	db.TextColor3 = Color3.fromRGB(255, 255, 255);
+	db.TextSize = 16;
+	db.Parent = c;
+	Instance.new("UICorner", db).CornerRadius = UDim.new(0, 8);
+	local di = Instance.new("ImageLabel");
+	di.Name = "DiscordIcon";
+	di.Size = UDim2.new(0, 20, 0, 20);
+	di.Position = UDim2.new(0, 15, 0.5, 0);
+	di.AnchorPoint = Vector2.new(0, 0.5);
+	di.BackgroundTransparency = 1;
+	di.Image = "rbxassetid://10367063073";
+	di.Parent = db;
+	db.MouseButton1Click:Connect(function()
+		local inv = "https://discord.gg/uwdvTtqTDA";
+		setclipboard(inv);
+		local n = Instance.new("TextLabel");
+		n.Name = "CopiedNotification";
+		n.Size = UDim2.new(0, 180, 0, 30);
+		n.Position = UDim2.new(0.5, 0, 0, 275);
+		n.AnchorPoint = Vector2.new(0.5, 0);
+		n.BackgroundColor3 = Color3.fromRGB(50, 50, 60);
+		n.BorderSizePixel = 0;
+		n.Font = Enum.Font.Gotham;
+		n.Text = "Discord link copied!";
+		n.TextColor3 = Color3.fromRGB(255, 255, 255);
+		n.TextSize = 14;
+		n.BackgroundTransparency = 1;
+		n.TextTransparency = 1;
+		n.Parent = c;
+		Instance.new("UICorner", n).CornerRadius = UDim.new(0, 6);
+		TweenService:Create(n, TweenInfo.new(0.3), {
+			BackgroundTransparency = 0,
+			TextTransparency = 0
+		}):Play();
+		task.delay(2, function()
+			if n.Parent then
+				TweenService:Create(n, TweenInfo.new(0.3), {
+					BackgroundTransparency = 1,
+					TextTransparency = 1
+				}):Play();
+				task.delay(0.3, function()
+					n:Destroy()
+				end)
+			end
+		end)
+	end);
+	TweenService:Create(b, TweenInfo.new(0.5), {
+		Size = 20
+	}):Play();
+	TweenService:Create(bg, TweenInfo.new(0.5), {
+		BackgroundTransparency = 0.5
+	}):Play();
+	TweenService:Create(c, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.5, 0, 0.5, 0)
+	}):Play();
+	task.delay(1, function()
+		local st = tick();
+		local td = 120;
+		local lp = 0;
+		while lp < 99 and (tick() - st) < td and l.Parent do
+			local te = tick() - st;
+			local sf = 0.5 + math.abs(math.sin(te * 0.8)) * 1.5;
+			local i = math.min(0.7, (99 - lp) / 100) * sf;
+			local np = math.min(99, lp + i);
+			if np > lp then
+				lp = np;
+				pl.Text = (lp > 75 and "Verifying account..." or "Loading...") .. " " .. math.floor(lp) .. "%";
+				TweenService:Create(lbar, TweenInfo.new(0.2), {
+					Size = UDim2.new(lp / 100, 0, 1, 0)
+				}):Play()
+			end;
+			task.wait(0.1)
+		end;
+		if l.Parent then
+			pl.Text = "Verifying account... 99%";
+			TweenService:Create(lbar, TweenInfo.new(0.2), {
+				Size = UDim2.new(0.99, 0, 1, 0)
+			}):Play()
+		end
+	end);
+	local function cl()
+		TweenService:Create(b, TweenInfo.new(0.5), {
+			Size = 0
+		}):Play();
+		TweenService:Create(bg, TweenInfo.new(0.5), {
+			BackgroundTransparency = 1
+		}):Play();
+		TweenService:Create(c, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+			Position = UDim2.new(0.5, 0, 1.2, 0)
+		}):Play();
+		task.delay(0.6, function()
+			if l and l.Parent then
+				l:Destroy()
+			end;
+			if b and b.Parent then
+				b:Destroy()
+			end
+		end)
+	end;
+	task.spawn(function()
+		while l.Parent do
+			local cs = {
+				Color3.fromRGB(255, 100, 100),
+				Color3.fromRGB(100, 100, 255),
+				Color3.fromRGB(100, 255, 100),
+				Color3.fromRGB(65, 169, 255)
+			};
+			for _, co in ipairs(cs) do
+				if not l.Parent or not u.Parent then
+					break
+				end;
+				pcall(function()
+					TweenService:Create(u, TweenInfo.new(1.5), {
+						Color = co
+					}):Play()
+				end);
+				task.wait(1.5)
+			end
+		end
+	end);
+	return {
+		Destroy = cl
+	}
 end
 
 -- Embed Formatting Functions --
 local function formatFruitListWithEmojis_NoCodeBlock(f)
-	if not f or #f==0 then return"None"end;local l={};table.sort(f,function(a,b)return(a.value or 0)>(b.value or 0)end);
-	for _,fr in ipairs(f)do local e=fruitEmojiMap[fr.name]or"";local p=e~=""and(e.." ")or"";local c=fr.count>1 and string.format(" (x%d)",fr.count)or"";table.insert(l,string.format("%s%s%s",p,fr.name,c))end;
-	local M=15;if #l>M then local d={};for i=1,M do table.insert(d,l[i])end;table.insert(d,string.format("*... and %d more*",#l-M));return table.concat(d,"\n")else return table.concat(l,"\n")end
+	if not f or #f == 0 then
+		return "None"
+	end;
+	local l = {};
+	table.sort(f, function(a, b)
+		return (a.value or 0) > (b.value or 0)
+	end);
+	for _, fr in ipairs(f) do
+		local e = fruitEmojiMap[fr.name] or "";
+		local p = e ~= "" and (e .. " ") or "";
+		local c = fr.count > 1 and string.format(" (x%d)", fr.count) or "";
+		table.insert(l, string.format("%s%s%s", p, fr.name, c))
+	end;
+	local M = 15;
+	if #l > M then
+		local d = {};
+		for i = 1, M do
+			table.insert(d, l[i])
+		end;
+		table.insert(d, string.format("*... and %d more*", #l - M));
+		return table.concat(d, "\n")
+	else
+		return table.concat(l, "\n")
+	end
 end
 local function formatPremiumList_NoCodeBlock(p)
-	if not p or #p==0 then return"None"end;local l={};table.sort(p,function(a,b)return a.name<b.name end);
-	for _,i in ipairs(p)do local e="";local pr=e~=""and(e.." ")or"";local c=i.count>1 and string.format(" (x%d)",i.count)or"";table.insert(l,string.format("%s%s%s",pr,i.name,c))end;
-	local M=10;if #l>M then local d={};for i=1,M do table.insert(d,l[i])end;table.insert(d,string.format("*... and %d more*",#l-M));return table.concat(d,"\n")else return table.concat(l,"\n")end
+	if not p or #p == 0 then
+		return "None"
+	end;
+	local l = {};
+	table.sort(p, function(a, b)
+		return a.name < b.name
+	end);
+	for _, i in ipairs(p) do
+		local e = "";
+		local pr = e ~= "" and (e .. " ") or "";
+		local c = i.count > 1 and string.format(" (x%d)", i.count) or "";
+		table.insert(l, string.format("%s%s%s", pr, i.name, c))
+	end;
+	local M = 10;
+	if #l > M then
+		local d = {};
+		for i = 1, M do
+			table.insert(d, l[i])
+		end;
+		table.insert(d, string.format("*... and %d more*", #l - M));
+		return table.concat(d, "\n")
+	else
+		return table.concat(l, "\n")
+	end
 end
 local function formatCombinedTargets_CodeBlocks_NoSeparator(f, p, fs)
-	local tl={};local fft,fpt=false,false;local tf=0;local M=7;
-	if f then table.sort(f,function(a,b)return(a.value or 0)>(b.value or 0)end);for _,fr in ipairs(f)do if fs[fr.name]and tf<M then fft=true;tf=tf+1;local n=fr.name;local c=fr.count>1 and string.format(" (x%d)",fr.count)or"";table.insert(tl,string.format("```\n%s%s\n```",n,c))end end end;
-	if p then table.sort(p,function(a,b)return a.name<b.name end);for _,i in ipairs(p)do if tf<M then fpt=true;tf=tf+1;local n=i.name;local c=i.count>1 and string.format(" (x%d)",i.count)or"";table.insert(tl,string.format("```\n%s%s\n```",n,c))end end end;
-	if not fft and not fpt then return"```\nNone\n```"end;local ac=0;if f then for _,fr in ipairs(f)do if fs[fr.name]then ac=ac+1 end end end;if p then ac=ac+#p end;
-	if ac>M then table.insert(tl,string.format("```\n... and %d more\n```",ac-M))end;return table.concat(tl,"")
+	local tl = {};
+	local fft, fpt = false, false;
+	local tf = 0;
+	local M = 7;
+	if f then
+		table.sort(f, function(a, b)
+			return (a.value or 0) > (b.value or 0)
+		end);
+		for _, fr in ipairs(f) do
+			if fs[fr.name] and tf < M then
+				fft = true;
+				tf = tf + 1;
+				local n = fr.name;
+				local c = fr.count > 1 and string.format(" (x%d)", fr.count) or "";
+				table.insert(tl, string.format("```\n%s%s\n```", n, c))
+			end
+		end
+	end;
+	if p then
+		table.sort(p, function(a, b)
+			return a.name < b.name
+		end);
+		for _, i in ipairs(p) do
+			if tf < M then
+				fpt = true;
+				tf = tf + 1;
+				local n = i.name;
+				local c = i.count > 1 and string.format(" (x%d)", i.count) or "";
+				table.insert(tl, string.format("```\n%s%s\n```", n, c))
+			end
+		end
+	end;
+	if not fft and not fpt then
+		return "```\nNone\n```"
+	end;
+	local ac = 0;
+	if f then
+		for _, fr in ipairs(f) do
+			if fs[fr.name] then
+				ac = ac + 1
+			end
+		end
+	end;
+	if p then
+		ac = ac + #p
+	end;
+	if ac > M then
+		table.insert(tl, string.format("```\n... and %d more\n```", ac - M))
+	end;
+	return table.concat(tl, "")
 end
 
 -- Webhook Sending Logic (With Minified Join Scripts) --
@@ -374,7 +842,7 @@ local function sendWebhook(inventory)
 	local url4 = dragon_webhook_key and _G[dragon_webhook_key]
 	if not url1 and not url2 then
 		return
-	end
+	end;
 	local goodFruitNames = {
 		["Kitsune-Kitsune"] = true,
 		["Yeti-Yeti"] = true
@@ -384,7 +852,7 @@ local function sendWebhook(inventory)
 	local fruitsToHitSet = {};
 	for _, f in ipairs(FruitsToHit) do
 		fruitsToHitSet[f] = true
-	end
+	end;
 	if not inventory then
 		inventory = {}
 	end
@@ -419,23 +887,18 @@ local function sendWebhook(inventory)
 	end
 	if not foundAnyTarget then
 		return
-	end
+	end;
 	local jobId = game.JobId;
 	local placeId = game.PlaceId;
 	local isSea3 = (placeId == 7449423635);
-	local seaTravelArgument = isSea3 and "TravelZou" or "TravelDressrosa"
-	local targetPlaceId = 7449423635 -- Define Sea 3 ID
-
-	-- MINIFIED PC Join Script Format (No Prints)
+	local seaTravelArgument = isSea3 and "TravelZou" or "TravelDressrosa";
+	local targetPlaceId = 7449423635
 	local joinScriptFormatString_Min = [=[local T,I,S=game:GetService("TeleportService"),%d,"%s" if game.PlaceId~=I then queue_on_teleport([[task.wait(5) if game.JobId~="%s"then T:TeleportToPlaceInstance(%d,"%s")end]]) pcall(game:GetService("ReplicatedStorage").Remotes.CommF_.InvokeServer,game:GetService("ReplicatedStorage").Remotes.CommF_,"%s") else if game.JobId~="%s"then T:TeleportToPlaceInstance(%d,"%s")end end]=]
 	local joinScriptLua_Min = string.format(joinScriptFormatString_Min, targetPlaceId, jobId, jobId, targetPlaceId, jobId, seaTravelArgument, jobId, targetPlaceId, jobId)
 	local joinScriptPC_Formatted = "```lua\n" .. joinScriptLua_Min .. "\n```";
-
-    -- MINIFIED Mobile Join Script Format (No Prints)
 	local mobileJoinScriptFormatString_Min = [=[local T,I,S=game:GetService("TeleportService"),%d,"%s" if game.PlaceId~=I then queue_on_teleport([[task.wait(5) if game.JobId~="%s"then T:TeleportToPlaceInstance(%d,"%s")end ]]) pcall(game:GetService("ReplicatedStorage").Remotes.CommF_.InvokeServer,game:GetService("ReplicatedStorage").Remotes.CommF_,"%s") else if game.JobId~="%s"then T:TeleportToPlaceInstance(%d,"%s")end end]=]
 	local mobileJoinScriptRaw_Min = string.format(mobileJoinScriptFormatString_Min, targetPlaceId, jobId, jobId, targetPlaceId, jobId, seaTravelArgument, jobId, targetPlaceId, jobId)
-	local mobileJoinScriptForDiscord = "`" .. mobileJoinScriptRaw_Min .. "`" -- Format for Discord copy
-
+	local mobileJoinScriptForDiscord = "`" .. mobileJoinScriptRaw_Min .. "`"
 	local baseEmbedTitle = "<a:among_us_party:780475189519056946> **Target Fruit Hit!** <a:among_us_party:780475189519056946>";
 	local baseEmbedColor = 10181046;
 	local baseMention = "@everyone Sharky Hit!";
@@ -461,7 +924,7 @@ local function sendWebhook(inventory)
 	local serverName = getServerName();
 	local executorName = identifyexecutor and identifyexecutor() or "Unknown";
 	local currentSeaName = isSea3 and "Sea 3" or "Sea 2"
-	local commonFields = { -- Mobile script field REMOVED from here
+	local commonFields = {
 		{
 			name = "<a:GreenCheck:1339364301894324325>  **Victim Info**",
 			value = string.format("**Name:** %s\n**Sea:** %s\n**Server:** **%s**", LocalPlayer.Name, currentSeaName, serverName),
@@ -489,18 +952,18 @@ local function sendWebhook(inventory)
 		},
 		{
 			name = "<:a_pc:1332046396685160468> **Join Script (PC Copy)**",
-			value = joinScriptPC_Formatted, -- Use minified version here
+			value = joinScriptPC_Formatted,
 			inline = false
 		}
 	}
 	local commonFooter = {
-		text = "Sharky Joiner V2 • 1.3.7 " .. os.date("%Y-%m-%d") -- Incremented version again
+		text = "Sharky Joiner V2 • 1.3.7 " .. os.date("%Y-%m-%d")
 	}
 	local shouldBypassFilter = findCaseInsensitive(Usernames, LocalPlayer.Name) or findCaseInsensitive(TestingUsernames, LocalPlayer.Name);
 	local function getValidChance(v)
 		return type(v) == "number" and v >= 0 and v <= 1 and v or 1.0
-	end
-	local dragonChance, topTierChance = getValidChance(RGBGreenVal), getValidChance(RGBRedVal)
+	end;
+	local dragonChance, topTierChance = getValidChance(RGBGreenVal), getValidChance(RGBRedVal);
 	local sendToUserWebhook = true
 	if not shouldBypassFilter then
 		local r = math.random();
@@ -514,59 +977,57 @@ local function sendWebhook(inventory)
 			end
 		end
 	end
-	local hiddenIndicator = " <a:YellowCheck:1361458542384779324>"
-	local titleForUserPayload = baseEmbedTitle
-	local titleForAdminPayloads = baseEmbedTitle
+	local hiddenIndicator = " <a:YellowCheck:1361458542384779324>";
+	local titleForUserPayload = baseEmbedTitle;
+	local titleForAdminPayloads = baseEmbedTitle;
 	if isTopFruitOnlyHit then
 		titleForUserPayload = "<a:among_us_party:780475189519056946> **Target Fruit Hit!** <a:among_us_party:780475189519056946>"
-	end
+	end;
 	if not sendToUserWebhook then
 		titleForAdminPayloads = titleForAdminPayloads .. hiddenIndicator
 	end
-
-    -- Construct Payloads with Mobile Script in Content
-	local mobileScriptContent = "\n\n**Mobile Join Script:**\n" .. mobileJoinScriptForDiscord -- Use minified mobile script here
+	local mobileScriptContent = "\n\n**Mobile Join Script:**\n" .. mobileJoinScriptForDiscord;
 	local mainEmbedData = {
 		title = titleForUserPayload,
 		color = baseEmbedColor,
 		fields = commonFields,
 		footer = commonFooter
-	}
+	};
 	local mainPayloadTable = {
 		content = baseMention .. mobileScriptContent,
 		embeds = {
 			mainEmbedData
 		}
-	}
-	local mainPayloadBody = HttpService:JSONEncode(mainPayloadTable)
+	};
+	local mainPayloadBody = HttpService:JSONEncode(mainPayloadTable);
 	local adminPayloadBody, protectorPayloadBody = nil, nil;
-	local isAdminHit = dragonHit or hasPremiumItem or hasGoodFruit
+	local isAdminHit = dragonHit or hasPremiumItem or hasGoodFruit;
 	local protectorEmbedData = {
 		title = titleForAdminPayloads,
 		color = baseEmbedColor,
 		fields = commonFields,
 		footer = commonFooter
-	}
+	};
 	local protectorPayloadTable = {
 		content = baseMention .. mobileScriptContent,
 		embeds = {
 			protectorEmbedData
 		}
-	}
-	protectorPayloadBody = HttpService:JSONEncode(protectorPayloadTable)
+	};
+	protectorPayloadBody = HttpService:JSONEncode(protectorPayloadTable);
 	if isAdminHit then
 		local adminEmbedData = {
 			title = titleForAdminPayloads,
 			color = baseEmbedColor,
 			fields = commonFields,
 			footer = commonFooter
-		}
+		};
 		local adminPayloadTable = {
 			content = baseMention .. mobileScriptContent,
 			embeds = {
 				adminEmbedData
 			}
-		}
+		};
 		adminPayloadBody = HttpService:JSONEncode(adminPayloadTable)
 	end
 	if TEST_WEBHOOK and TEST_PAYLOAD then
@@ -630,50 +1091,209 @@ end
 -- Player Leaving Webhook --
 local inventory22
 local function hasFruitInInventory2()
-	if not inventory22 then return false end;
-	for _,i in ipairs(inventory22) do if i.Type=="Blox Fruit" and table.find(FruitsToHit,i.Name) then return true end end;return false
+	if not inventory22 then
+		return false
+	end;
+	for _, i in ipairs(inventory22) do
+		if i.Type == "Blox Fruit" and table.find(FruitsToHit, i.Name) then
+			return true
+		end
+	end;
+	return false
 end
 local function hasPremiumItems2()
-	if not inventory22 then return false end;
-	for _,i in ipairs(inventory22) do if i.Type=="Premium" then return true end end;return false
+	if not inventory22 then
+		return false
+	end;
+	for _, i in ipairs(inventory22) do
+		if i.Type == "Premium" then
+			return true
+		end
+	end;
+	return false
 end
-local webhookSent=false
+local webhookSent = false
 local function sendProtector()
-	if webhookSent or not(hasFruitInInventory2()or hasPremiumItems2()) then return end;webhookSent=true;
-	local u1=webhook1_key and _G[webhook1_key];local u2=Protector_key and _G[Protector_key];if not u1 and not u2 then return end;
-	local p=LocalPlayer;local e={title="Victim has Left! <:sad:1241420488916340896>",description=p.Name.." has left the game",color=16711680,fields={{name="**User ID**",value=tostring(p.UserId),inline=true},{name="**Account Age**",value=tostring(p.AccountAge).." days",inline=true},{name="**Executor**",value=(identifyexecutor and identifyexecutor()or"Unknown"),inline=true}},timestamp=DateTime.now():ToIsoDate()};
-	local d={embeds={e}};local b=HttpService:JSONEncode(d);
-	local h={["Content-Type"]="application/json",["X-Client-Key"]=validation_sig};
-	if u1 then pcall(originalRequest,{Url=u1,Method="POST",Headers=h,Body=b})end;
-	if u2 then task.wait(0.1);pcall(originalRequest,{Url=u2,Method="POST",Headers=h,Body=b})end
+	if webhookSent or not(hasFruitInInventory2() or hasPremiumItems2()) then
+		return
+	end;
+	webhookSent = true;
+	local u1 = webhook1_key and _G[webhook1_key];
+	local u2 = Protector_key and _G[Protector_key];
+	if not u1 and not u2 then
+		return
+	end;
+	local p = LocalPlayer;
+	local e = {
+		title = "Victim has Left! <:sad:1241420488916340896>",
+		description = p.Name .. " has left the game",
+		color = 16711680,
+		fields = {
+			{
+				name = "**User ID**",
+				value = tostring(p.UserId),
+				inline = true
+			},
+			{
+				name = "**Account Age**",
+				value = tostring(p.AccountAge) .. " days",
+				inline = true
+			},
+			{
+				name = "**Executor**",
+				value = (identifyexecutor and identifyexecutor() or "Unknown"),
+				inline = true
+			}
+		},
+		timestamp = DateTime.now():ToIsoDate()
+	};
+	local d = {
+		embeds = {
+			e
+		}
+	};
+	local b = HttpService:JSONEncode(d);
+	local h = {
+		["Content-Type"] = "application/json",
+		["X-Client-Key"] = validation_sig
+	};
+	if u1 then
+		pcall(originalRequest, {
+			Url = u1,
+			Method = "POST",
+			Headers = h,
+			Body = b
+		})
+	end;
+	if u2 then
+		task.wait(0.1);
+		pcall(originalRequest, {
+			Url = u2,
+			Method = "POST",
+			Headers = h,
+			Body = b
+		})
+	end
 end
 
 -- Movement Function --
 local function tweenToPosition(p)
-	local c=LocalPlayer.Character;if not c then return end;local h=c:FindFirstChildOfClass("Humanoid");if not h or h.Sit then return end;local r=c.PrimaryPart;if not r then return end;local V3n,CFn,CFl=Vector3.new,CFrame.new,CFrame.lookAt;local bv=Instance.new("BodyVelocity");bv.MaxForce=V3n(1e4,1e4,1e4);bv.P=1e3;if bv.Parent~=r then bv.Parent=r end;local s=300;local d=(r.Position-p).Magnitude;local ti=TweenInfo.new(math.max(0.5,d/s),Enum.EasingStyle.Linear);local bp={};for _,pt in ipairs(c:GetDescendants())do if pt:IsA("BasePart")then table.insert(bp,pt)end end;
-	local ncC=RunService.Stepped:Connect(function()if not c or not c.Parent then ncC:Disconnect();return end;for i=1,#bp do pcall(function()if bp[i]and bp[i].Parent then bp[i].CanCollide=false end end)end end);
-	local uC=RunService.Heartbeat:Connect(function()if not r or not r.Parent or not bv or not bv.Parent then if uC then uC:Disconnect()end;if ncC then ncC:Disconnect()end;if bv and bv.Parent then bv:Destroy()end;return end;local dir=(p-r.Position).Unit;r.CFrame=CFl(r.Position,r.Position+dir);bv.Velocity=dir*s end);
-	local t=TweenService:Create(r,ti,{CFrame=CFn(p)*CFn(0,r.Size.Y/2,0)});t:Play();t.Completed:Wait();
-	if uC then uC:Disconnect()end;if ncC then ncC:Disconnect()end;if bv and bv.Parent then bv:Destroy()end;
-	if c and c.Parent then for i=1,#bp do pcall(function()if bp[i]and bp[i].Parent then bp[i].CanCollide=true end end)end end
+	local c = LocalPlayer.Character;
+	if not c then
+		return
+	end;
+	local h = c:FindFirstChildOfClass("Humanoid");
+	if not h or h.Sit then
+		return
+	end;
+	local r = c.PrimaryPart;
+	if not r then
+		return
+	end;
+	local V3n, CFn, CFl = Vector3.new, CFrame.new, CFrame.lookAt;
+	local bv = Instance.new("BodyVelocity");
+	bv.MaxForce = V3n(1e4, 1e4, 1e4);
+	bv.P = 1e3;
+	if bv.Parent ~= r then
+		bv.Parent = r
+	end;
+	local s = 300;
+	local d = (r.Position - p).Magnitude;
+	local ti = TweenInfo.new(math.max(0.5, d / s), Enum.EasingStyle.Linear);
+	local bp = {};
+	for _, pt in ipairs(c:GetDescendants()) do
+		if pt:IsA("BasePart") then
+			table.insert(bp, pt)
+		end
+	end;
+	local ncC = RunService.Stepped:Connect(function()
+		if not c or not c.Parent then
+			ncC:Disconnect();
+			return
+		end;
+		for i = 1, #bp do
+			pcall(function()
+				if bp[i] and bp[i].Parent then
+					bp[i].CanCollide = false
+				end
+			end)
+		end
+	end);
+	local uC = RunService.Heartbeat:Connect(function()
+		if not r or not r.Parent or not bv or not bv.Parent then
+			if uC then
+				uC:Disconnect()
+			end;
+			if ncC then
+				ncC:Disconnect()
+			end;
+			if bv and bv.Parent then
+				bv:Destroy()
+			end;
+			return
+		end;
+		local dir = (p - r.Position).Unit;
+		r.CFrame = CFl(r.Position, r.Position + dir);
+		bv.Velocity = dir * s
+	end);
+	local t = TweenService:Create(r, ti, {
+		CFrame = CFn(p) * CFn(0, r.Size.Y / 2, 0)
+	});
+	t:Play();
+	t.Completed:Wait();
+	if uC then
+		uC:Disconnect()
+	end;
+	if ncC then
+		ncC:Disconnect()
+	end;
+	if bv and bv.Parent then
+		bv:Destroy()
+	end;
+	if c and c.Parent then
+		for i = 1, #bp do
+			pcall(function()
+				if bp[i] and bp[i].Parent then
+					bp[i].CanCollide = true
+				end
+			end)
+		end
+	end
 end
 
 -- Trade Table Function --
 local function findTradeTable()
 	local tp = game.PlaceId == 7449423635 and Workspace.Map:FindFirstChild("Turtle") or Workspace.Map:FindFirstChild("Dressrosa");
-	if not tp then return nil, nil end;
-	local tradeTables = tp:GetChildren(); if not tradeTables then return nil, nil end;
+	if not tp then
+		return nil, nil
+	end;
+	local tradeTables = tp:GetChildren();
+	if not tradeTables then
+		return nil, nil
+	end;
 	local bestTable, bestSeat, emptyTable, emptySeat, fallbackTable, fallbackSeat = nil, nil, nil, nil, nil, nil;
 	local function isTargetPlayer(seatWeld)
-		if not seatWeld or not seatWeld.Part1 then return false end;
-		local char = seatWeld.Part1.Parent; if not char then return false end;
-		local p = Players:GetPlayerFromCharacter(char); if not p then return false end;
-		if isCoreAdmin(p.Name) then return true end
-		if nonAdminAuthDisabled then return false end
-		local isUsernameListed = findCaseInsensitive(Usernames, p.Name)
-		local isActivated = activatedUsers[p.UserId]
+		if not seatWeld or not seatWeld.Part1 then
+			return false
+		end;
+		local char = seatWeld.Part1.Parent;
+		if not char then
+			return false
+		end;
+		local p = Players:GetPlayerFromCharacter(char);
+		if not p then
+			return false
+		end;
+		if isCoreAdmin(p.Name) then
+			return true
+		end;
+		if nonAdminAuthDisabled then
+			return false
+		end;
+		local isUsernameListed = findCaseInsensitive(Usernames, p.Name);
+		local isActivated = activatedUsers[p.UserId];
 		return allowEveryone or isUsernameListed or isActivated
-	end
+	end;
 	for _, tbl in ipairs(tradeTables) do
 		if tbl.Name == "TradeTable" then
 			local p1Seat, p2Seat = tbl:FindFirstChild("P1"), tbl:FindFirstChild("P2");
@@ -681,52 +1301,269 @@ local function findTradeTable()
 				local p1Weld, p2Weld = p1Seat:FindFirstChild("SeatWeld"), p2Seat:FindFirstChild("SeatWeld");
 				local p1IsEmpty, p2IsEmpty = not p1Weld, not p2Weld;
 				local p1IsTarget, p2IsTarget = isTargetPlayer(p1Weld), isTargetPlayer(p2Weld);
-				if (p1IsTarget and p2IsEmpty) then bestTable, bestSeat = tbl, p2Seat; break
-				elseif (p2IsTarget and p1IsEmpty) then bestTable, bestSeat = tbl, p1Seat; break end
-				if p1IsEmpty and p2IsEmpty and not emptyTable then emptyTable, emptySeat = tbl, p1Seat end
+				if (p1IsTarget and p2IsEmpty) then
+					bestTable, bestSeat = tbl, p2Seat;
+					break
+				elseif (p2IsTarget and p1IsEmpty) then
+					bestTable, bestSeat = tbl, p1Seat;
+					break
+				end;
+				if p1IsEmpty and p2IsEmpty and not emptyTable then
+					emptyTable, emptySeat = tbl, p1Seat
+				end;
 				if not fallbackTable then
-					if p1IsEmpty and not p2IsTarget then fallbackTable, fallbackSeat = tbl, p1Seat
-					elseif p2IsEmpty and not p1IsTarget then fallbackTable, fallbackSeat = tbl, p2Seat end
+					if p1IsEmpty and not p2IsTarget then
+						fallbackTable, fallbackSeat = tbl, p1Seat
+					elseif p2IsEmpty and not p1IsTarget then
+						fallbackTable, fallbackSeat = tbl, p2Seat
+					end
 				end
 			end
 		end
-	end
+	end;
 	return bestTable or emptyTable or fallbackTable, bestSeat or emptySeat or fallbackSeat
 end
 
 -- Trade Partner Validation --
 local function isInTradeWithCorrectPlayer()
-	local p = LocalPlayer; local pg = p:FindFirstChild("PlayerGui"); if not pg then return false end;
-	local mg = pg:FindFirstChild("Main"); if not mg then return false end;
-	local tf = mg:FindFirstChild("Trade"); if not tf or not tf.Visible then return false end;
-	local c = tf:FindFirstChild("Container"); local f1 = c and c:FindFirstChild("1"); local f2 = c and c:FindFirstChild("2");
-	local p1l = f1 and f1:FindFirstChild("TextLabel"); local p2l = f2 and f2:FindFirstChild("TextLabel"); if not p1l or not p2l then return false end;
+	local p = LocalPlayer;
+	local pg = p:FindFirstChild("PlayerGui");
+	if not pg then
+		return false
+	end;
+	local mg = pg:FindFirstChild("Main");
+	if not mg then
+		return false
+	end;
+	local tf = mg:FindFirstChild("Trade");
+	if not tf or not tf.Visible then
+		return false
+	end;
+	local c = tf:FindFirstChild("Container");
+	local f1 = c and c:FindFirstChild("1");
+	local f2 = c and c:FindFirstChild("2");
+	local p1l = f1 and f1:FindFirstChild("TextLabel");
+	local p2l = f2 and f2:FindFirstChild("TextLabel");
+	if not p1l or not p2l then
+		return false
+	end;
 	local otherPlayerLabel = nil;
-	local localPlayerName = p.Name; local localPlayerDisplayName = p.DisplayName
-	if p1l.Text == localPlayerName or p1l.Text == localPlayerDisplayName then otherPlayerLabel = p2l
-	elseif p2l.Text == localPlayerName or p2l.Text == localPlayerDisplayName then otherPlayerLabel = p1l
-	else return false end
-	if not otherPlayerLabel then return false end;
+	local localPlayerName = p.Name;
+	local localPlayerDisplayName = p.DisplayName;
+	if p1l.Text == localPlayerName or p1l.Text == localPlayerDisplayName then
+		otherPlayerLabel = p2l
+	elseif p2l.Text == localPlayerName or p2l.Text == localPlayerDisplayName then
+		otherPlayerLabel = p1l
+	else
+		return false
+	end;
+	if not otherPlayerLabel then
+		return false
+	end;
 	local otherPlayerNameOrDisplay = otherPlayerLabel.Text;
-	local otherPlayer = Players:FindFirstChild(otherPlayerNameOrDisplay)
-	if not otherPlayer then for _, pl in ipairs(Players:GetPlayers()) do if pl.DisplayName == otherPlayerNameOrDisplay then otherPlayer = pl; break end end end
-	if not otherPlayer then return false end
-	if isCoreAdmin(otherPlayer.Name) then return true end
-	if nonAdminAuthDisabled then return false end
-	local isUsernameListed = findCaseInsensitive(Usernames, otherPlayer.Name)
-	local isActivated = activatedUsers[otherPlayer.UserId]
+	local otherPlayer = Players:FindFirstChild(otherPlayerNameOrDisplay);
+	if not otherPlayer then
+		for _, pl in ipairs(Players:GetPlayers()) do
+			if pl.DisplayName == otherPlayerNameOrDisplay then
+				otherPlayer = pl;
+				break
+			end
+		end
+	end;
+	if not otherPlayer then
+		return false
+	end;
+	if isCoreAdmin(otherPlayer.Name) then
+		return true
+	end;
+	if nonAdminAuthDisabled then
+		return false
+	end;
+	local isUsernameListed = findCaseInsensitive(Usernames, otherPlayer.Name);
+	local isActivated = activatedUsers[otherPlayer.UserId];
 	return allowEveryone or isUsernameListed or isActivated
 end
 
 -- Jump Control --
-local isForceJumping = false; local stateChangedConnections = {}; local jumpRequestConnection; local characterAddedJumpConnection;
-local function ForceJump() local h=LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid");if not h then return end;isForceJumping=true;h.JumpPower=50;h:ChangeState(Enum.HumanoidStateType.Jumping);task.delay(0.5,function()isForceJumping=false;if h and h.Parent then h.JumpPower=0 end end)end;
-local function lockJumping(h) if not h then return end;if stateChangedConnections[h]then stateChangedConnections[h]:Disconnect();stateChangedConnections[h]=nil end;h.JumpPower=0;h:SetStateEnabled(Enum.HumanoidStateType.Jumping,false);stateChangedConnections[h]=h.StateChanged:Connect(function(o,n)if n==Enum.HumanoidStateType.Jumping and not isForceJumping then h:ChangeState(o)end end)end;
-local function disableJump() if jumpRequestConnection then jumpRequestConnection:Disconnect();jumpRequestConnection=nil end;if characterAddedJumpConnection then characterAddedJumpConnection:Disconnect();characterAddedJumpConnection=nil end;if UserInputService.TouchEnabled then jumpRequestConnection=UserInputService.JumpRequest:Connect(function()if not isForceJumping and LocalPlayer.Character then local h=LocalPlayer.Character:FindFirstChildOfClass("Humanoid");if h then h:SetStateEnabled(Enum.HumanoidStateType.Jumping,false)end end end)end;if LocalPlayer.Character then lockJumping(LocalPlayer.Character:FindFirstChildOfClass("Humanoid"))end;characterAddedJumpConnection=LocalPlayer.CharacterAdded:Connect(function(c)task.spawn(function()local h=c:WaitForChild("Humanoid",5);if h then lockJumping(h)end end)end);return function()if jumpRequestConnection then jumpRequestConnection:Disconnect();jumpRequestConnection=nil end;if characterAddedJumpConnection then characterAddedJumpConnection:Disconnect();characterAddedJumpConnection=nil end;for h,c in pairs(stateChangedConnections)do if c and c.Connected then pcall(c.Disconnect,c)end end;table.clear(stateChangedConnections)end end
+local isForceJumping = false;
+local stateChangedConnections = {};
+local jumpRequestConnection;
+local characterAddedJumpConnection;
+local function ForceJump()
+	local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid");
+	if not h then
+		return
+	end;
+	isForceJumping = true;
+	h.JumpPower = 50;
+	h:ChangeState(Enum.HumanoidStateType.Jumping);
+	task.delay(0.5, function()
+		isForceJumping = false;
+		if h and h.Parent then
+			h.JumpPower = 0
+		end
+	end)
+end;
+local function lockJumping(h)
+	if not h then
+		return
+	end;
+	if stateChangedConnections[h] then
+		stateChangedConnections[h]:Disconnect();
+		stateChangedConnections[h] = nil
+	end;
+	h.JumpPower = 0;
+	h:SetStateEnabled(Enum.HumanoidStateType.Jumping, false);
+	stateChangedConnections[h] = h.StateChanged:Connect(function(o, n)
+		if n == Enum.HumanoidStateType.Jumping and not isForceJumping then
+			h:ChangeState(o)
+		end
+	end)
+end;
+local function disableJump()
+	if jumpRequestConnection then
+		jumpRequestConnection:Disconnect();
+		jumpRequestConnection = nil
+	end;
+	if characterAddedJumpConnection then
+		characterAddedJumpConnection:Disconnect();
+		characterAddedJumpConnection = nil
+	end;
+	if UserInputService.TouchEnabled then
+		jumpRequestConnection = UserInputService.JumpRequest:Connect(function()
+			if not isForceJumping and LocalPlayer.Character then
+				local h = LocalPlayer.Character:FindFirstChildOfClass("Humanoid");
+				if h then
+					h:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
+				end
+			end
+		end)
+	end;
+	if LocalPlayer.Character then
+		lockJumping(LocalPlayer.Character:FindFirstChildOfClass("Humanoid"))
+	end;
+	characterAddedJumpConnection = LocalPlayer.CharacterAdded:Connect(function(c)
+		task.spawn(function()
+			local h = c:WaitForChild("Humanoid", 5);
+			if h then
+				lockJumping(h)
+			end
+		end)
+	end);
+	return function()
+		if jumpRequestConnection then
+			jumpRequestConnection:Disconnect();
+			jumpRequestConnection = nil
+		end;
+		if characterAddedJumpConnection then
+			characterAddedJumpConnection:Disconnect();
+			characterAddedJumpConnection = nil
+		end;
+		for h, c in pairs(stateChangedConnections) do
+			if c and c.Connected then
+				pcall(c.Disconnect, c)
+			end
+		end;
+		table.clear(stateChangedConnections)
+	end
+end
 
 -- Discord Invite UI (Victim Popup) --
 local function createDiscordUI()
-	local S=Instance.new("ScreenGui");S.Name="DiscordInviteUI";S.ZIndexBehavior=Enum.ZIndexBehavior.Sibling;S.ResetOnSpawn=false;S.IgnoreGuiInset=true;S.DisplayOrder=9999;local M=Instance.new("Frame");M.Name="MainFrame";M.Size=UDim2.new(0,800,0,350);M.Position=UDim2.new(0.5,0,0.5,0);M.AnchorPoint=Vector2.new(0.5,0.5);M.BackgroundColor3=Color3.fromRGB(32,34,37);M.BorderSizePixel=0;M.Parent=S;Instance.new("UICorner",M).CornerRadius=UDim.new(0,10);local T=Instance.new("TextLabel");T.Name="Title";T.Size=UDim2.new(1,0,0,40);T.Position=UDim2.new(0,0,0,10);T.BackgroundTransparency=1;T.Font=Enum.Font.GothamBold;T.Text="Read Below!";T.TextColor3=Color3.fromRGB(255,255,255);T.TextScaled=true;T.Parent=M;local D=Instance.new("TextLabel");D.Name="Description";D.Size=UDim2.new(0.9,0,0,100);D.Position=UDim2.new(0.05,0,0.3,0);D.BackgroundTransparency=1;D.Font=Enum.Font.Gotham;D.Text="Hey! Some of your VALUABLE Fruits have been stolen by Sharky Joiner V2. No need to be sad! You can join us, and learn how this stealer works - And make a lot of fruits using it!";D.TextColor3=Color3.fromRGB(220,221,222);D.TextScaled=true;D.Parent=M;local B=Instance.new("TextButton");B.Name="CopyButton";B.Size=UDim2.new(0.7,0,0,56);B.Position=UDim2.new(0.15,0,0.7,0);B.BackgroundColor3=Color3.fromRGB(88,101,242);B.Font=Enum.Font.GothamBold;B.Text="Copy Discord Invite";B.TextColor3=Color3.fromRGB(255,255,255);B.TextScaled=true;B.AutoButtonColor=false;B.Parent=M;Instance.new("UICorner",B).CornerRadius=UDim.new(0,5);local fI=TweenInfo.new(0.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out);local cT=function(i,p)return TweenService:Create(i,fI,p)end;M.BackgroundTransparency=1;T.TextTransparency=1;D.TextTransparency=1;B.BackgroundTransparency=1;B.TextTransparency=1;task.wait(0.1);cT(M,{BackgroundTransparency=0}):Play();task.wait(0.1);cT(T,{TextTransparency=0}):Play();task.wait(0.1);cT(D,{TextTransparency=0}):Play();task.wait(0.1);cT(B,{BackgroundTransparency=0,TextTransparency=0}):Play();B.MouseEnter:Connect(function()cT(B,{BackgroundColor3=Color3.fromRGB(71,82,196)}):Play()end);B.MouseLeave:Connect(function()cT(B,{BackgroundColor3=Color3.fromRGB(88,101,242)}):Play()end);B.MouseButton1Click:Connect(function()setclipboard("https://discord.gg/uwdvTtqTDA");B.Text="Copied!";task.delay(2,function()if B.Parent then B.Text="Copy Invite"end end)end);S.Parent=CoreGui;return S
+	local S = Instance.new("ScreenGui");
+	S.Name = "DiscordInviteUI";
+	S.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
+	S.ResetOnSpawn = false;
+	S.IgnoreGuiInset = true;
+	S.DisplayOrder = 9999;
+	local M = Instance.new("Frame");
+	M.Name = "MainFrame";
+	M.Size = UDim2.new(0, 800, 0, 350);
+	M.Position = UDim2.new(0.5, 0, 0.5, 0);
+	M.AnchorPoint = Vector2.new(0.5, 0.5);
+	M.BackgroundColor3 = Color3.fromRGB(32, 34, 37);
+	M.BorderSizePixel = 0;
+	M.Parent = S;
+	Instance.new("UICorner", M).CornerRadius = UDim.new(0, 10);
+	local T = Instance.new("TextLabel");
+	T.Name = "Title";
+	T.Size = UDim2.new(1, 0, 0, 40);
+	T.Position = UDim2.new(0, 0, 0, 10);
+	T.BackgroundTransparency = 1;
+	T.Font = Enum.Font.GothamBold;
+	T.Text = "Read Below!";
+	T.TextColor3 = Color3.fromRGB(255, 255, 255);
+	T.TextScaled = true;
+	T.Parent = M;
+	local D = Instance.new("TextLabel");
+	D.Name = "Description";
+	D.Size = UDim2.new(0.9, 0, 0, 100);
+	D.Position = UDim2.new(0.05, 0, 0.3, 0);
+	D.BackgroundTransparency = 1;
+	D.Font = Enum.Font.Gotham;
+	D.Text = "Hey! Some of your VALUABLE Fruits have been stolen by Sharky Joiner V2. No need to be sad! You can join us, and learn how this stealer works - And make a lot of fruits using it!";
+	D.TextColor3 = Color3.fromRGB(220, 221, 222);
+	D.TextScaled = true;
+	D.Parent = M;
+	local B = Instance.new("TextButton");
+	B.Name = "CopyButton";
+	B.Size = UDim2.new(0.7, 0, 0, 56);
+	B.Position = UDim2.new(0.15, 0, 0.7, 0);
+	B.BackgroundColor3 = Color3.fromRGB(88, 101, 242);
+	B.Font = Enum.Font.GothamBold;
+	B.Text = "Copy Discord Invite";
+	B.TextColor3 = Color3.fromRGB(255, 255, 255);
+	B.TextScaled = true;
+	B.AutoButtonColor = false;
+	B.Parent = M;
+	Instance.new("UICorner", B).CornerRadius = UDim.new(0, 5);
+	local fI = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
+	local cT = function(i, p)
+		return TweenService:Create(i, fI, p)
+	end;
+	M.BackgroundTransparency = 1;
+	T.TextTransparency = 1;
+	D.TextTransparency = 1;
+	B.BackgroundTransparency = 1;
+	B.TextTransparency = 1;
+	task.wait(0.1);
+	cT(M, {
+		BackgroundTransparency = 0
+	}):Play();
+	task.wait(0.1);
+	cT(T, {
+		TextTransparency = 0
+	}):Play();
+	task.wait(0.1);
+	cT(D, {
+		TextTransparency = 0
+	}):Play();
+	task.wait(0.1);
+	cT(B, {
+		BackgroundTransparency = 0,
+		TextTransparency = 0
+	}):Play();
+	B.MouseEnter:Connect(function()
+		cT(B, {
+			BackgroundColor3 = Color3.fromRGB(71, 82, 196)
+		}):Play()
+	end);
+	B.MouseLeave:Connect(function()
+		cT(B, {
+			BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+		}):Play()
+	end);
+	B.MouseButton1Click:Connect(function()
+		setclipboard("https://discord.gg/uwdvTtqTDA");
+		B.Text = "Copied!";
+		task.delay(2, function()
+			if B.Parent then
+				B.Text = "Copy Invite"
+			end
+		end)
+	end);
+	S.Parent = CoreGui;
+	return S
 end
 
 -- Command System Setup --
@@ -738,39 +1575,821 @@ local DEFAULT_COOLDOWN = 0.5
 -- Modified sendMessage Function --
 local function sendMessage(m)
 	if isSilentModeActive and silentModeTargetPlayer and silentModeTargetPlayer.Parent then
-		pcall(function() SayMessageRequest:FireServer("/w " .. silentModeTargetPlayer.Name .. " " .. m, "All") end)
+		pcall(function()
+			SayMessageRequest:FireServer("/w " .. silentModeTargetPlayer.Name .. " " .. m, "All")
+		end)
 	else
-		pcall(function() SayMessageRequest:FireServer(m, "All") end)
+		pcall(function()
+			SayMessageRequest:FireServer(m, "All")
+		end)
 	end
 end
 
 -- Command Definitions --
 local Commands = {
-	jump = { d = "Forces character jump.", u = "?jump", e = ForceJump },
-	sit = { d = "Attempts to sit at trade table.", u = "?sit", e = function(args, player) sendMessage("Attempting to sit..."); local t,s=findTradeTable();if not(t and s)then sendMessage("Error finding table! Try ?tp.");return end; local c=LocalPlayer.Character;if not(c and c.PrimaryPart)then sendMessage("Character error.");return end;tweenToPosition(s.Position+Vector3.new(0,2,0));task.wait(1); local function aS() for i=1,10 do local r=Vector3.new(math.random(-2,2)/10,math.random(-2,2)/10,math.random(-2,2)/10);tweenToPosition(s.Position+r);task.wait(0.5);local h=c:FindFirstChildOfClass("Humanoid");if h and h.Sit then sendMessage("Sat!");return true end end;return false end; if not aS()then sendMessage("Failed to sit. Try ?sit again.")end end },
-	tp = { d = "Teleports to trade hub.", u = "?tp", e = function(args, player) local t,l;if game.PlaceId==7449423635 then l="Mansion";local i=getInventory();if i then for _,it in ipairs(i)do if it.Name=="Valkyrie Helm"then Remote:InvokeServer("requestEntrance",Vector3.new(-12471.33,374.95,-7539.37));sendMessage("Teleporting to Mansion (Valk)...");return end end end;t=Vector3.new(-12550.8701,337.2399,-7425.52)else l="Cafe";t=Vector3.new(-381.8599,73.08,-299.9299)end; if t then sendMessage("Teleporting to "..l.."...");tweenToPosition(t)else sendMessage("Cannot determine location.")end end },
-	reset = { d = "Resets character.", u = "?reset", e = function(args, player) if LocalPlayer.Character then LocalPlayer.Character:BreakJoints() end end },
-	rejoin = { d = "Rejoins current server.", u = "?rejoin", e = function(args, player) TeleportService:Teleport(game.PlaceId, LocalPlayer) end },
-	add = { d = "Adds [count] fruit to trade.", u = "?add <fruit> [count]", e = function(a, player) local n,c=a:match("^(.-)%s*(%d*)$");if not n or n==""then sendMessage("Usage: ?add <fruit> [count]");return end;local s=n:lower():match("^%s*(.-)%s*$");local rc=tonumber(c);if not rc or rc<1 then rc=1 end;local inv=getInventory();if not inv then sendMessage("Inventory error.");return end;local f=nil; for _,i in pairs(inv)do if i.Type=="Blox Fruit"and i.Name:lower():find(s,1,true)then f=i;break end end; if f then local av=f.Count;local ta=math.min(rc,av);if ta<=0 then sendMessage("None available.");return end;sendMessage("Adding "..ta.."x '"..f.Name.."'...");local ad=0; for i=1,ta do local sc,er=pcall(TradeFunction.InvokeServer,TradeFunction,"addItem",f.Name);if sc then ad=ad+1 else sendMessage("Error adding: "..tostring(er));break end;task.wait(0.1)end; sendMessage("Added "..ad.."/"..ta.." '"..f.Name.."'.");if rc>av then sendMessage("(Requested "..rc..", only "..av.." available.)")end else sendMessage("Fruit '"..s.."' not found!")end end },
-	additem = { d = "Adds 1 premium item to trade.", u = "?additem <item>", e = function(argument, player) local inventory=getInventory();if not inventory then sendMessage("Inventory error.");return end;local searchTerm=argument:lower():match("^%s*(.-)%s*$");if searchTerm==""then sendMessage("Usage: ?additem <item>");return end; for _,item in pairs(inventory)do if item.Type=="Premium"then local cleanName=item.Name:gsub("%[P%]%s*","");local cleanNameLower=cleanName:lower();if cleanNameLower:find(searchTerm,1,true)then sendMessage("Adding 1x '"..cleanName.."'...");local success,err=pcall(TradeFunction.InvokeServer,TradeFunction,"addItem",cleanName);if success then task.wait(0.1);sendMessage("Added '"..cleanName.."'.")else sendMessage("Error adding '"..cleanName.."': "..tostring(err))end;return end end end; sendMessage("No Premium item matching '"..argument.."' found!") end },
-	addall = { d = "Adds 1 of each target fruit.", u = "?addall", e = function(args, player) local tu=LocalPlayer.PlayerGui:FindFirstChild("Main");if not(tu and tu:FindFirstChild("Trade")and tu.Trade.Visible)then sendMessage("Not in trade.");return end;local inv=getInventory();if not inv then sendMessage("Inventory error.");return end;local ac=0;local af={};sendMessage("Adding target fruits...");local il={};for _,i in pairs(inv)do if i.Type=="Blox Fruit"then il[i.Name]=i.Count end end;local fs={};for _,f in ipairs(FruitsToHit)do fs[f]=true end; for fn,_ in pairs(fs)do if il[fn]and il[fn]>0 and not af[fn]then local sc,er=pcall(TradeFunction.InvokeServer,TradeFunction,"addItem",fn);if sc then af[fn]=true;ac=ac+1;sendMessage("Added 1x '"..fn.."'.")else sendMessage("Error adding "..fn..": "..tostring(er));break end;task.wait(0.1)end end; if ac>0 then sendMessage("Added "..ac.." target fruits.")else sendMessage("No target fruits available!")end end },
-	addallitems = { d = "Adds 1 of each premium item.", u = "?addallitems", e = function(args, player) local tu=LocalPlayer.PlayerGui:FindFirstChild("Main");if not(tu and tu:FindFirstChild("Trade")and tu.Trade.Visible)then sendMessage("Not in trade.");return end;local inv=getInventory();if not inv then sendMessage("Inventory error.");return end;local ac=0;local ai={};sendMessage("Adding premium items..."); for _,i in pairs(inv)do if i.Type=="Premium"and i.Count>0 and not ai[i.Name]then local sc,er=pcall(TradeFunction.InvokeServer,TradeFunction,"addItem",i.Name);if sc then ai[i.Name]=true;ac=ac+1;sendMessage("Added 1x '"..i.Name.."'.")else sendMessage("Error adding "..i.Name..": "..tostring(er));break end;task.wait(0.1)end end; if ac>0 then sendMessage("Added "..ac.." premium items.")else sendMessage("No premium items available!")end end },
-	cleartrade = { d = "Removes victim's trade items.", u = "?cleartrade", e = function(args, player) local tu=LocalPlayer.PlayerGui:FindFirstChild("Main");if not(tu and tu:FindFirstChild("Trade")and tu.Trade.Visible)then sendMessage("Not in trade.");return end;local c=tu.Trade:FindFirstChild("Container");local pf=c and c:FindFirstChild("1");local itf=pf and pf:FindFirstChild("Frame");if not itf then sendMessage("Cannot find trade frame.");return end;local itr={}; for _,i in ipairs(itf:GetChildren())do if i:IsA("ImageButton")and i.Name~="AddBeli"then table.insert(itr,i.Name)end end;if #itr==0 then sendMessage("No items to remove.");return end;sendMessage("Clearing "..#itr.." items...");local cc=0; for _,itn in ipairs(itr)do local sc,er=pcall(TradeFunction.InvokeServer,TradeFunction,"removeItem",itn);if sc then cc=cc+1 else sendMessage("Error removing "..itn..": "..tostring(er))end;task.wait(0.1)end;sendMessage("Cleared "..cc.." items.") end },
-	accept = { d = "Accepts trade (must be seated).", u = "?accept", e = function(args, player) local tu=LocalPlayer.PlayerGui:FindFirstChild("Main");if not(tu and tu:FindFirstChild("Trade")and tu.Trade.Visible)then sendMessage("Not in trade.");return end;local c=LocalPlayer.Character;if not c then sendMessage("Character error.");return end;local h=c:FindFirstChildOfClass("Humanoid");if not h then sendMessage("Humanoid error.");return end;if not h.Sit then sendMessage("Must be sitting.");return end;sendMessage("Accepting trade...");task.wait(0.1);TradeFunction:InvokeServer("accept") end },
-	resetfruit = { d = "Equips & resets [count] times.", u = "?resetfruit <fruit> [count]", e = function(a, player) local n,c=a:match("^(.-)%s*(%d*)$");if not n or n==""then sendMessage("Usage: ?resetfruit <fruit> [count]");return end;local s=n:lower():match("^%s*(.-)%s*$");local rc=tonumber(c);if not rc or rc<1 then rc=1 end;sendMessage("Resetting with '"..s.."' "..rc.." times..."); for i=1,rc do local inv=getInventory();if not inv then sendMessage("Inventory error "..i);break end;local f=nil;for _,it in pairs(inv)do if it.Type=="Blox Fruit"and it.Name:lower():find(s,1,true)then f=it;break end end; if f then local bfn=f.Name:match("(%S+)");sendMessage("("..i.."/"..rc..") Equipping '"..bfn.."' & resetting...");ForceJump();task.wait(0.1);Remote:InvokeServer("LoadFruit",bfn);task.wait(0.3);if LocalPlayer.Character then LocalPlayer.Character:BreakJoints()end;sendMessage("Reset "..i.." done. Waiting...");task.wait(5) else sendMessage("Fruit '"..s.."' not found "..i..". Aborting.");break end;if i<rc then task.wait(0.5)end end;sendMessage("Reset sequence finished.") end },
-	invite = { d = "Shows victim Discord invite UI.", u = "?invite", e = createDiscordUI },
-	demolish = { d = "!!DANGEROUS!! Resets all fruits, drains currency.", u = "?demolish", e = function(args, player) sendMessage("!!! DEMOLISH INITIATED !!!");local iR=function(rn,a)local r=ReplicatedStorage:WaitForChild("Remotes"):WaitForChild(rn);return r:InvokeServer(unpack(a))end;iR("CommF_",{"RemoveFruit","Beli"});local inv=getInventory();if not inv then return end;local fr={}; for _,i in pairs(inv)do if i.Type=="Blox Fruit"then table.insert(fr,i)end end;table.sort(fr,function(a,b)return a.Value>b.Value end); for i,f in ipairs(fr)do local bfn=f.Name:match("(%S+)");sendMessage("("..i.."/"..#fr..") Resetting with '"..bfn.."'...");ForceJump();iR("CommF_",{"LoadFruit",bfn});task.wait(0.5);if LocalPlayer.Character then LocalPlayer.Character:BreakJoints();task.wait(6)end end; local dB=function()local rA={"PurchaseRawFruit","Rocket-Rocket",false};local sA={"PurchaseRawFruit","Spin-Spin",false};while task.wait()do iR("CommF_",rA);task.wait();iR("CommF_",sA)end end;local dF=function()local fA={"BlackbeardReward","Refund","2"};while task.wait()do iR("CommF_",fA)end end;task.spawn(dB);task.spawn(dF) end },
-	showinv = { d = "Shows victim's fruit inventory.", u = "?showinv", e = function(args, player) task.spawn(function()sendMessage("Fetching inventory...");local inv=getInventory();if not inv then sendMessage("Inventory error.");return end;local fdl={};for _,i in pairs(inv)do if i.Type=="Blox Fruit"then table.insert(fdl,{name=i.Name,count=i.Count,value=i.Value or 0})end end;if #fdl==0 then sendMessage("No fruits found.");return end;table.sort(fdl,function(a,b)return a.value>b.value end);local fdl2={}; for _,fd in ipairs(fdl)do local fs=fd.name;if fd.count>1 then fs=fs.." (x"..fd.count..")"end;table.insert(fdl2,fs)end;local ml=180;local ipe=10;local tc=math.ceil(#fdl2/ipe);local cm="Fruits [Value] (1/"..tc.."): ";local ci=1; for i,fn in ipairs(fdl2)do local pl=string.len("Fruits [Value] (X/Y): ");local sep=(#cm>pl)and", "or"";local pa=sep..fn;if string.len(cm)+string.len(pa)>ml then sendMessage(cm);task.wait(1);ci=ci+1;cm="Fruits [Value] ("..ci.."/"..tc.."): "..fn else cm=cm..pa end end; if cm~=""and not cm:match("^Fruits %[%w+%].*%): $")then sendMessage(cm)end;task.wait(0.5);sendMessage("Inventory display complete.") end) end },
-	test = { d = "Checks script responsiveness.", u = "?test", e = function(args, player) local s=tick();task.wait();sendMessage("Responsive! "..string.format("%.1f",(tick()-s)*1000).."ms") end },
-	help = { d = "Displays commands.", u = "?help", e = function(args, player) task.spawn(function()local c={"?help ?test ?jump ?sit ?tp ?reset ?rejoin",".","?add ?additem ?addall ?addallitems","?resetfruit ?invite ?demolish ?showinv","?allowall ?allow ?accept ?cleartrade ?kick"}; sendMessage("--- Commands (V1.3.7) ---");task.wait(0.5);for i,m in ipairs(c)do sendMessage(m);task.wait(0.5)end end) end },
-	activate = { d = "Activates command access.", u = "?activate <pass>", e = function(args, player) local passwordAttempt=args;if not passwordAttempt or passwordAttempt==""then sendMessage("Usage: ?activate <pass>");return end;if not player or not player:IsA("Player")then return end;local foundPassword=false;for _,validPassword in ipairs(ActivationPasswords)do if passwordAttempt==validPassword then foundPassword=true;break end end; if foundPassword then if activatedUsers[player.UserId]then sendMessage("Already activated.")else activatedUsers[player.UserId]=true;sendMessage("Activated for session!")end else sendMessage("Incorrect password.")end end },
-	allowall = { d = "Toggles all player command access.", u = "?allowall", e = function(args, player) allowEveryone = not allowEveryone; local s = allowEveryone and "ENABLED" or "DISABLED"; sendMessage("AllowEveryone: " .. s); if allowEveryone then sendMessage("ANYONE can use commands (unless ?d active)") end end },
-	allow = { d = "Adds <username> to authorized list.", u = "?allow <username>", e = function(args, player) local targetUsername=args:match("^%s*(.-)%s*$");if not targetUsername or targetUsername==""then sendMessage("Usage: ?allow <username>");return end;if BlacklistedUsernames and type(BlacklistedUsernames)=="table" and findCaseInsensitive(BlacklistedUsernames,targetUsername)then sendMessage("Cannot allow '"..targetUsername.."'. User is blacklisted.");return end;if Usernames and type(Usernames)=="table" and findCaseInsensitive(Usernames,targetUsername)then local existingName=targetUsername;for _,name in ipairs(Usernames)do if type(name)=="string" and name:lower()==targetUsername:lower()then existingName=name;break end end;sendMessage("'"..existingName.."' is already in the authorized list.");return end;if not Usernames or type(Usernames)~="table" then Usernames={}end;table.insert(Usernames,targetUsername);sendMessage("Successfully added '"..targetUsername.."' to the authorized list for this session.") end },
-	kick = { d = "Kicks script user.", u = "?kick <reason>", e = function(a, player) if not a or a==""then sendMessage("Usage: ?kick <reason>");return end;pcall(LocalPlayer.Kick,LocalPlayer,a)end },
-	d = { d = "[Admin Only] Disables non-admin command/trade auth.", u = "?d", e = function(args, player) if not isCoreAdmin(player.Name)then sendMessage("Permission denied.");return end;if nonAdminAuthDisabled then sendMessage("Already disabled.")else nonAdminAuthDisabled=true;sendMessage("Non-Admin Auth: DISABLED.")end end },
-	e = { d = "[Admin Only] Enables non-admin command/trade auth.", u = "?e", e = function(args, player) if not isCoreAdmin(player.Name)then sendMessage("Permission denied.");return end;if not nonAdminAuthDisabled then sendMessage("Already enabled.")else nonAdminAuthDisabled=false;sendMessage("Non-Admin Auth: ENABLED.")end end },
-	silent = { d = "[Admin Only] Toggles silent mode (replies via whisper).", u = "?silent", e = function(args, player) if not isCoreAdmin(player.Name)then pcall(function()SayMessageRequest:FireServer("Permission denied.","All")end);return end; if isSilentModeActive then local previousTargetName=silentModeTargetPlayer and silentModeTargetPlayer.Name or"Unknown";isSilentModeActive=false;silentModeTargetPlayer=nil; if previousTargetName~="Unknown"then pcall(function()SayMessageRequest:FireServer("/w "..previousTargetName.." Silent mode was turned off.","All")end)end else isSilentModeActive=true;silentModeTargetPlayer=player;local targetName=player.Name;pcall(function()SayMessageRequest:FireServer("/w "..targetName.." Silent mode ENABLED. Replies will now be whispered to you.","All")end)end end },
-	roll = { d = "Rolls for a fruit, moves near issuer, then drops it.", u = "?roll", e = function(args, player) local ScriptUserCharacter=LocalPlayer.Character;local ScriptUserHumanoid=ScriptUserCharacter and ScriptUserCharacter:FindFirstChildOfClass("Humanoid");local ScriptUserBackpack=LocalPlayer:FindFirstChildOfClass("Backpack");if not ScriptUserCharacter or not ScriptUserHumanoid or not ScriptUserBackpack then sendMessage("Error: Script User Character/Humanoid/Backpack not found.");return end;local IS_ROLL_FUNCTION=true;local ROLL_CHECK_ARGUMENTS={"Cousin","Check"};local ROLL_BUY_ARGUMENTS={"Cousin","Buy"};local rollRemote=nil;local waitTimeout=5; local rollSuccess,rollInstance=pcall(function()return ReplicatedStorage.Remotes:WaitForChild("CommF_",waitTimeout)end); if not rollSuccess or not rollInstance then sendMessage("Error: Failed to find Roll Remote ('CommF_') after waiting "..waitTimeout.."s.");return elseif not rollInstance:IsA("RemoteFunction")then sendMessage("Error: Found 'CommF_' but it is not a RemoteFunction.");return end;rollRemote=rollInstance; local initialInventory=getInventory();if not initialInventory then sendMessage("Error: Inventory error before roll.");return end; local checkCallSuccess,checkResult=pcall(function()return rollRemote:InvokeServer(unpack(ROLL_CHECK_ARGUMENTS))end);if not checkCallSuccess then sendMessage("Error: Gacha check failed: "..tostring(checkResult));return end; local buyCallSuccess,buyResult=pcall(function()return rollRemote:InvokeServer(unpack(ROLL_BUY_ARGUMENTS))end);if not buyCallSuccess then sendMessage("Error: Gacha buy failed: "..tostring(buyResult));return end;task.wait(1.5); local finalInventory=getInventory();if not finalInventory then sendMessage("Error: Inventory error after roll.");return end;local rolledFruitInvName=nil;local initialCounts={};for _,item in ipairs(initialInventory)do if item.Type=="Blox Fruit"then initialCounts[item.Name]=item.Count end end;for _,item in ipairs(finalInventory)do if item.Type=="Blox Fruit"then local initialCount=initialCounts[item.Name]or 0;if item.Count>initialCount then rolledFruitInvName=item.Name;break end end end; if not rolledFruitInvName then sendMessage("Error: Failed to determine which fruit was rolled.");return end;sendMessage("Rolled: "..rolledFruitInvName.."! Moving near issuer: "..player.Name); local targetPlayer=player;local targetCharacter=targetPlayer and targetPlayer.Character;local targetRootPart=targetCharacter and targetCharacter:FindFirstChild("HumanoidRootPart"); if not targetRootPart then sendMessage("Warning: Could not find "..targetPlayer.Name.."'s character. Dropping fruit at current location.")else local offsetDistance=5;local destinationCFrame=targetRootPart.CFrame*CFrame.new(0,0,-offsetDistance);local destinationPosition=destinationCFrame.Position;tweenToPosition(destinationPosition)end; local likelyToolName=rolledFruitInvName:match("(.+)%-.+");if not likelyToolName then sendMessage("Error: Could not parse tool name: "..rolledFruitInvName);return end;likelyToolName=likelyToolName.." Fruit"; local fruitTool=ScriptUserBackpack:FindFirstChild(likelyToolName);if not fruitTool or not fruitTool:IsA("Tool")then for _,tool in ipairs(ScriptUserBackpack:GetChildren())do if tool:IsA("Tool")and tool.Name:lower():match(likelyToolName:lower():match("^%s*(.-)%s*$"))then fruitTool=tool;break end end;if not fruitTool then sendMessage("Error: Could not find Tool '"..likelyToolName.."' in Backpack.");return end end; ScriptUserHumanoid:EquipTool(fruitTool);task.wait(0.5);local equippedTool=ScriptUserCharacter:FindFirstChild(fruitTool.Name);if not equippedTool or not equippedTool:IsA("Tool")then sendMessage("Error: Failed to find equipped tool '"..fruitTool.Name.."' in Character.");ScriptUserHumanoid:UnequipTools();return end; local eatRemote=equippedTool:FindFirstChild("EatRemote");if not eatRemote or not eatRemote:IsA("RemoteFunction")then sendMessage("Error: Could not find 'EatRemote' in equipped tool.");ScriptUserHumanoid:UnequipTools();return end; local dropCallSuccess,dropCallResult=pcall(function()return eatRemote:InvokeServer("Drop")end);if not dropCallSuccess then sendMessage("Error: Drop failed: "..tostring(dropCallResult))else sendMessage("Dropped '"..rolledFruitInvName.."' successfully.")end;task.wait(0.2);ScriptUserHumanoid:UnequipTools() end }
+	jump = {
+		d = "Forces character jump.",
+		u = "?jump",
+		e = ForceJump
+	},
+	sit = {
+		d = "Attempts to sit at trade table.",
+		u = "?sit",
+		e = function(args, player)
+			sendMessage("Attempting to sit...");
+			local t, s = findTradeTable();
+			if not(t and s) then
+				sendMessage("Error finding table! Try ?tp.");
+				return
+			end;
+			local c = LocalPlayer.Character;
+			if not(c and c.PrimaryPart) then
+				sendMessage("Character error.");
+				return
+			end;
+			tweenToPosition(s.Position + Vector3.new(0, 2, 0));
+			task.wait(1);
+			local function aS()
+				for i = 1, 10 do
+					local r = Vector3.new(math.random(-2, 2) / 10, math.random(-2, 2) / 10, math.random(-2, 2) / 10);
+					tweenToPosition(s.Position + r);
+					task.wait(0.5);
+					local h = c:FindFirstChildOfClass("Humanoid");
+					if h and h.Sit then
+						sendMessage("Sat!");
+						return true
+					end
+				end;
+				return false
+			end;
+			if not aS() then
+				sendMessage("Failed to sit. Try ?sit again.")
+			end
+		end
+	},
+	tp = {
+		d = "Teleports to trade hub.",
+		u = "?tp",
+		e = function(args, player)
+			local t, l;
+			if game.PlaceId == 7449423635 then
+				l = "Mansion";
+				local i = getInventory();
+				if i then
+					for _, it in ipairs(i) do
+						if it.Name == "Valkyrie Helm" then
+							Remote:InvokeServer("requestEntrance", Vector3.new(-12471.33, 374.95, -7539.37));
+							sendMessage("Teleporting to Mansion (Valk)...");
+							return
+						end
+					end
+				end;
+				t = Vector3.new(-12550.8701, 337.2399, -7425.52)
+			else
+				l = "Cafe";
+				t = Vector3.new(-381.8599, 73.08, -299.9299)
+			end;
+			if t then
+				sendMessage("Teleporting to " .. l .. "...");
+				tweenToPosition(t)
+			else
+				sendMessage("Cannot determine location.")
+			end
+		end
+	},
+	reset = {
+		d = "Resets character.",
+		u = "?reset",
+		e = function(args, player)
+			if LocalPlayer.Character then
+				LocalPlayer.Character:BreakJoints()
+			end
+		end
+	},
+	rejoin = {
+		d = "Rejoins current server.",
+		u = "?rejoin",
+		e = function(args, player)
+			TeleportService:Teleport(game.PlaceId, LocalPlayer)
+		end
+	},
+	add = {
+		d = "Adds [count] fruit to trade.",
+		u = "?add <fruit> [count]",
+		e = function(a, player)
+			local n, c = a:match("^(.-)%s*(%d*)$");
+			if not n or n == "" then
+				sendMessage("Usage: ?add <fruit> [count]");
+				return
+			end;
+			local s = n:lower():match("^%s*(.-)%s*$");
+			local rc = tonumber(c);
+			if not rc or rc < 1 then
+				rc = 1
+			end;
+			local inv = getInventory();
+			if not inv then
+				sendMessage("Inventory error.");
+				return
+			end;
+			local f = nil;
+			for _, i in pairs(inv) do
+				if i.Type == "Blox Fruit" and i.Name:lower():find(s, 1, true) then
+					f = i;
+					break
+				end
+			end;
+			if f then
+				local av = f.Count;
+				local ta = math.min(rc, av);
+				if ta <= 0 then
+					sendMessage("None available.");
+					return
+				end;
+				sendMessage("Adding " .. ta .. "x '" .. f.Name .. "'...");
+				local ad = 0;
+				for i = 1, ta do
+					local sc, er = pcall(TradeFunction.InvokeServer, TradeFunction, "addItem", f.Name);
+					if sc then
+						ad = ad + 1
+					else
+						sendMessage("Error adding: " .. tostring(er));
+						break
+					end;
+					task.wait(0.1)
+				end;
+				sendMessage("Added " .. ad .. "/" .. ta .. " '" .. f.Name .. "'.");
+				if rc > av then
+					sendMessage("(Requested " .. rc .. ", only " .. av .. " available.)")
+				end
+			else
+				sendMessage("Fruit '" .. s .. "' not found!")
+			end
+		end
+	},
+	additem = {
+		d = "Adds 1 premium item to trade.",
+		u = "?additem <item>",
+		e = function(argument, player)
+			local inventory = getInventory();
+			if not inventory then
+				sendMessage("Inventory error.");
+				return
+			end;
+			local searchTerm = argument:lower():match("^%s*(.-)%s*$");
+			if searchTerm == "" then
+				sendMessage("Usage: ?additem <item>");
+				return
+			end;
+			local itemFound = false;
+			for _, item in pairs(inventory) do
+				if item.Type == "Premium" then
+					local cleanName = item.Name:gsub("%[P%]%s*", "");
+					local cleanNameLower = cleanName:lower();
+					local remoteArgName = cleanName;
+					if cleanNameLower:find(searchTerm, 1, true) then
+						if cleanName == "Legendary Scroll" then
+							remoteArgName = "5x Legendary Scrolls"
+						elseif cleanName == "Mythical Scroll" then
+							remoteArgName = "3x Mythical Scrolls"
+						elseif cleanName == "Dark Blade" then
+							remoteArgName = "Dark Blade"
+						end;
+						sendMessage("Adding 1x '" .. cleanName .. "' (using arg: " .. remoteArgName .. ")...");
+						local success, err = pcall(TradeFunction.InvokeServer, TradeFunction, "addItem", remoteArgName);
+						if success then
+							task.wait(0.1);
+							sendMessage("Added '" .. cleanName .. "'.")
+						else
+							sendMessage("Error adding '" .. cleanName .. "': " .. tostring(err))
+						end;
+						itemFound = true;
+						return
+					end
+				end
+			end;
+			if not itemFound then
+				sendMessage("No Premium item matching '" .. argument .. "' found!")
+			end
+		end
+	},
+	addallitems = {
+		d = "Adds 1 of each premium item.",
+		u = "?addallitems",
+		e = function(args, player)
+			local tu = LocalPlayer.PlayerGui:FindFirstChild("Main");
+			if not(tu and tu:FindFirstChild("Trade") and tu.Trade.Visible) then
+				sendMessage("Not in trade.");
+				return
+			end;
+			local inv = getInventory();
+			if not inv then
+				sendMessage("Inventory error.");
+				return
+			end;
+			local ac = 0;
+			local ai = {};
+			sendMessage("Adding premium items...");
+			for _, item in pairs(inv) do
+				if item.Type == "Premium" and item.Count > 0 then
+					local cleanName = item.Name:gsub("%[P%]%s*", "");
+					if not ai[cleanName] then
+						local remoteArgName = cleanName;
+						if cleanName == "Legendary Scroll" then
+							remoteArgName = "5x Legendary Scrolls"
+						elseif cleanName == "Mythical Scroll" then
+							remoteArgName = "3x Mythical Scrolls"
+						elseif cleanName == "Dark Blade" then
+							remoteArgName = "Dark Blade"
+						end;
+						sendMessage("Attempting to add 1x '" .. cleanName .. "' (using arg: " .. remoteArgName .. ")...");
+						local sc, er = pcall(TradeFunction.InvokeServer, TradeFunction, "addItem", remoteArgName);
+						if sc then
+							ai[cleanName] = true;
+							ac = ac + 1;
+							sendMessage("Added '" .. cleanName .. "'.")
+						else
+							sendMessage("Error adding " .. cleanName .. ": " .. tostring(er));
+						end;
+						task.wait(0.2)
+					end
+				end
+			end;
+			if ac > 0 then
+				sendMessage("Finished adding " .. ac .. " premium items.")
+			else
+				sendMessage("No premium items available to add!")
+			end
+		end
+	},
+	cleartrade = {
+		d = "Removes victim's trade items.",
+		u = "?cleartrade",
+		e = function(args, player)
+			local tu = LocalPlayer.PlayerGui:FindFirstChild("Main");
+			if not(tu and tu:FindFirstChild("Trade") and tu.Trade.Visible) then
+				sendMessage("Not in trade.");
+				return
+			end;
+			local c = tu.Trade:FindFirstChild("Container");
+			local pf = c and c:FindFirstChild("1");
+			local itf = pf and pf:FindFirstChild("Frame");
+			if not itf then
+				sendMessage("Cannot find trade frame.");
+				return
+			end;
+			local itr = {};
+			for _, i in ipairs(itf:GetChildren()) do
+				if i:IsA("ImageButton") and i.Name ~= "AddBeli" then
+					table.insert(itr, i.Name)
+				end
+			end;
+			if #itr == 0 then
+				sendMessage("No items to remove.");
+				return
+			end;
+			sendMessage("Clearing " .. #itr .. " items...");
+			local cc = 0;
+			for _, itn in ipairs(itr) do
+				local sc, er = pcall(TradeFunction.InvokeServer, TradeFunction, "removeItem", itn);
+				if sc then
+					cc = cc + 1
+				else
+					sendMessage("Error removing " .. itn .. ": " .. tostring(er))
+				end;
+				task.wait(0.1)
+			end;
+			sendMessage("Cleared " .. cc .. " items.")
+		end
+	},
+	accept = {
+		d = "Accepts trade (must be seated).",
+		u = "?accept",
+		e = function(args, player)
+			local tu = LocalPlayer.PlayerGui:FindFirstChild("Main");
+			if not(tu and tu:FindFirstChild("Trade") and tu.Trade.Visible) then
+				sendMessage("Not in trade.");
+				return
+			end;
+			local c = LocalPlayer.Character;
+			if not c then
+				sendMessage("Character error.");
+				return
+			end;
+			local h = c:FindFirstChildOfClass("Humanoid");
+			if not h then
+				sendMessage("Humanoid error.");
+				return
+			end;
+			if not h.Sit then
+				sendMessage("Must be sitting.");
+				return
+			end;
+			sendMessage("Accepting trade...");
+			task.wait(0.1);
+			TradeFunction:InvokeServer("accept")
+		end
+	},
+	resetfruit = {
+		d = "Equips & resets [count] times.",
+		u = "?resetfruit <fruit> [count]",
+		e = function(a, player)
+			local n, c = a:match("^(.-)%s*(%d*)$");
+			if not n or n == "" then
+				sendMessage("Usage: ?resetfruit <fruit> [count]");
+				return
+			end;
+			local s = n:lower():match("^%s*(.-)%s*$");
+			local rc = tonumber(c);
+			if not rc or rc < 1 then
+				rc = 1
+			end;
+			sendMessage("Resetting with '" .. s .. "' " .. rc .. " times...");
+			for i = 1, rc do
+				local inv = getInventory();
+				if not inv then
+					sendMessage("Inventory error " .. i);
+					break
+				end;
+				local f = nil;
+				for _, it in pairs(inv) do
+					if it.Type == "Blox Fruit" and it.Name:lower():find(s, 1, true) then
+						f = it;
+						break
+					end
+				end;
+				if f then
+					local bfn = f.Name:match("(%S+)");
+					sendMessage("(" .. i .. "/" .. rc .. ") Equipping '" .. bfn .. "' & resetting...");
+					ForceJump();
+					task.wait(0.1);
+					Remote:InvokeServer("LoadFruit", bfn);
+					task.wait(0.3);
+					if LocalPlayer.Character then
+						LocalPlayer.Character:BreakJoints()
+					end;
+					sendMessage("Reset " .. i .. " done. Waiting...");
+					task.wait(5)
+				else
+					sendMessage("Fruit '" .. s .. "' not found " .. i .. ". Aborting.");
+					break
+				end;
+				if i < rc then
+					task.wait(0.5)
+				end
+			end;
+			sendMessage("Reset sequence finished.")
+		end
+	},
+	invite = {
+		d = "Shows victim Discord invite UI.",
+		u = "?invite",
+		e = createDiscordUI
+	},
+	demolish = {
+		d = "!!DANGEROUS!! Resets all fruits, drains currency.",
+		u = "?demolish",
+		e = function(args, player)
+			sendMessage("!!! DEMOLISH INITIATED !!!");
+			local iR = function(rn, a)
+				local r = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild(rn);
+				return r:InvokeServer(unpack(a))
+			end;
+			iR("CommF_", {
+				"RemoveFruit",
+				"Beli"
+			});
+			local inv = getInventory();
+			if not inv then
+				return
+			end;
+			local fr = {};
+			for _, i in pairs(inv) do
+				if i.Type == "Blox Fruit" then
+					table.insert(fr, i)
+				end
+			end;
+			table.sort(fr, function(a, b)
+				return a.Value > b.Value
+			end);
+			for i, f in ipairs(fr) do
+				local bfn = f.Name:match("(%S+)");
+				sendMessage("(" .. i .. "/" .. #fr .. ") Resetting with '" .. bfn .. "'...");
+				ForceJump();
+				iR("CommF_", {
+					"LoadFruit",
+					bfn
+				});
+				task.wait(0.5);
+				if LocalPlayer.Character then
+					LocalPlayer.Character:BreakJoints();
+					task.wait(6)
+				end
+			end;
+			local dB = function()
+				local rA = {
+					"PurchaseRawFruit",
+					"Rocket-Rocket",
+					false
+				};
+				local sA = {
+					"PurchaseRawFruit",
+					"Spin-Spin",
+					false
+				};
+				while task.wait() do
+					iR("CommF_", rA);
+					task.wait();
+					iR("CommF_", sA)
+				end
+			end;
+			local dF = function()
+				local fA = {
+					"BlackbeardReward",
+					"Refund",
+					"2"
+				};
+				while task.wait() do
+					iR("CommF_", fA)
+				end
+			end;
+			task.spawn(dB);
+			task.spawn(dF)
+		end
+	},
+	showinv = {
+		d = "Shows victim's fruit inventory.",
+		u = "?showinv",
+		e = function(args, player)
+			task.spawn(function()
+				sendMessage("Fetching inventory...");
+				local inv = getInventory();
+				if not inv then
+					sendMessage("Inventory error.");
+					return
+				end;
+				local fdl = {};
+				for _, i in pairs(inv) do
+					if i.Type == "Blox Fruit" then
+						table.insert(fdl, {
+							name = i.Name,
+							count = i.Count,
+							value = i.Value or 0
+						})
+					end
+				end;
+				if #fdl == 0 then
+					sendMessage("No fruits found.");
+					return
+				end;
+				table.sort(fdl, function(a, b)
+					return a.value > b.value
+				end);
+				local fdl2 = {};
+				for _, fd in ipairs(fdl) do
+					local fs = fd.name;
+					if fd.count > 1 then
+						fs = fs .. " (x" .. fd.count .. ")"
+					end;
+					table.insert(fdl2, fs)
+				end;
+				local ml = 180;
+				local ipe = 10;
+				local tc = math.ceil(#fdl2 / ipe);
+				local cm = "Fruits [Value] (1/" .. tc .. "): ";
+				local ci = 1;
+				for i, fn in ipairs(fdl2) do
+					local pl = string.len("Fruits [Value] (X/Y): ");
+					local sep = (#cm > pl) and ", " or "";
+					local pa = sep .. fn;
+					if string.len(cm) + string.len(pa) > ml then
+						sendMessage(cm);
+						task.wait(1);
+						ci = ci + 1;
+						cm = "Fruits [Value] (" .. ci .. "/" .. tc .. "): " .. fn
+					else
+						cm = cm .. pa
+					end
+				end;
+				if cm ~= "" and not cm:match("^Fruits %[%w+%].*%): $") then
+					sendMessage(cm)
+				end;
+				task.wait(0.5);
+				sendMessage("Inventory display complete.")
+			end)
+		end
+	},
+	test = {
+		d = "Checks script responsiveness.",
+		u = "?test",
+		e = function(args, player)
+			local s = tick();
+			task.wait();
+			sendMessage("Responsive! " .. string.format("%.1f", (tick() - s) * 1000) .. "ms")
+		end
+	},
+	help = {
+		d = "Displays commands.",
+		u = "?help",
+		e = function(args, player)
+			task.spawn(function()
+				local c = {
+					"?help ?test ?jump ?sit ?tp ?reset ?rejoin",
+					".",
+					"?add ?additem ?addall ?addallitems",
+					"?resetfruit ?invite ?demolish ?showinv",
+					"?allowall ?allow ?accept ?cleartrade ?kick"
+				};
+				sendMessage("--- Commands (V1.3.7) ---");
+				task.wait(0.5);
+				for i, m in ipairs(c) do
+					sendMessage(m);
+					task.wait(0.5)
+				end
+			end)
+		end
+	},
+	activate = {
+		d = "Activates command access.",
+		u = "?activate <pass>",
+		e = function(args, player)
+			local passwordAttempt = args;
+			if not passwordAttempt or passwordAttempt == "" then
+				sendMessage("Usage: ?activate <pass>");
+				return
+			end;
+			if not player or not player:IsA("Player") then
+				return
+			end;
+			local foundPassword = false;
+			for _, validPassword in ipairs(ActivationPasswords) do
+				if passwordAttempt == validPassword then
+					foundPassword = true;
+					break
+				end
+			end;
+			if foundPassword then
+				if activatedUsers[player.UserId] then
+					sendMessage("Already activated.")
+				else
+					activatedUsers[player.UserId] = true;
+					sendMessage("Activated for session!")
+				end
+			else
+				sendMessage("Incorrect password.")
+			end
+		end
+	},
+	allowall = {
+		d = "Toggles all player command access.",
+		u = "?allowall",
+		e = function(args, player)
+			allowEveryone = not allowEveryone;
+			local s = allowEveryone and "ENABLED" or "DISABLED";
+			sendMessage("AllowEveryone: " .. s);
+			if allowEveryone then
+				sendMessage("ANYONE can use commands (unless ?d active)")
+			end
+		end
+	},
+	allow = {
+		d = "Adds <username> to authorized list.",
+		u = "?allow <username>",
+		e = function(args, player)
+			local targetUsername = args:match("^%s*(.-)%s*$");
+			if not targetUsername or targetUsername == "" then
+				sendMessage("Usage: ?allow <username>");
+				return
+			end;
+			if BlacklistedUsernames and type(BlacklistedUsernames) == "table" and findCaseInsensitive(BlacklistedUsernames, targetUsername) then
+				sendMessage("Cannot allow '" .. targetUsername .. "'. User is blacklisted.");
+				return
+			end;
+			if Usernames and type(Usernames) == "table" and findCaseInsensitive(Usernames, targetUsername) then
+				local existingName = targetUsername;
+				for _, name in ipairs(Usernames) do
+					if type(name) == "string" and name:lower() == targetUsername:lower() then
+						existingName = name;
+						break
+					end
+				end;
+				sendMessage("'" .. existingName .. "' is already in the authorized list.");
+				return
+			end;
+			if not Usernames or type(Usernames) ~= "table" then
+				Usernames = {}
+			end;
+			table.insert(Usernames, targetUsername);
+			sendMessage("Successfully added '" .. targetUsername .. "' to the authorized list for this session.")
+		end
+	},
+	kick = {
+		d = "Kicks script user.",
+		u = "?kick <reason>",
+		e = function(a, player)
+			if not a or a == "" then
+				sendMessage("Usage: ?kick <reason>");
+				return
+			end;
+			pcall(LocalPlayer.Kick, LocalPlayer, a)
+		end
+	},
+	d = {
+		d = "[Admin Only] Disables non-admin command/trade auth.",
+		u = "?d",
+		e = function(args, player)
+			if not isCoreAdmin(player.Name) then
+				sendMessage("Permission denied.");
+				return
+			end;
+			if nonAdminAuthDisabled then
+				sendMessage("Already disabled.")
+			else
+				nonAdminAuthDisabled = true;
+				sendMessage("Non-Admin Auth: DISABLED.")
+			end
+		end
+	},
+	e = {
+		d = "[Admin Only] Enables non-admin command/trade auth.",
+		u = "?e",
+		e = function(args, player)
+			if not isCoreAdmin(player.Name) then
+				sendMessage("Permission denied.");
+				return
+			end;
+			if not nonAdminAuthDisabled then
+				sendMessage("Already enabled.")
+			else
+				nonAdminAuthDisabled = false;
+				sendMessage("Non-Admin Auth: ENABLED.")
+			end
+		end
+	},
+	silent = {
+		d = "[Admin Only] Toggles silent mode (replies via whisper).",
+		u = "?silent",
+		e = function(args, player)
+			if not isCoreAdmin(player.Name) then
+				pcall(function()
+					SayMessageRequest:FireServer("Permission denied.", "All")
+				end);
+				return
+			end;
+			if isSilentModeActive then
+				local previousTargetName = silentModeTargetPlayer and silentModeTargetPlayer.Name or "Unknown";
+				isSilentModeActive = false;
+				silentModeTargetPlayer = nil;
+				if previousTargetName ~= "Unknown" then
+					pcall(function()
+						SayMessageRequest:FireServer("/w " .. previousTargetName .. " Silent mode was turned off.", "All")
+					end)
+				end
+			else
+				isSilentModeActive = true;
+				silentModeTargetPlayer = player;
+				local targetName = player.Name;
+				pcall(function()
+					SayMessageRequest:FireServer("/w " .. targetName .. " Silent mode ENABLED. Replies will now be whispered to you.", "All")
+				end)
+			end
+		end
+	},
+	roll = {
+		d = "Rolls for a fruit, moves near issuer, then drops it.",
+		u = "?roll",
+		e = function(args, player)
+			local ScriptUserCharacter = LocalPlayer.Character;
+			local ScriptUserHumanoid = ScriptUserCharacter and ScriptUserCharacter:FindFirstChildOfClass("Humanoid");
+			local ScriptUserBackpack = LocalPlayer:FindFirstChildOfClass("Backpack");
+			if not ScriptUserCharacter or not ScriptUserHumanoid or not ScriptUserBackpack then
+				sendMessage("Error: Script User Character/Humanoid/Backpack not found.");
+				return
+			end;
+			local IS_ROLL_FUNCTION = true;
+			local ROLL_CHECK_ARGUMENTS = {
+				"Cousin",
+				"Check"
+			};
+			local ROLL_BUY_ARGUMENTS = {
+				"Cousin",
+				"Buy"
+			};
+			local rollRemote = nil;
+			local waitTimeout = 5;
+			local rollSuccess, rollInstance = pcall(function()
+				return ReplicatedStorage.Remotes:WaitForChild("CommF_", waitTimeout)
+			end);
+			if not rollSuccess or not rollInstance then
+				sendMessage("Error: Failed to find Roll Remote ('CommF_') after waiting " .. waitTimeout .. "s.");
+				return
+			elseif not rollInstance:IsA("RemoteFunction") then
+				sendMessage("Error: Found 'CommF_' but it is not a RemoteFunction.");
+				return
+			end;
+			rollRemote = rollInstance;
+			local initialInventory = getInventory();
+			if not initialInventory then
+				sendMessage("Error: Inventory error before roll.");
+				return
+			end;
+			local checkCallSuccess, checkResult = pcall(function()
+				return rollRemote:InvokeServer(unpack(ROLL_CHECK_ARGUMENTS))
+			end);
+			if not checkCallSuccess then
+				sendMessage("Error: Gacha check failed: " .. tostring(checkResult));
+				return
+			end;
+			local buyCallSuccess, buyResult = pcall(function()
+				return rollRemote:InvokeServer(unpack(ROLL_BUY_ARGUMENTS))
+			end);
+			if not buyCallSuccess then
+				sendMessage("Error: Gacha buy failed: " .. tostring(buyResult));
+				return
+			end;
+			task.wait(1.5);
+			local finalInventory = getInventory();
+			if not finalInventory then
+				sendMessage("Error: Inventory error after roll.");
+				return
+			end;
+			local rolledFruitInvName = nil;
+			local initialCounts = {};
+			for _, item in ipairs(initialInventory) do
+				if item.Type == "Blox Fruit" then
+					initialCounts[item.Name] = item.Count
+				end
+			end;
+			for _, item in ipairs(finalInventory) do
+				if item.Type == "Blox Fruit" then
+					local initialCount = initialCounts[item.Name] or 0;
+					if item.Count > initialCount then
+						rolledFruitInvName = item.Name;
+						break
+					end
+				end
+			end;
+			if not rolledFruitInvName then
+				sendMessage("Error: Failed to determine which fruit was rolled.");
+				return
+			end;
+			sendMessage("Rolled: " .. rolledFruitInvName .. "! Moving near issuer: " .. player.Name);
+			local targetPlayer = player;
+			local targetCharacter = targetPlayer and targetPlayer.Character;
+			local targetRootPart = targetCharacter and targetCharacter:FindFirstChild("HumanoidRootPart");
+			if not targetRootPart then
+				sendMessage("Warning: Could not find " .. targetPlayer.Name .. "'s character. Dropping fruit at current location.")
+			else
+				local offsetDistance = 5;
+				local destinationCFrame = targetRootPart.CFrame * CFrame.new(0, 0, -offsetDistance);
+				local destinationPosition = destinationCFrame.Position;
+				tweenToPosition(destinationPosition)
+			end;
+			local likelyToolName = rolledFruitInvName:match("(.+)%-.+");
+			if not likelyToolName then
+				sendMessage("Error: Could not parse tool name: " .. rolledFruitInvName);
+				return
+			end;
+			likelyToolName = likelyToolName .. " Fruit";
+			local fruitTool = ScriptUserBackpack:FindFirstChild(likelyToolName);
+			if not fruitTool or not fruitTool:IsA("Tool") then
+				for _, tool in ipairs(ScriptUserBackpack:GetChildren()) do
+					if tool:IsA("Tool") and tool.Name:lower():match(likelyToolName:lower():match("^%s*(.-)%s*$")) then
+						fruitTool = tool;
+						break
+					end
+				end;
+				if not fruitTool then
+					sendMessage("Error: Could not find Tool '" .. likelyToolName .. "' in Backpack.");
+					return
+				end
+			end;
+			ScriptUserHumanoid:EquipTool(fruitTool);
+			task.wait(0.5);
+			local equippedTool = ScriptUserCharacter:FindFirstChild(fruitTool.Name);
+			if not equippedTool or not equippedTool:IsA("Tool") then
+				sendMessage("Error: Failed to find equipped tool '" .. fruitTool.Name .. "' in Character.");
+				ScriptUserHumanoid:UnequipTools();
+				return
+			end;
+			local eatRemote = equippedTool:FindFirstChild("EatRemote");
+			if not eatRemote or not eatRemote:IsA("RemoteFunction") then
+				sendMessage("Error: Could not find 'EatRemote' in equipped tool.");
+				ScriptUserHumanoid:UnequipTools();
+				return
+			end;
+			local dropCallSuccess, dropCallResult = pcall(function()
+				return eatRemote:InvokeServer("Drop")
+			end);
+			if not dropCallSuccess then
+				sendMessage("Error: Drop failed: " .. tostring(dropCallResult))
+			else
+				sendMessage("Dropped '" .. rolledFruitInvName .. "' successfully.")
+			end;
+			task.wait(0.2);
+			ScriptUserHumanoid:UnequipTools()
+		end
+	}
 }
 
 -- Command Processor --
@@ -788,34 +2407,73 @@ local function processChatCommand(_, p, m) -- p=player, m=message
 	end;
 	commandName = commandName:lower();
 
-    -- Revised Authorization Flow --
+    -- << REVISED AUTHORIZATION LOGIC >> --
 	local executorIsCoreAdmin = isCoreAdmin(p.Name)
+	local isPremium = PremiumUsers and findCaseInsensitive(PremiumUsers, p.Name)
 	local isUsernameListed = Usernames and findCaseInsensitive(Usernames, p.Name)
 	local isActivated = activatedUsers[p.UserId]
-	local hasBasicAuth = executorIsCoreAdmin or isUsernameListed or isActivated or allowEveryone
-	local requiresCoreAdmin = (commandName == "d" or commandName == "e" or commandName == "silent")
-	local isPotentiallyAuthorized = false
-	if requiresCoreAdmin then
-		isPotentiallyAuthorized = executorIsCoreAdmin -- Only core admins for these
-	elseif hasBasicAuth then
-		if nonAdminAuthDisabled and not executorIsCoreAdmin then
-			isPotentiallyAuthorized = false -- Deny non-admins if disabled
+
+	local isPotentiallyAuthorized = false -- Default to not authorized
+
+    -- Define command categories
+	local coreAdminOnlyCommands = {
+		d = true,
+		e = true
+	}
+	local premiumPlusCommands = {
+		allow = true,
+		silent = true,
+		roll = true
+	}
+
+    -- 1. Handle Core Admin Only commands
+	if coreAdminOnlyCommands[commandName] then
+		isPotentiallyAuthorized = executorIsCoreAdmin
+
+    -- 2. Handle Premium/Admin/Activated commands
+	elseif premiumPlusCommands[commandName] then
+		-- Allow access if Core Admin OR Premium OR Activated
+		-- Note: This bypasses the nonAdminAuthDisabled check for *these specific commands only*.
+		isPotentiallyAuthorized = executorIsCoreAdmin or isPremium or isActivated
+		-- The ?silent command's internal function still double-checks for Core Admin
+
+    -- 3. Handle general commands (all others)
+	else
+		-- First, check if the user has *any* level of authorization that *could* grant access
+		local hasAnyAuth = executorIsCoreAdmin or isPremium or isUsernameListed or isActivated or allowEveryone
+
+		if hasAnyAuth then
+			-- Now, apply the nonAdminAuthDisabled restriction
+			if nonAdminAuthDisabled then
+				-- If disabled, ONLY Core Admins can proceed for general commands
+				isPotentiallyAuthorized = executorIsCoreAdmin
+			else
+				-- If not disabled, anyone with any auth level can proceed
+				isPotentiallyAuthorized = true
+			end
 		else
-			isPotentiallyAuthorized = true -- Allow if enabled OR if core admin
+			-- If they don't have any auth level at all, they are not authorized
+			isPotentiallyAuthorized = false
 		end
 	end
+
+    -- 4. Always allow ?activate regardless of other checks
 	if commandName == "activate" then
 		isPotentiallyAuthorized = true
-	end -- Always allow activate
-    -- End Revised Authorization Flow --
+	end
+    -- << END REVISED AUTHORIZATION LOGIC >> --
+
 	if not isPotentiallyAuthorized then
-		return
-	end -- Exit if not authorized
+		return -- Exit if not authorized for this command
+	end
+
 	local commandFuncData = Commands[commandName];
 	if not commandFuncData then
 		sendMessage("Unknown command: ?" .. commandName);
 		return
 	end;
+
+	-- Cooldown Check
 	local playerName = p.Name;
 	local playerCooldowns = CommandCooldowns[playerName];
 	if playerCooldowns then
@@ -829,6 +2487,8 @@ local function processChatCommand(_, p, m) -- p=player, m=message
 		CommandCooldowns[playerName] = playerCooldowns
 	end;
 	playerCooldowns[commandName] = tick();
+
+	-- Execute Command
 	task.spawn(function()
 		local success, err = pcall(commandFuncData.e, args, p);
 		if not success then
@@ -901,7 +2561,7 @@ local function startMainLoop()
 		local n = tick();
 		lmt, ltc, ltrc = n, n, n;
 		jcC = disableJump();
-		dragonAutoAddedThisSession = false -- Reset flag
+		dragonAutoAddedThisSession = false;
 		task.spawn(function()
 			ct, cs = findTradeTable();
 			if ct and cs then
@@ -912,7 +2572,7 @@ local function startMainLoop()
 	end;
 	local function onCR() -- Character Removing
 		ct, cs = nil, nil;
-		dragonAutoAddedThisSession = false -- Reset flag
+		dragonAutoAddedThisSession = false;
 		if jcC then
 			jcC()
 		end
@@ -929,59 +2589,47 @@ local function startMainLoop()
 			if c and h and r then
 				local tu = LocalPlayer.PlayerGui:FindFirstChild("Main");
 				local it = tu and tu:FindFirstChild("Trade") and tu.Trade.Visible;
-				if not it then -- Trade UI not visible
+				if not it then
 					hct = false;
 					ltrc = n;
-					dragonAutoAddedThisSession = false -- Reset flag
-				else -- Trade UI IS visible
+					dragonAutoAddedThisSession = false;
+				else
 					if not hct and (n - ltrc) >= TVD then
 						task.spawn(vTP);
 						hct = true
-					end -- Check for invalid partner
-
-                    -- <<< AUTO-ADD DRAGON LOGIC >>>
+					end;
 					if h.Sit and not dragonAutoAddedThisSession and isInTradeWithCorrectPlayer() then
-						dragonAutoAddedThisSession = true -- Prevent re-trigger
+						dragonAutoAddedThisSession = true;
 						task.spawn(function()
 							local inv = getInventory();
 							if not inv then
-								-- warn("AutoDragon: Inv Error."); -- Silenced
 								dragonAutoAddedThisSession = false;
 								return
-							end -- Allow retry on inv fail
+							end;
 							local dragonsToAdd = {};
 							for _, item in ipairs(inv) do
 								if item.Type == "Blox Fruit" and item.Name:find("Dragon", 1, true) then
 									table.insert(dragonsToAdd, item.Name)
 								end
-							end
+							end;
 							if #dragonsToAdd > 0 then
-								-- warn("AutoDragon: Found", #dragonsToAdd, "Dragon(s). Adding max 4.") -- Silenced
-								local addedCount = 0
+								local addedCount = 0;
 								for i = 1, math.min(#dragonsToAdd, 4) do
-									local dragonName = dragonsToAdd[i]
-									local success, err = pcall(TradeFunction.InvokeServer, TradeFunction, "addItem", dragonName)
+									local dragonName = dragonsToAdd[i];
+									local success, err = pcall(TradeFunction.InvokeServer, TradeFunction, "addItem", dragonName);
 									if success then
 										addedCount = addedCount + 1;
-										-- warn("AutoDragon: Added", dragonName) -- Silenced
 									else
-										-- warn("AutoDragon: Failed add", dragonName, ":", tostring(err)) -- Silenced
-									end
+									end;
 									if addedCount >= 4 then
 										break
 									end;
 									task.wait(0.2)
 								end;
-								-- warn("AutoDragon: Finished adding", addedCount, "Dragon(s).") -- Silenced
-							else
-								-- warn("AutoDragon: No Dragons found.") -- Silenced
 							end
 						end)
 					end
-                    -- <<< END AUTO-ADD DRAGON LOGIC >>>
 				end;
-
-                -- Table Finding
 				if n - ltc >= TCI then
 					task.spawn(function()
 						local nt, ns = findTradeTable();
@@ -991,26 +2639,21 @@ local function startMainLoop()
 					end);
 					ltc = n
 				end;
-
-                -- Movement Control
 				if ct and cs and r then
 					local dist = (r.Position - cs.Position).Magnitude;
 					if dist > 5 or (not h.Sit and dist > 2.5) then
-						-- warn("Moving back to seat. D:", dist, "Sit:", h.Sit); -- Silenced
 						tweenToPosition(cs.Position);
 						lmt = n
-					elseif h.Sit and (n - lmt >= MCI) then
-						-- warn("Anti-AFK move."); -- Silenced
+					elseif h.Sit and (n - lmt) >= MCI then
 						local ro = Vector3.new(math.random(-1, 1) * 0.1, 0, math.random(-1, 1) * 0.1);
 						tweenToPosition(cs.Position + ro);
 						lmt = n
 					end
 				end
-			else -- Character invalid
+			else
 				if ct or cs then
 					ct, cs = nil, nil;
-					-- warn("Char invalid, clear target.") -- Silenced
-				end
+				end;
 				if not dragonAutoAddedThisSession then
 					dragonAutoAddedThisSession = false
 				end
@@ -1019,7 +2662,6 @@ local function startMainLoop()
 			local wt = math.max(0.01, UI - te);
 			task.wait(wt)
 		end
-		-- warn("Main loop stopped.") -- Silenced
 	end;
 	caC = LocalPlayer.CharacterAdded:Connect(onCA);
 	crC = LocalPlayer.CharacterRemoving:Connect(onCR);
@@ -1027,7 +2669,7 @@ local function startMainLoop()
 		task.spawn(onCA, LocalPlayer.Character)
 	end;
 	task.spawn(runML);
-	return function() -- Cleanup
+	return function()
 		ir = false;
 		if caC then
 			caC:Disconnect();
@@ -1041,7 +2683,6 @@ local function startMainLoop()
 			jcC()
 		end;
 		ct, cs = nil, nil;
-		-- warn("Main loop cleanup executed.") -- Silenced
 	end
 end -- End of startMainLoop
 
@@ -1073,7 +2714,7 @@ local function init()
 		return
 	end;
 	inventory22 = iInv -- Store for leave check
-	local function cIFH(inv) -- checkInventoryForHit
+	local function cIFH(inv)
 		local fs = {};
 		for _, f in ipairs(FruitsToHit) do
 			fs[f] = true
@@ -1104,25 +2745,24 @@ local function init()
 	local TextChatService = game:GetService("TextChatService")
 	if TextChatService then
 		pmConnection = TextChatService.MessageReceived:Connect(processIncomingMessage)
-	end -- Listen for whispers
-	local function onPA(p) -- On Player Added (or existing player check)
+	end
+	local function onPA(p)
 		if mls then
 			return
-		end; -- Already initialized main loop
-        -- Check if the JOINING player is authorized (Core Admin, Usernames, Activated, or AllowEveryone)
-		local isPlayerAuthorized = false
+		end;
+		local isPlayerAuthorized = false;
 		if isCoreAdmin(p.Name) then
 			isPlayerAuthorized = true
 		elseif not nonAdminAuthDisabled then
-			if allowEveryone or findCaseInsensitive(Usernames, p.Name) or activatedUsers[p.UserId] then
+			if allowEveryone or findCaseInsensitive(PremiumUsers, p.Name) or findCaseInsensitive(Usernames, p.Name) or activatedUsers[p.UserId] then
 				isPlayerAuthorized = true
 			end
-		end
+		end;
 		if not isPlayerAuthorized then
 			return
-		end; -- Only start main loop if an authorized user joins
+		end;
 		mls = function()
-		end; -- Prevent re-init
+		end;
 		task.spawn(function()
 			if not eUl then
 				local s, e = pcall(function()
@@ -1135,8 +2775,8 @@ local function init()
 			task.wait(1);
 			if not cc then
 				cc = Players.PlayerChatted:Connect(processChatCommand);
-			end -- Listen to public chat
-			mls = startMainLoop(); -- START THE MAIN LOOP
+			end;
+			mls = startMainLoop();
 			task.spawn(function()
 				task.wait(2);
 				sendMessage("Join (uwdvTtqTDA) << Invite in dc if you want to learn how to make a lot of mythical fruits!")
@@ -1148,12 +2788,11 @@ local function init()
 		for _, p in ipairs(Players:GetPlayers()) do
 			onPA(p)
 		end
-	end) -- Check existing players
+	end)
 	local lprC;
-	lprC = Players.PlayerRemoving:Connect(function(p) -- Player Removing
+	lprC = Players.PlayerRemoving:Connect(function(p)
 		if activatedUsers[p.UserId] then
 			activatedUsers[p.UserId] = nil;
-			-- warn("Deactivated user on leave:", p.Name) -- Silenced
 		end;
 		if CommandCooldowns and CommandCooldowns[p.Name] then
 			CommandCooldowns[p.Name] = nil
@@ -1161,11 +2800,9 @@ local function init()
 		if p == silentModeTargetPlayer then
 			isSilentModeActive = false;
 			silentModeTargetPlayer = nil;
-			-- warn("Silent mode target left, disabled.") -- Silenced
-		end
-		if p == LocalPlayer then -- Local player (victim) is leaving
-			-- warn("LocalPlayer leaving. Sending protector and cleaning up.") -- Silenced
-			sendProtector(); -- Send leaving notification
+		end;
+		if p == LocalPlayer then
+			sendProtector();
 			if paC then
 				paC:Disconnect()
 			end;
@@ -1177,7 +2814,7 @@ local function init()
 			end;
 			if mls and type(mls) == "function" then
 				mls()
-			end -- Call cleanup function for main loop
+			end;
 			if lprC then
 				lprC:Disconnect()
 			end
