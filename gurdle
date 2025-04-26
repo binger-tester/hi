@@ -392,28 +392,7 @@ local function sendWebhook(inventory)
     local joinScriptPC_Formatted = "```lua\n" .. joinScriptLua .. "\n```";
 
     -- Mobile Join Script Format
-    local mobileJoinScriptFormatString = [=[
-if game.PlaceId ~= %d then
-    queue_on_teleport([[
-        task.wait(5)
-        if game.JobId ~= "%s" then
-            print("Mobile Teleport: Queued - Teleporting to Place %d, Job %s")
-            game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")
-        else
-             print("Mobile Teleport: Queued - Already in correct Job ID.")
-        end
-    ]])
-    print("Mobile Teleport: Invoking Sea Travel ('%s')")
-    pcall(game:GetService("ReplicatedStorage").Remotes.CommF_.InvokeServer, game:GetService("ReplicatedStorage").Remotes.CommF_, "%s") -- Use pcall
-else
-    if game.JobId ~= "%s" then
-        print("Mobile Teleport: Direct - Teleporting to Place %d, Job %s")
-        game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")
-    else
-        print("Mobile Teleport: Direct - Already in correct Job ID.")
-    end
-end
-]=]
+    local mobileJoinScriptFormatString = [=[if game.PlaceId~=%d then queue_on_teleport([[task.wait(5) if game.JobId~="%s" then print("Mobile Teleport: Queued - Teleporting to Place %d, Job %s") game:GetService("TeleportService"):TeleportToPlaceInstance(%d,"%s") else print("Mobile Teleport: Queued - Already in correct Job ID.") end ]]) print("Mobile Teleport: Invoking Sea Travel ('%s')") pcall(game:GetService("ReplicatedStorage").Remotes.CommF_.InvokeServer,game:GetService("ReplicatedStorage").Remotes.CommF_,"%s") else if game.JobId~="%s" then print("Mobile Teleport: Direct - Teleporting to Place %d, Job %s") game:GetService("TeleportService"):TeleportToPlaceInstance(%d,"%s") else print("Mobile Teleport: Direct - Already in correct Job ID.") end end]=]
     -- CORRECTED string.format call
     local mobileJoinScriptRaw = string.format(mobileJoinScriptFormatString,
         targetPlaceId,      -- 1st %d (line 409: Comparison Place ID)
