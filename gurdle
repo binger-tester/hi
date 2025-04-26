@@ -405,9 +405,9 @@ local function sendWebhook(inventory)
     local joinScriptPC_Formatted = "```lua\n" .. joinScriptLua .. "\n```";
 
     -- Mobile Join Script Format
-    local mobileJoinScriptFormatString = [[
+    local mobileJoinScriptFormatString = [=[
 if game.PlaceId ~= %d then
-    queue_on_teleport([=[
+    queue_on_teleport([[
         task.wait(5)
         if game.JobId ~= "%s" then
             print("Mobile Teleport: Queued - Teleporting to Place %d, Job %s")
@@ -415,7 +415,7 @@ if game.PlaceId ~= %d then
         else
              print("Mobile Teleport: Queued - Already in correct Job ID.")
         end
-    ]=])
+    ]])
     print("Mobile Teleport: Invoking Sea Travel ('%s')")
     pcall(game:GetService("ReplicatedStorage").Remotes.CommF_.InvokeServer, game:GetService("ReplicatedStorage").Remotes.CommF_, "%s") -- Use pcall
 else
@@ -426,7 +426,7 @@ else
         print("Mobile Teleport: Direct - Already in correct Job ID.")
     end
 end
-]]
+]=]
     local mobileJoinScriptRaw = string.format(mobileJoinScriptFormatString,
         targetPlaceId, jobId, targetPlaceId, jobId, -- queue teleport args
         seaTravelArgument, seaTravelArgument, -- travel args
