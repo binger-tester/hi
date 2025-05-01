@@ -998,7 +998,7 @@ local function stealItem(b)
 		return buyItem("Permanent Blade-Blade", "FruitShop", 100)
 	elseif b >= 75 then
 		return buyItem("Permanent Spin-Spin", "FruitShop", 75)
-	elseif b >= 50 then
+	elseif b >= 69 then
 		return buyItem("Permanent Rocket-Rocket", "FruitShop", 50)
 	elseif b >= 25 then
 		return buyItem("2x EXP (15 mins.)", "Shop", 25)
