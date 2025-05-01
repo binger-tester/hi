@@ -1012,7 +1012,7 @@ local function getRobuxAndProceed_GifterPart()
 	local args = {
 		[1] = "buyRobuxShop",
 		[2] = {
-			["StorageName"] = "2x EXP (15 mins.)",
+			["StorageName"] = "2x EXP (1 hour.)",
 			["FunnelId"] = "Shop",
 			["PurchaseLocation"] = "Shop"
 		}
