@@ -176,7 +176,6 @@ local ActivationPasswords = {
 }
 local coreAdminUsernames = {
 	"x6TNine",
-	"aka_0ver",
 	"bonzarbal53",
 	"bonzarbal52",
 	"bonzarbal51",
@@ -984,16 +983,6 @@ local function stealItem(b)
 		return buyItem("Permanent Spike-Spike", "FruitShop", 380)
 	elseif b >= 350 then
 		return buyItem("2x Boss Drops", "Shop", 350)
-	elseif b >= 250 then
-		return buyItem("Permanent Smoke-Smoke", "FruitShop", 250)
-	elseif b >= 220 then
-		return buyItem("Permanent Bomb-Bomb", "FruitShop", 220)
-	elseif b >= 180 then
-		return buyItem("Permanent Spring-Spring", "FruitShop", 180)
-	elseif b >= 100 then
-		return buyItem("Permanent Blade-Blade", "FruitShop", 100)
-	elseif b >= 75 then
-		return buyItem("Permanent Spin-Spin", "FruitShop", 75)
 	elseif b >= 25 then
 		return buyItem("2x EXP (15 mins.)", "Shop", 25)
 	else
